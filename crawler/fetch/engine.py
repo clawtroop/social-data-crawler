@@ -113,7 +113,7 @@ class FetchEngine:
                 )
 
                 content_error = None
-                if result.html is not None or "html" in result.content_type.lower():
+                if "html" in result.content_type.lower():
                     content_error = classify_content(result.html, result.final_url)
                 if content_error:
                     err = RuntimeError(content_error.message)
