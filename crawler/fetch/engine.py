@@ -11,6 +11,7 @@ import httpx
 
 from .backend_router import resolve_backend
 from .browser_pool import BrowserPool
+from .circuit_breaker import CircuitBreaker
 from .error_classifier import FetchError, classify, classify_content
 from .models import FetchTiming, RawFetchResult
 from .rate_limiter import RateLimiter
@@ -42,6 +43,7 @@ class FetchEngine:
         self._pool = BrowserPool(session_root)
         self._session_mgr = SessionManager(session_root)
         self._rate_limiter = RateLimiter()
+        self._circuit_breaker = CircuitBreaker()
         self._started = False
 
     @property
@@ -83,6 +85,12 @@ class FetchEngine:
         api_kwargs: dict | None = None,
     ) -> RawFetchResult:
         """Fetch a URL with automatic backend selection, wait strategies, and retry/escalation."""
+        circuit_error = self._circuit_breaker.open_error(platform)
+        if circuit_error is not None:
+            err = RuntimeError(circuit_error.message)
+            err.fetch_error = circuit_error  # type: ignore[attr-defined]
+            raise err
+
         if override_backend:
             initial_backend = override_backend
             fallback_chain: list[str] = []
@@ -119,6 +127,7 @@ class FetchEngine:
                     err = RuntimeError(content_error.message)
                     err.fetch_error = content_error  # type: ignore[attr-defined]
                     raise err
+                self._circuit_breaker.record_success(platform)
                 return result
             except Exception as exc:
                 last_error = exc
@@ -131,6 +140,7 @@ class FetchEngine:
                 )
                 if last_fetch_error and last_fetch_error.retryable:
                     backoff_seconds = self._rate_limiter.get_backoff_seconds(platform, attempt)
+                    self._circuit_breaker.record_failure(platform, last_fetch_error, backoff_seconds)
                     if backoff_seconds > 0:
                         logger.info(
                             "Backing off %.1fs for %s after %s",
@@ -139,6 +149,8 @@ class FetchEngine:
                             last_fetch_error.error_code,
                         )
                         await asyncio.sleep(backoff_seconds)
+                    if not self._circuit_breaker.allow_request(platform):
+                        break
                 continue
 
         err = RuntimeError(

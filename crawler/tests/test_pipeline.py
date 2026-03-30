@@ -79,6 +79,32 @@ def test_discovery_map_pipeline_uses_platform_specific_adapter(monkeypatch, work
         "crawler.discovery.adapters.registry.get_discovery_adapter",
         lambda platform: FakeDiscoveryAdapter(),
     )
+    async def fake_fetch(
+        self,
+        url: str,
+        platform: str,
+        resource_type: str | None = None,
+        *,
+        requires_auth: bool = False,
+        **kwargs,
+    ):
+        from datetime import datetime, timezone
+        from crawler.fetch.models import FetchTiming, RawFetchResult
+
+        html = "<html><body><a href='/wiki/Machine_learning'>Machine learning</a></body></html>"
+        return RawFetchResult(
+            url=url,
+            final_url=url,
+            backend="http",
+            fetch_time=datetime.now(timezone.utc),
+            content_type="text/html",
+            status_code=200,
+            html=html,
+            content_bytes=html.encode("utf-8"),
+            timing=FetchTiming(start_ms=0, navigation_ms=1, wait_strategy_ms=0, total_ms=1),
+        )
+
+    monkeypatch.setattr("crawler.fetch.engine.FetchEngine.fetch", fake_fetch)
 
     config = parse_args(["discover-map", "--input", str(input_path), "--output", str(output_dir)])
     records, errors = run_command(config)
@@ -210,6 +236,211 @@ def test_new_pipeline_uses_discovery_seed_builder(monkeypatch, workspace_tmp_pat
     assert errors == []
     assert captured["record"] == {"platform": "generic", "resource_type": "page", "url": "https://example.com/docs"}
     assert records[0]["canonical_url"] == "https://example.com/docs"
+
+
+def test_new_pipeline_resume_skips_completed_urls(monkeypatch, workspace_tmp_path: Path) -> None:
+    input_path = workspace_tmp_path / "input.jsonl"
+    output_dir = workspace_tmp_path / "out"
+    input_path.write_text(
+        json.dumps({"platform": "generic", "resource_type": "page", "url": "https://example.com/docs"}) + "\n",
+        encoding="utf-8",
+    )
+    fetch_calls = {"count": 0}
+
+    class FakeAdapter:
+        requires_auth = False
+
+        def resolve_backend(self, record: dict, override_backend: str | None = None, retry_count: int = 0) -> str:
+            return "http"
+
+        def normalize_record(self, record: dict, discovered: dict, extracted: dict, supplemental: dict) -> dict:
+            return {"title": "Test"}
+
+    async def fake_fetch(
+        self,
+        url: str,
+        platform: str,
+        resource_type: str | None = None,
+        *,
+        requires_auth: bool = False,
+        override_backend: str | None = None,
+        api_fetcher=None,
+        api_kwargs=None,
+        preferred_backend: str | None = None,
+        fallback_chain=None,
+    ):
+        from datetime import datetime, timezone
+        from crawler.fetch.models import FetchTiming, RawFetchResult
+
+        fetch_calls["count"] += 1
+        return RawFetchResult(
+            url=url,
+            final_url=url,
+            backend="http",
+            fetch_time=datetime.now(timezone.utc),
+            content_type="text/html; charset=utf-8",
+            status_code=200,
+            html="<html><body><article><h1>Docs</h1></article></body></html>",
+            content_bytes=b"<html></html>",
+            timing=FetchTiming(start_ms=0, navigation_ms=1, wait_strategy_ms=0, total_ms=1),
+        )
+
+    monkeypatch.setattr("crawler.platforms.registry.get_platform_adapter", lambda platform: FakeAdapter())
+    monkeypatch.setattr("crawler.fetch.engine.FetchEngine.fetch", fake_fetch)
+
+    first_config = parse_args(["crawl", "--input", str(input_path), "--output", str(output_dir)])
+    first_records, first_errors = run_command(first_config)
+    second_config = parse_args(["crawl", "--input", str(input_path), "--output", str(output_dir), "--resume"])
+    second_records, second_errors = run_command(second_config)
+
+    assert first_errors == []
+    assert len(first_records) == 1
+    assert second_errors == []
+    assert second_records == []
+    assert fetch_calls["count"] == 1
+
+
+def test_new_pipeline_deduplicates_same_canonical_url_within_run(monkeypatch, workspace_tmp_path: Path) -> None:
+    input_path = workspace_tmp_path / "input.jsonl"
+    output_dir = workspace_tmp_path / "out"
+    input_path.write_text(
+        (
+            json.dumps({"platform": "generic", "resource_type": "page", "url": "https://example.com/docs"}) + "\n"
+            + json.dumps({"platform": "generic", "resource_type": "page", "url": "https://example.com/docs"}) + "\n"
+        ),
+        encoding="utf-8",
+    )
+    fetch_calls = {"count": 0}
+
+    class FakeAdapter:
+        requires_auth = False
+
+        def resolve_backend(self, record: dict, override_backend: str | None = None, retry_count: int = 0) -> str:
+            return "http"
+
+        def normalize_record(self, record: dict, discovered: dict, extracted: dict, supplemental: dict) -> dict:
+            return {"title": "Docs"}
+
+    async def fake_fetch(
+        self,
+        url: str,
+        platform: str,
+        resource_type: str | None = None,
+        *,
+        requires_auth: bool = False,
+        override_backend: str | None = None,
+        api_fetcher=None,
+        api_kwargs=None,
+        preferred_backend: str | None = None,
+        fallback_chain=None,
+    ):
+        from datetime import datetime, timezone
+        from crawler.fetch.models import FetchTiming, RawFetchResult
+
+        fetch_calls["count"] += 1
+        html = "<html><body><article><h1>Docs</h1></article></body></html>"
+        return RawFetchResult(
+            url=url,
+            final_url=url,
+            backend="http",
+            fetch_time=datetime.now(timezone.utc),
+            content_type="text/html; charset=utf-8",
+            status_code=200,
+            html=html,
+            content_bytes=html.encode("utf-8"),
+            timing=FetchTiming(start_ms=0, navigation_ms=1, wait_strategy_ms=0, total_ms=1),
+        )
+
+    monkeypatch.setattr("crawler.platforms.registry.get_platform_adapter", lambda platform: FakeAdapter())
+    monkeypatch.setattr("crawler.fetch.engine.FetchEngine.fetch", fake_fetch)
+
+    config = parse_args(["crawl", "--input", str(input_path), "--output", str(output_dir)])
+    records, errors = run_command(config)
+
+    assert errors == []
+    assert len(records) == 1
+    assert fetch_calls["count"] == 1
+
+
+def test_new_pipeline_auto_login_retries_after_auth_expired(monkeypatch, workspace_tmp_path: Path) -> None:
+    input_path = workspace_tmp_path / "input.jsonl"
+    output_dir = workspace_tmp_path / "out"
+    session_root = output_dir / ".sessions"
+    input_path.write_text(
+        json.dumps({"platform": "linkedin", "resource_type": "profile", "public_identifier": "john-doe"}) + "\n",
+        encoding="utf-8",
+    )
+    session_root.mkdir(parents=True, exist_ok=True)
+    (session_root / "linkedin.json").write_text(
+        json.dumps({"cookies": [{"name": "li_at", "value": "seed"}, {"name": "JSESSIONID", "value": "ajax:seed"}], "origins": []}),
+        encoding="utf-8",
+    )
+    calls = {"count": 0, "refresh": 0}
+
+    class FakeAdapter:
+        requires_auth = True
+
+        def resolve_backend(self, record: dict, override_backend: str | None = None, retry_count: int = 0) -> str:
+            return "http"
+
+        def normalize_record(self, record: dict, discovered: dict, extracted: dict, supplemental: dict) -> dict:
+            return {"title": "John Doe"}
+
+    async def fake_fetch(
+        self,
+        url: str,
+        platform: str,
+        resource_type: str | None = None,
+        *,
+        requires_auth: bool = False,
+        override_backend: str | None = None,
+        api_fetcher=None,
+        api_kwargs=None,
+        preferred_backend: str | None = None,
+        fallback_chain=None,
+    ):
+        from crawler.fetch.error_classifier import FetchError
+
+        calls["count"] += 1
+        if calls["count"] == 1:
+            err = RuntimeError("auth expired")
+            err.fetch_error = FetchError("AUTH_EXPIRED", "refresh_session", "expired", True)  # type: ignore[attr-defined]
+            raise err
+
+        from datetime import datetime, timezone
+        from crawler.fetch.models import FetchTiming, RawFetchResult
+
+        html = "<html><body><article><h1>John Doe</h1></article></body></html>"
+        return RawFetchResult(
+            url=url,
+            final_url=url,
+            backend="playwright",
+            fetch_time=datetime.now(timezone.utc),
+            content_type="text/html; charset=utf-8",
+            status_code=200,
+            html=html,
+            content_bytes=html.encode("utf-8"),
+            timing=FetchTiming(start_ms=0, navigation_ms=1, wait_strategy_ms=0, total_ms=1),
+        )
+
+    def fake_export(session_store) -> str:
+        calls["refresh"] += 1
+        refreshed = session_store.root / "linkedin.json"
+        refreshed.parent.mkdir(parents=True, exist_ok=True)
+        refreshed.write_text(json.dumps({"cookies": [{"name": "li_at", "value": "secret"}, {"name": "JSESSIONID", "value": "ajax:1"}], "origins": []}), encoding="utf-8")
+        return str(refreshed)
+
+    monkeypatch.setattr("crawler.platforms.registry.get_platform_adapter", lambda platform: FakeAdapter())
+    monkeypatch.setattr("crawler.fetch.engine.FetchEngine.fetch", fake_fetch)
+    monkeypatch.setattr("crawler.core.pipeline._export_linkedin_session_via_auto_browser", fake_export)
+
+    config = parse_args(["crawl", "--input", str(input_path), "--output", str(output_dir), "--auto-login"])
+    records, errors = run_command(config)
+
+    assert errors == []
+    assert len(records) == 1
+    assert calls["refresh"] == 1
+    assert calls["count"] == 2
 
 
 def _fake_extracted_document() -> SimpleNamespace:

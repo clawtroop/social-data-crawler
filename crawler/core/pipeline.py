@@ -110,6 +110,7 @@ async def _run_discovery_crawl_pipeline_async(config: CrawlerConfig) -> tuple[li
         max_depth=config.max_depth,
         max_pages=config.max_pages,
         sitemap_mode=config.sitemap_mode,
+        max_concurrency=config.concurrency,
     )
 
     # Build candidates from input
@@ -159,6 +160,8 @@ async def _run_discovery_crawl_pipeline_async(config: CrawlerConfig) -> tuple[li
                 fetch_fn=fetch_fn,
                 options=options,
                 adapter_resolver=get_discovery_adapter,
+                state_dir=config.output_dir / ".discovery_state",
+                resume=config.resume,
             )
         except Exception as exc:
             errors.append({
@@ -221,9 +224,22 @@ async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], li
     enrich_pipeline = EnrichPipeline(
         enrich_llm_schema_path=config.enrich_llm_schema_path,
         model_config=model_config,
+        cache_dir=config.output_dir / ".cache" / "enrich",
     )
     if config.command is CrawlCommand.ENRICH:
         return await _run_new_enrich_only_pipeline(records, config, enrich_pipeline)
+
+    deduped_records: list[dict[str, Any]] = []
+    seen_urls: set[str] = set()
+    for record in records:
+        seeds = build_seed_records(record)
+        canonical_url = seeds[0].canonical_url if seeds else None
+        if canonical_url and canonical_url in seen_urls:
+            continue
+        if canonical_url:
+            seen_urls.add(canonical_url)
+        deduped_records.append(record)
+    records = deduped_records
 
     # Initialize pipelines
     session_root = config.output_dir / ".sessions"
@@ -294,34 +310,54 @@ async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], li
             if requires_auth and storage_state_path is None:
                 return None, _build_auth_required_error(platform=platform, resource_type=resource_type)
 
-            # For API backends, we need the adapter's API fetcher
+            # For API backends, we need the adapter's API fetcher.
             initial_backend = adapter.resolve_backend(record, config.backend, retry_count=0)
-            if initial_backend == "api":
-                raw_result = await fetch_engine.fetch(
-                    url=url,
-                    platform=platform,
-                    resource_type=resource_type,
-                    requires_auth=requires_auth,
-                    override_backend=config.backend,
-                    preferred_backend=initial_backend if config.backend is None else None,
-                    fallback_chain=list(getattr(adapter, "fallback_backends", ())),
-                    api_fetcher=lambda _url, **_kwargs: adapter.fetch_record(
-                        record,
-                        discovered,
-                        "api",
-                        storage_state_path,
-                    ),
-                )
-                fetch_result = raw_result.to_legacy_dict()
+            last_fetch_exc: Exception | None = None
+            for fetch_attempt in range(2):
+                try:
+                    if initial_backend == "api":
+                        raw_result = await fetch_engine.fetch(
+                            url=url,
+                            platform=platform,
+                            resource_type=resource_type,
+                            requires_auth=requires_auth,
+                            override_backend=config.backend,
+                            preferred_backend=initial_backend if config.backend is None else None,
+                            fallback_chain=list(getattr(adapter, "fallback_backends", ())),
+                            api_fetcher=lambda _url, **_kwargs: adapter.fetch_record(
+                                record,
+                                discovered,
+                                "api",
+                                storage_state_path,
+                            ),
+                        )
+                    else:
+                        raw_result = await fetch_engine.fetch(
+                            url=url,
+                            platform=platform,
+                            resource_type=resource_type,
+                            requires_auth=requires_auth,
+                            override_backend=config.backend,
+                        )
+                    fetch_result = raw_result.to_legacy_dict()
+                    break
+                except Exception as exc:
+                    last_fetch_exc = exc
+                    fetch_error = getattr(exc, "fetch_error", None)
+                    should_refresh = (
+                        fetch_attempt == 0
+                        and config.auto_login
+                        and platform == "linkedin"
+                        and requires_auth
+                        and fetch_error is not None
+                        and fetch_error.error_code == "AUTH_EXPIRED"
+                    )
+                    if not should_refresh:
+                        raise
+                    storage_state_path = _export_linkedin_session_via_auto_browser(session_store)
+                    logger.info("Refreshed %s session after auth expiry, retrying %s", platform, url)
             else:
-                raw_result = await fetch_engine.fetch(
-                    url=url,
-                    platform=platform,
-                    resource_type=resource_type,
-                    requires_auth=requires_auth,
-                    override_backend=config.backend,
-                )
-                fetch_result = raw_result.to_legacy_dict()
+                raise last_fetch_exc or RuntimeError(f"fetch failed for {url}")
 
             # Persist fetch artifacts
             fetch_artifacts = _persist_fetch_artifacts_new(

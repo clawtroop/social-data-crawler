@@ -188,11 +188,73 @@ def test_main_handles_bom_prefixed_jsonl_input(workspace_tmp_path: Path) -> None
         encoding="utf-8",
     )
 
-    exit_code = main(["crawl", "--input", str(input_path), "--output", str(output_dir)])
+    async def fake_fetch(
+        self,
+        url: str,
+        platform: str,
+        resource_type: str | None = None,
+        *,
+        requires_auth: bool = False,
+        **kwargs,
+    ):
+        from datetime import datetime, timezone
+        from crawler.fetch.models import FetchTiming, RawFetchResult
+
+        html = "<html><body><article><h1>Artificial intelligence</h1></article></body></html>"
+        return RawFetchResult(
+            url=url,
+            final_url=url,
+            backend="http",
+            fetch_time=datetime.now(timezone.utc),
+            content_type="text/html; charset=utf-8",
+            status_code=200,
+            html=html,
+            content_bytes=html.encode("utf-8"),
+            timing=FetchTiming(start_ms=0, navigation_ms=1, wait_strategy_ms=0, total_ms=1),
+        )
+
+    from unittest.mock import patch
+
+    with patch("crawler.fetch.engine.FetchEngine.fetch", fake_fetch):
+        exit_code = main(["crawl", "--input", str(input_path), "--output", str(output_dir)])
 
     assert exit_code == 0
     summary = json.loads((output_dir / "summary.json").read_text(encoding="utf-8"))
     assert summary["status"] == "success"
+
+
+def test_main_writes_dlq_and_runtime_metrics(workspace_tmp_path: Path, monkeypatch) -> None:
+    input_path = workspace_tmp_path / "input.jsonl"
+    output_dir = workspace_tmp_path / "out"
+    input_path.write_text(json.dumps({"platform": "generic", "resource_type": "page", "url": "https://example.com"}) + "\n", encoding="utf-8")
+
+    monkeypatch.setattr(
+        "crawler.cli.run_command",
+        lambda config: (
+            [{"platform": "generic", "resource_type": "page", "canonical_url": "https://example.com"}],
+            [
+                {
+                    "platform": "generic",
+                    "resource_type": "page",
+                    "canonical_url": "https://example.com/retry",
+                    "error_code": "NETWORK_ERROR",
+                    "retryable": True,
+                    "message": "temporary failure",
+                }
+            ],
+        ),
+    )
+
+    exit_code = main(["crawl", "--input", str(input_path), "--output", str(output_dir), "--concurrency", "4"])
+
+    assert exit_code == 0
+    dlq_lines = (output_dir / "dlq.jsonl").read_text(encoding="utf-8").strip().splitlines()
+    assert len(dlq_lines) == 1
+    dlq_entry = json.loads(dlq_lines[0])
+    assert dlq_entry["error_code"] == "NETWORK_ERROR"
+    metrics = json.loads((output_dir / "runtime_metrics.json").read_text(encoding="utf-8"))
+    assert metrics["concurrency"] == 4
+    assert metrics["retryable_errors"] == 1
 
 
 def test_fill_enrichment_handles_bom_prefixed_json_files(workspace_tmp_path: Path) -> None:

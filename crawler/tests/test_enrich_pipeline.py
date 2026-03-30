@@ -257,6 +257,42 @@ class TestPromptRenderer:
 # ─── Pipeline Integration Tests ─────────────────────────────────────
 
 class TestEnrichPipeline:
+    def test_pipeline_reuses_cached_llm_schema_result(self, monkeypatch, workspace_tmp_path: Path) -> None:
+        schema_path = workspace_tmp_path / "enrich-llm-schema.json"
+        schema_path.write_text(
+            json.dumps({"schema_name": "enrich-profile", "instruction": "Extract enrich fields", "output_fields": ["entity_profile"]}),
+            encoding="utf-8",
+        )
+        calls = {"count": 0}
+
+        async def fake_execute(self, payload: dict) -> dict:
+            calls["count"] += 1
+            return {
+                "success": True,
+                "data": {"entity_profile": "AI engineer"},
+                "schema_name": "enrich-profile",
+            }
+
+        monkeypatch.setattr("crawler.enrich.pipeline.LLMSchemaFieldGroupExecutor.execute", fake_execute)
+
+        pipeline = EnrichPipeline(
+            enrich_llm_schema_path=schema_path,
+            model_config={"model": "test-model", "base_url": "https://api.example.com"},
+            cache_dir=workspace_tmp_path / "cache",
+        )
+        document = {
+            "platform": "linkedin",
+            "plain_text": "Engineer with Python and ML experience.",
+            "canonical_url": "https://linkedin.com/in/test",
+        }
+
+        first = asyncio.run(pipeline.enrich(document, field_groups=["llm_schema"]))
+        second = asyncio.run(pipeline.enrich(document, field_groups=["llm_schema"]))
+
+        assert first.enriched_fields["entity_profile"] == "AI engineer"
+        assert second.enriched_fields["entity_profile"] == "AI engineer"
+        assert calls["count"] == 1
+
     def test_pipeline_llm_schema_group_without_model_config_returns_failed(self, workspace_tmp_path: Path) -> None:
         schema_path = workspace_tmp_path / "enrich-llm-schema.json"
         schema_path.write_text(
@@ -563,6 +599,43 @@ class TestEnrichPipeline:
 # ─── Batch Executor Tests ──────────────────────────────────────────
 
 class TestBatchExecutor:
+    def test_batch_respects_total_token_budget(self) -> None:
+        class BudgetPipeline:
+            async def enrich(self, record: dict[str, object], field_groups: list[str]) -> EnrichedRecord:
+                enriched = EnrichedRecord(
+                    doc_id=str(record["doc_id"]),
+                    source_url="https://example.com",
+                    platform="test",
+                    resource_type="profile",
+                )
+                enriched.merge_field_group_result(
+                    FieldGroupResult(
+                        field_group="llm_schema",
+                        status="success",
+                        fields=[
+                            EnrichedField(
+                                field_name="summary",
+                                value="ok",
+                                source_type="generative",
+                                source_details="cache:test",
+                                confidence=1.0,
+                                tokens_used=60,
+                            )
+                        ],
+                    )
+                )
+                return enriched
+
+        executor = BatchEnrichmentExecutor(BudgetPipeline(), max_concurrency=2, batch_size=10, max_total_tokens=100)
+        records = [{"doc_id": "1"}, {"doc_id": "2"}, {"doc_id": "3"}]
+
+        results = asyncio.run(executor.execute_batch(records, ["llm_schema"]))
+
+        assert len(results) == 3
+        assert results[0].enrichment_results["llm_schema"].status == "success"
+        assert results[1].enrichment_results["llm_schema"].status == "skipped"
+        assert results[2].enrichment_results["llm_schema"].status == "skipped"
+
     def test_batch_execute(self) -> None:
         pipeline = EnrichPipeline()
         executor = BatchEnrichmentExecutor(pipeline, max_concurrency=2, batch_size=2)

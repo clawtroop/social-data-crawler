@@ -8,10 +8,13 @@ from datetime import datetime
 from pathlib import Path
 from unittest.mock import AsyncMock, MagicMock, patch
 
+import httpx
 import pytest
 
 from crawler.fetch.backend_router import get_escalation_backend, resolve_backend
+from crawler.fetch.error_classifier import classify_content
 from crawler.fetch.models import FetchTiming, RawFetchResult, SessionStatus
+from crawler.fetch.rate_limiter import RateLimiter
 from crawler.fetch.session_manager import SessionManager
 from crawler.fetch.wait_strategy import get_wait_config
 
@@ -235,6 +238,26 @@ class TestSessionManager:
 # ---------------------------------------------------------------------------
 
 class TestFetchEngineHttp:
+    def test_rate_limiter_waits_between_requests(self):
+        async def run():
+            limiter = RateLimiter()
+            limiter._config = {"defaults": {"requests_per_minute": 60}}
+            limiter._last_request["linkedin"] = time.monotonic()
+
+            with patch("crawler.fetch.rate_limiter.asyncio.sleep", new=AsyncMock()) as sleep_mock:
+                await limiter.acquire("linkedin")
+
+            sleep_mock.assert_awaited_once()
+            assert sleep_mock.await_args.args[0] == pytest.approx(1.0, rel=0.2)
+
+        asyncio.run(run())
+
+    def test_classify_content_detects_authwall(self):
+        err = classify_content("<html><body>authwall</body></html>" * 20, "https://www.linkedin.com/login")
+        assert err is not None
+        assert err.error_code == "AUTH_EXPIRED"
+        assert err.agent_hint == "refresh_session"
+
     def test_fetch_http_success(self):
         """Test HTTP fetch via the engine with a mocked httpx response."""
         from crawler.fetch.engine import FetchEngine
@@ -321,7 +344,7 @@ class TestFetchEngineHttp:
                     fetch_time=datetime(2026, 1, 1),
                     content_type="text/html",
                     status_code=200,
-                    html="<html>ok</html>",
+                    html="<html><body>" + ("ok " * 100) + "</body></html>",
                     timing=FetchTiming(start_ms=0, navigation_ms=1, wait_strategy_ms=0, total_ms=1),
                 )
 
@@ -335,5 +358,65 @@ class TestFetchEngineHttp:
 
             assert calls == ["api", "http"]
             assert result.backend == "http"
+
+        asyncio.run(run())
+
+    def test_fetch_raises_structured_error_for_content_level_issue(self):
+        from crawler.fetch.engine import FetchEngine
+
+        async def run():
+            engine = FetchEngine(Path("/tmp/test-sessions"))
+
+            async def fake_fetch_with_backend(**kwargs):
+                return RawFetchResult(
+                    url="https://www.linkedin.com/in/test/",
+                    final_url="https://www.linkedin.com/login",
+                    backend="playwright",
+                    fetch_time=datetime(2026, 1, 1),
+                    content_type="text/html; charset=utf-8",
+                    status_code=200,
+                    html="<html><body>authwall</body></html>" * 20,
+                    timing=FetchTiming(start_ms=0, navigation_ms=1, wait_strategy_ms=0, total_ms=1),
+                )
+
+            with patch.object(engine, "_fetch_with_backend", side_effect=fake_fetch_with_backend):
+                with pytest.raises(RuntimeError) as exc_info:
+                    await engine.fetch(
+                        url="https://www.linkedin.com/in/test/",
+                        platform="linkedin",
+                        resource_type="profile",
+                    )
+
+            fetch_error = getattr(exc_info.value, "fetch_error", None)
+            assert fetch_error is not None
+            assert fetch_error.error_code == "AUTH_EXPIRED"
+            assert fetch_error.agent_hint == "refresh_session"
+
+        asyncio.run(run())
+
+    def test_fetch_opens_circuit_after_repeated_rate_limits(self):
+        from crawler.fetch.engine import FetchEngine
+
+        async def run():
+            engine = FetchEngine(Path("/tmp/test-sessions"))
+            attempts = 0
+
+            async def fake_fetch_with_backend(**kwargs):
+                nonlocal attempts
+                attempts += 1
+                request = httpx.Request("GET", "https://example.com")
+                response = httpx.Response(429, request=request)
+                raise httpx.HTTPStatusError("rate limited", request=request, response=response)
+
+            with patch.object(engine, "_fetch_with_backend", side_effect=fake_fetch_with_backend):
+                with pytest.raises(RuntimeError):
+                    await engine.fetch(url="https://example.com", platform="linkedin", resource_type="profile")
+                with pytest.raises(RuntimeError) as exc_info:
+                    await engine.fetch(url="https://example.com/2", platform="linkedin", resource_type="profile")
+
+            fetch_error = getattr(exc_info.value, "fetch_error", None)
+            assert fetch_error is not None
+            assert fetch_error.error_code == "CIRCUIT_OPEN"
+            assert attempts >= 1
 
         asyncio.run(run())

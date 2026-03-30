@@ -39,3 +39,6 @@ class DiscoveryScheduler:
         )
         self.occupancy_store.put(lease)
         return leased
+
+    def complete(self, frontier_id: str) -> FrontierEntry | None:
+        return self.frontier_store.mark_done(frontier_id)

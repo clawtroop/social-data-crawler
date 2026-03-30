@@ -155,6 +155,9 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     write_jsonl(config.output_dir / "records.jsonl", records, append=config.resume)
     write_jsonl(config.output_dir / "errors.jsonl", errors, append=config.resume)
+    retryable_errors = [error for error in errors if error.get("retryable")]
+    if retryable_errors:
+        write_jsonl(config.output_dir / "dlq.jsonl", retryable_errors, append=config.resume)
     summary = build_summary(records, errors)
     write_summary(config.output_dir / "summary.json", summary)
     write_manifest(
@@ -168,6 +171,17 @@ def main(argv: Sequence[str] | None = None) -> int:
             "strict": config.strict,
             "backend": config.backend,
             "concurrency": config.concurrency,
+            "generated_at": datetime.now(UTC).isoformat(),
+        },
+    )
+    write_manifest(
+        config.output_dir / "runtime_metrics.json",
+        {
+            "records_succeeded": len(records),
+            "records_failed": len(errors),
+            "retryable_errors": len(retryable_errors),
+            "concurrency": config.concurrency,
+            "resume": config.resume,
             "generated_at": datetime.now(UTC).isoformat(),
         },
     )
@@ -199,7 +213,7 @@ def _fill_enrichment(records_path: Path, responses_path: Path) -> int:
     responses = read_json_file(responses_path)
 
     # Load and update records
-    pipeline = EnrichPipeline()
+    pipeline = EnrichPipeline(cache_dir=records_path.parent / ".cache" / "enrich")
     updated_records = []
     filled_count = 0
 
@@ -213,7 +227,7 @@ def _fill_enrichment(records_path: Path, responses_path: Path) -> int:
                     key = f"{doc_id}:{field_group}"
                     if key in responses:
                         # Fill with agent response
-                        filled = pipeline.fill_pending_agent_result(field_group, responses[key])
+                        filled = pipeline.fill_pending_agent_result(field_group, responses[key], document=record)
                         record["enrichment"]["enrichment_results"][field_group] = filled.to_dict()
                         # Also update enriched_fields
                         for field in filled.fields:

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import time
 import json
 from pathlib import Path
@@ -61,9 +62,13 @@ class EnrichPipeline:
         *,
         enrich_llm_schema_path: Path | None = None,
         model_config: dict[str, Any] | None = None,
+        cache_dir: Path | None = None,
     ) -> None:
         self._lookup_cache: dict[str, LookupEnricher] = {}
         self._regex_cache: dict[str, RegexEnricher] = {}
+        self._cache_dir = cache_dir
+        if self._cache_dir is not None:
+            self._cache_dir.mkdir(parents=True, exist_ok=True)
         self._llm_schema_executor = (
             LLMSchemaFieldGroupExecutor(enrich_llm_schema_path, model_config or {})
             if enrich_llm_schema_path is not None
@@ -112,17 +117,24 @@ class EnrichPipeline:
         )
 
         for group_name in field_groups:
+            cached = self._read_cached_result(document, group_name)
+            if cached is not None:
+                record.merge_field_group_result(cached)
+                continue
             if group_name == "llm_schema" and self._llm_schema_executor is not None:
                 result = await self._run_llm_schema_group(document)
+                self._write_cached_result(document, result)
                 record.merge_field_group_result(result)
                 continue
             spec = get_field_group_spec(group_name)
             if spec is None:
                 result = self._run_legacy_group(group_name, document)
+                self._write_cached_result(document, result)
                 record.merge_field_group_result(result)
                 continue
 
             result = await self._run_field_group(spec, document, model_capabilities)
+            self._write_cached_result(document, result)
             record.merge_field_group_result(result)
 
         return record
@@ -355,6 +367,7 @@ class EnrichPipeline:
         self,
         field_group: str,
         llm_response_text: str,
+        document: dict[str, Any] | None = None,
     ) -> FieldGroupResult:
         """Fill a pending_agent result with the LLM response from agent execution.
 
@@ -387,8 +400,55 @@ class EnrichPipeline:
                 )
             )
 
-        return FieldGroupResult(
+        result = FieldGroupResult(
             field_group=field_group,
             status="success" if any(f.value is not None for f in fields) else "failed",
             fields=fields,
         )
+        if document is not None:
+            self._write_cached_result(document, result)
+        return result
+
+    def _read_cached_result(self, document: dict[str, Any], field_group: str) -> FieldGroupResult | None:
+        if self._cache_dir is None:
+            return None
+        path = self._cache_path(document, field_group)
+        if not path.exists():
+            return None
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        return FieldGroupResult(
+            field_group=payload["field_group"],
+            status=payload["status"],
+            fields=[EnrichedField(**field) for field in payload.get("fields", [])],
+            error=payload.get("error"),
+            latency_ms=int(payload.get("latency_ms", 0)),
+            cost_usd=payload.get("cost_usd"),
+            agent_prompt=payload.get("agent_prompt"),
+            agent_system_prompt=payload.get("agent_system_prompt"),
+            output_fields=list(payload.get("output_fields", [])),
+        )
+
+    def _write_cached_result(self, document: dict[str, Any], result: FieldGroupResult) -> None:
+        if self._cache_dir is None:
+            return
+        if result.status in {"failed", "skipped"}:
+            return
+        self._cache_path(document, result.field_group).write_text(
+            json.dumps(result.to_dict(), ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+
+    def _cache_path(self, document: dict[str, Any], field_group: str) -> Path:
+        payload = {
+            "field_group": field_group,
+            "canonical_url": document.get("canonical_url"),
+            "platform": document.get("platform"),
+            "resource_type": document.get("resource_type", document.get("entity_type")),
+            "plain_text": document.get("plain_text"),
+            "markdown": document.get("markdown"),
+            "structured": document.get("structured"),
+        }
+        digest = hashlib.sha256(
+            json.dumps(payload, sort_keys=True, ensure_ascii=False, default=str).encode("utf-8")
+        ).hexdigest()
+        return self._cache_dir / f"{digest}.json"

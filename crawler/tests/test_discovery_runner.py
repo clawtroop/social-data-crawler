@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import asyncio
+
 import pytest
 
 from crawler.discovery.contracts import CrawlOptions, DiscoveryCandidate, DiscoveryMode
@@ -165,3 +167,107 @@ async def test_run_discover_crawl_uses_scheduler_and_visited_to_expand_graph() -
         "https://example.com/root",
         "https://example.com/child",
     ]
+
+
+@pytest.mark.asyncio
+async def test_run_discover_crawl_persists_state_and_resumes(workspace_tmp_path) -> None:
+    root = DiscoveryCandidate(
+        platform="generic",
+        resource_type="page",
+        canonical_url="https://example.com/root",
+        seed_url="https://example.com/root",
+        fields={},
+        discovery_mode=DiscoveryMode.DIRECT_INPUT,
+        score=1.0,
+        score_breakdown={"direct_input": 1.0},
+        hop_depth=0,
+        parent_url=None,
+        metadata={},
+    )
+    child = DiscoveryCandidate(
+        platform="generic",
+        resource_type="page",
+        canonical_url="https://example.com/child",
+        seed_url="https://example.com/root",
+        fields={},
+        discovery_mode=DiscoveryMode.PAGE_LINKS,
+        score=0.6,
+        score_breakdown={"page_links": 0.6},
+        hop_depth=1,
+        parent_url="https://example.com/root",
+        metadata={},
+    )
+    state_dir = workspace_tmp_path / "discovery-state"
+
+    class FakeAdapter:
+        async def crawl(self, candidate: DiscoveryCandidate, context: dict[str, object]) -> dict[str, object]:
+            spawned = [child] if candidate.canonical_url == root.canonical_url else []
+            return {
+                "candidate": candidate,
+                "fetched": {"url": candidate.canonical_url, "html": "<html></html>", "content_type": "text/html"},
+                "spawned_candidates": spawned,
+            }
+
+    first = await run_discover_crawl(
+        seeds=[root],
+        fetch_fn=lambda _: {"url": "unused"},
+        options=CrawlOptions(max_depth=2, max_pages=1),
+        adapter_resolver=lambda platform: FakeAdapter(),
+        state_dir=state_dir,
+    )
+    second = await run_discover_crawl(
+        seeds=[root],
+        fetch_fn=lambda _: {"url": "unused"},
+        options=CrawlOptions(max_depth=2, max_pages=10),
+        adapter_resolver=lambda platform: FakeAdapter(),
+        state_dir=state_dir,
+        resume=True,
+    )
+
+    assert [record["canonical_url"] for record in first] == ["https://example.com/root"]
+    assert [record["canonical_url"] for record in second] == ["https://example.com/child"]
+
+
+@pytest.mark.asyncio
+async def test_run_discover_crawl_uses_multiple_workers_for_independent_seeds() -> None:
+    seeds = [
+        DiscoveryCandidate(
+            platform="generic",
+            resource_type="page",
+            canonical_url=f"https://example.com/{i}",
+            seed_url=f"https://example.com/{i}",
+            fields={},
+            discovery_mode=DiscoveryMode.DIRECT_INPUT,
+            score=1.0,
+            score_breakdown={"direct_input": 1.0},
+            hop_depth=0,
+            parent_url=None,
+            metadata={},
+        )
+        for i in range(4)
+    ]
+    active = 0
+    max_active = 0
+
+    class FakeAdapter:
+        async def crawl(self, candidate: DiscoveryCandidate, context: dict[str, object]) -> dict[str, object]:
+            nonlocal active, max_active
+            active += 1
+            max_active = max(max_active, active)
+            await asyncio.sleep(0.02)
+            active -= 1
+            return {
+                "candidate": candidate,
+                "fetched": {"url": candidate.canonical_url, "html": "<html></html>", "content_type": "text/html"},
+                "spawned_candidates": [],
+            }
+
+    records = await run_discover_crawl(
+        seeds=seeds,
+        fetch_fn=lambda _: {"url": "unused"},
+        options=CrawlOptions(max_depth=0, max_pages=10, max_concurrency=2),
+        adapter_resolver=lambda platform: FakeAdapter(),
+    )
+
+    assert len(records) == 4
+    assert max_active >= 2
