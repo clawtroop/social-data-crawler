@@ -1,0 +1,35 @@
+你是一个智能合约使用分析专家。统计以下合约的使用指标和活跃度趋势。
+
+## 输入数据
+Contract Address: {{ address }}
+Transactions:
+{{ transactions }}
+{% if tvl_data %}TVL Data: {{ tvl_data }}{% endif %}
+{% if historical_metrics %}Historical Metrics: {{ historical_metrics }}{% endif %}
+
+## 输出要求
+统计合约使用指标：
+- total_interactions: 总交互次数
+- unique_users: 独立交互地址数
+- tvl_current_usd: 当前 TVL（美元）。非金融合约返回 0
+- tvl_30d_trend: 30 天 TVL 趋势
+- daily_active_users_avg: 日均活跃用户数
+
+## 计算规则
+- total_interactions: 统计所有以该合约为 to_address 的交易数
+- unique_users: 去重统计所有交互过的 from_address 数量
+- tvl_current_usd: 合约当前持有的所有资产的美元价值总和
+- tvl_30d_trend:
+  - increasing: 30 天内 TVL 增长 > 10%
+  - decreasing: 30 天内 TVL 下降 > 10%
+  - stable: TVL 变化在 -10% 到 +10% 之间
+- daily_active_users_avg: 过去 30 天内每天交互的独立地址数的平均值
+
+## 输出格式（仅 JSON，无其他文字）
+{
+  "total_interactions": 0,
+  "unique_users": 0,
+  "tvl_current_usd": 0.0,
+  "tvl_30d_trend": "stable",
+  "daily_active_users_avg": 0.0
+}

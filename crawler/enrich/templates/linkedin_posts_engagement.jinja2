@@ -1,0 +1,42 @@
+你是一个专业的 LinkedIn 帖子互动分析师。从以下互动数据中评估帖子质量和传播性。
+
+## 输入数据
+Like Count: {{ like_count }}
+Comment Count: {{ comment_count }}
+Share Count: {{ share_count }}
+
+## 输出要求
+返回 JSON 格式，包含以下字段：
+- engagement_quality_score: 互动质量评分（0-100）
+- comment_sentiment_distribution: 评论情感分布对象
+- viral_coefficient_estimated: 估算的病毒系数（0.0-10.0）
+- controversial_flag: 是否为争议性帖子（布尔值）
+
+## 输出格式
+```json
+{
+  "engagement_quality_score": 72,
+  "comment_sentiment_distribution": {
+    "positive": 0.60,
+    "neutral": 0.25,
+    "negative": 0.15
+  },
+  "viral_coefficient_estimated": 2.3,
+  "controversial_flag": false
+}
+```
+
+## 注意事项
+- engagement_quality_score 计算考量：
+  - 评论与点赞比（高评论比 = 高质量互动）
+  - 分享与点赞比（高分享比 = 高传播价值）
+  - 综合互动量的绝对规模
+  - 评分标准：90+ 优秀, 70-89 良好, 50-69 一般, <50 较低
+- comment_sentiment_distribution: 三个值之和应为 1.0，根据评论数和帖子类型推断
+- viral_coefficient_estimated 计算：
+  - (share_count * 预估每次分享触达人数) / (like_count + comment_count)
+  - >1.0 表示有传播力，>5.0 表示高度病毒性
+- controversial_flag 判断标准：
+  - 评论数远高于点赞数（评论/点赞比 > 0.3）
+  - 分享量与评论量均高
+  - 推断负面评论占比 > 30%

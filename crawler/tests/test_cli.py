@@ -143,6 +143,40 @@ def test_parse_args_rejects_unknown_subcommand() -> None:
         )
 
 
+def test_parse_discover_map_command() -> None:
+    config = parse_args(["discover-map", "--input", "in.jsonl", "--output", "out"])
+    assert config.command is CrawlCommand.DISCOVER_MAP
+
+
+def test_parse_discover_crawl_command() -> None:
+    config = parse_args(
+        ["discover-crawl", "--input", "in.jsonl", "--output", "out", "--max-depth", "3"]
+    )
+    assert config.command is CrawlCommand.DISCOVER_CRAWL
+    assert config.max_depth == 3
+
+
+def test_parse_discover_crawl_accepts_all_discovery_options() -> None:
+    config = parse_args(
+        [
+            "discover-crawl",
+            "--input",
+            "in.jsonl",
+            "--output",
+            "out",
+            "--max-depth",
+            "5",
+            "--max-pages",
+            "200",
+            "--sitemap-mode",
+            "only",
+        ]
+    )
+    assert config.max_depth == 5
+    assert config.max_pages == 200
+    assert config.sitemap_mode == "only"
+
+
 def test_main_handles_bom_prefixed_jsonl_input(workspace_tmp_path: Path) -> None:
     input_path = workspace_tmp_path / "input.jsonl"
     output_dir = workspace_tmp_path / "out"

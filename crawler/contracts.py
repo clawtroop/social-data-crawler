@@ -7,6 +7,8 @@ from typing import Any, Mapping
 
 
 class CrawlCommand(str, Enum):
+    DISCOVER_MAP = "discover-map"
+    DISCOVER_CRAWL = "discover-crawl"
     CRAWL = "crawl"
     RUN = "run"
     ENRICH = "enrich"
@@ -81,6 +83,10 @@ class CrawlerConfig:
     use_legacy_pipeline: bool = False
     max_chunk_tokens: int = 512
     chunk_overlap: int = 50
+    # Discovery options (for discover-map and discover-crawl commands)
+    max_depth: int = 2
+    max_pages: int = 100
+    sitemap_mode: str = "include"
 
     @classmethod
     def from_mapping(cls, values: Mapping[str, Any]) -> CrawlerConfig:
@@ -127,4 +133,7 @@ class CrawlerConfig:
             use_legacy_pipeline=bool(values.get("use_legacy_pipeline", False)),
             max_chunk_tokens=int(values.get("max_chunk_tokens", 512)),
             chunk_overlap=int(values.get("chunk_overlap", 50)),
+            max_depth=int(values.get("max_depth", 2)),
+            max_pages=int(values.get("max_pages", 100)),
+            sitemap_mode=str(values.get("sitemap_mode", "include")),
         )

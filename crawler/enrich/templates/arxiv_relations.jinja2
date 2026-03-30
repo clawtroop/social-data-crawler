@@ -1,0 +1,27 @@
+你是一个学术论文关系分析专家。分析以下论文与其他研究工作之间的关系。
+
+## 输入数据
+Title: {{ title }}
+Abstract: {{ abstract }}
+References: {{ references }}
+
+## 输出要求
+识别论文与其他工作之间的关系：
+- builds_upon: 本文建立在哪些工作之上（论文标题或 arXiv ID 列表）
+- contradicts: 本文反驳或质疑了哪些工作的结论
+- replicates: 本文复现或验证了哪些工作
+- uses_dataset_from: 本文使用了哪些工作发布的数据集
+- uses_method_from: 本文借用了哪些工作的方法
+
+每个列表项应尽可能使用论文标题或 arXiv ID 进行标识。
+
+## 输出格式
+```json
+{
+  "builds_upon": ["论文标题或 arXiv ID"],
+  "contradicts": [],
+  "replicates": [],
+  "uses_dataset_from": [],
+  "uses_method_from": []
+}
+```

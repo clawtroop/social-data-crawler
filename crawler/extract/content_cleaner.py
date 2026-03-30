@@ -8,6 +8,7 @@ from typing import Any
 
 from bs4 import BeautifulSoup, Comment, Tag
 
+from .html_parse import parse_html
 from .models import CleanedContent
 
 _REFERENCES_DIR = Path(__file__).resolve().parents[1].parent / "references"
@@ -43,6 +44,11 @@ def _load_platform_selectors() -> dict[str, list[str]]:
     return _platform_selectors_cache
 
 
+# 规范上应为 void 的标签若被子节点错误嵌套（常见于畸形 HTML + html.parser），
+# 会导致正文挂在 img 等标签下；后续再按 display:none 整棵删除会误删主内容。
+_VOID_TAGS = frozenset(
+    {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
+)
 def _matches_noise_pattern(tag: Tag) -> bool:
     if not isinstance(getattr(tag, "attrs", None), dict):
         return False
@@ -57,11 +63,43 @@ def _matches_noise_pattern(tag: Tag) -> bool:
     return False
 
 
+def _unwrap_void_with_element_children(tag: Tag) -> bool:
+    """void 标签不应包含元素子节点；若存在则展开标签，把子树提升到父级。"""
+    if tag.name not in _VOID_TAGS:
+        return False
+    has_element_child = any(isinstance(c, Tag) for c in tag.children)
+    if not has_element_child:
+        return False
+    tag.unwrap()
+    return True
+
+
+def _collect_hidden_candidates(soup: BeautifulSoup) -> list[Tag]:
+    seen: set[int] = set()
+    out: list[Tag] = []
+    for tag in soup.find_all(True, attrs={"hidden": True}):
+        i = id(tag)
+        if i not in seen:
+            seen.add(i)
+            out.append(tag)
+    for tag in soup.find_all(True, style=re.compile(r"display\s*:\s*none")):
+        i = id(tag)
+        if i not in seen:
+            seen.add(i)
+            out.append(tag)
+    return out
+
+
 class ContentCleaner:
     def clean(self, html: str, platform: str = "") -> CleanedContent:
         original_size = len(html)
-        soup = BeautifulSoup(html, "html.parser")
+        soup = parse_html(html)
         noise_removed = 0
+
+        # 0. 修复 void 标签错误嵌套（在删除隐藏节点之前）
+        for tag in list(soup.find_all(True)):
+            if isinstance(tag, Tag) and _unwrap_void_with_element_children(tag):
+                noise_removed += 1
 
         # 1. Remove comments
         for comment in soup.find_all(string=lambda text: isinstance(text, Comment)):
@@ -90,11 +128,10 @@ class ContentCleaner:
             except Exception:
                 pass
 
-        # 5. Remove hidden elements
-        for tag in soup.find_all(True, attrs={"hidden": True}):
-            tag.decompose()
-            noise_removed += 1
-        for tag in soup.find_all(True, style=re.compile(r"display\s*:\s*none")):
+        # 5. 删除隐藏节点。void 误嵌套已在步骤 0 展开，这里保持隐藏内容不泄漏到正文。
+        for tag in _collect_hidden_candidates(soup):
+            if not isinstance(tag, Tag) or tag.parent is None:
+                continue
             tag.decompose()
             noise_removed += 1
 

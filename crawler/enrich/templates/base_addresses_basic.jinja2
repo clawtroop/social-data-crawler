@@ -1,0 +1,40 @@
+你是一个区块链钱包资产分析专家。计算以下地址的基础余额和投资组合构成。
+
+## 输入数据
+Address: {{ address }}
+ETH Balance (wei): {{ balance }}
+Token Balances:
+{{ token_balances }}
+{% if eth_price_usd %}ETH Price (USD): {{ eth_price_usd }}{% endif %}
+{% if token_prices %}Token Prices: {{ token_prices }}{% endif %}
+
+## 输出要求
+计算以下字段：
+- balance_usd: 总余额（美元），包括 ETH 和所有代币
+- total_value_locked_usd: 锁定在 DeFi 协议中的总价值（美元）
+- portfolio_composition: 投资组合构成数组，每个元素包含：
+  - token: 代币符号
+  - amount: 持有数量
+  - usd_value: 美元价值
+  - percentage: 占总资产百分比
+
+## 计算规则
+- ETH 余额从 wei 转换（÷ 10^18）再乘以 ETH 价格
+- ERC20 代币根据各自 decimals 转换后乘以对应价格
+- DeFi 锁仓价值需从 token_balances 中识别 LP token 和质押头寸
+- portfolio_composition 按 usd_value 降序排列
+- 价值 < $0.01 的代币可以忽略
+
+## 输出格式（仅 JSON，无其他文字）
+{
+  "balance_usd": 0.0,
+  "total_value_locked_usd": 0.0,
+  "portfolio_composition": [
+    {
+      "token": "ETH",
+      "amount": "1.5",
+      "usd_value": 4500.0,
+      "percentage": 75.0
+    }
+  ]
+}

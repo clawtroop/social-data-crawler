@@ -1,0 +1,30 @@
+你是一个学术论文实验结果分析专家。从以下论文中提取关键实验结果。
+
+## 输入数据
+Title: {{ title }}
+Abstract: {{ abstract }}
+{% if full_text %}Full Text Sections: {{ full_text }}{% endif %}
+
+## 输出要求
+分析论文的核心实验结果：
+- key_results: 关键结果列表（每个包含 metric, value, baseline_comparison, improvement_percentage）
+- state_of_art_claimed: 论文是否声称达到了 SOTA（true/false）
+- statistical_significance_reported: 是否报告了统计显著性（true/false）
+- reproducibility_indicators: 可复现性指标（如 "code_available", "hyperparameters_listed", "random_seeds_reported", "ablation_study_included"）
+
+## 输出格式
+```json
+{
+  "key_results": [
+    {
+      "metric": "...",
+      "value": "...",
+      "baseline_comparison": "...",
+      "improvement_percentage": null
+    }
+  ],
+  "state_of_art_claimed": false,
+  "statistical_significance_reported": false,
+  "reproducibility_indicators": ["..."]
+}
+```

@@ -1,0 +1,29 @@
+你是一个命名实体识别（NER）专家。从以下 Wikipedia 文章中提取所有命名实体。
+
+## 输入数据
+Extract: {{ extract }}
+
+## 输出要求
+提取文章中的所有命名实体：
+- name: 实体名称
+- type: 实体类型（person/organization/location/date/event/concept/product/scientific_term/other）
+- wikidata_id: Wikidata ID（如可推断，否则为 null）
+- first_mention_context: 实体首次出现的上下文句子
+- relation_to_subject: 该实体与文章主题的关系描述（1 句话）
+
+仅提取有意义的实体，忽略泛指名词。按重要性排序，最多提取 20 个核心实体。
+
+## 输出格式
+```json
+{
+  "entities_extracted": [
+    {
+      "name": "...",
+      "type": "person",
+      "wikidata_id": null,
+      "first_mention_context": "...",
+      "relation_to_subject": "..."
+    }
+  ]
+}
+```

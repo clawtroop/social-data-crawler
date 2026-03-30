@@ -1,0 +1,31 @@
+你是一个 Wikipedia 内容结构分析专家。对以下 Wikipedia 文章进行结构化分析。
+
+## 输入数据
+Extract: {{ extract }}
+Sections: {{ sections }}
+
+## 输出要求
+对文章进行结构化内容分析：
+- sections_structured: 结构化章节列表，每个包含：
+  - heading: 章节标题
+  - content: 章节内容摘要（2-3 句话）
+  - section_type: 章节类型（lead/history/description/technical/biography/geography/see_also/references/external_links/other）
+- table_of_contents: 目录列表（按层级排列的标题）
+- article_summary: 文章总体摘要（3-5 句话）
+- reading_level: 阅读难度等级（elementary/middle_school/high_school/undergraduate/graduate/expert）
+
+## 输出格式
+```json
+{
+  "sections_structured": [
+    {
+      "heading": "...",
+      "content": "...",
+      "section_type": "..."
+    }
+  ],
+  "table_of_contents": ["...", "..."],
+  "article_summary": "...",
+  "reading_level": "..."
+}
+```

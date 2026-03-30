@@ -1,0 +1,37 @@
+你是一个电商卖家绩效评估专家。评估卖家的运营健康度。
+
+## 输入数据
+Seller Rating: {{ seller_rating }}
+Feedback Count: {{ feedback_count }}
+
+## 输出要求
+评估卖家的运营表现：
+- seller_health_score: 卖家健康度综合评分（0-10）
+- response_time_tier: 响应速度层级（excellent/good/average/slow/unresponsive）
+- dispute_rate_estimated: 纠纷率估算（0.0-1.0）
+
+## 输出格式
+```json
+{
+  "seller_health_score": 0.0,
+  "response_time_tier": "excellent|good|average|slow|unresponsive",
+  "dispute_rate_estimated": 0.0
+}
+```
+
+## 分析要点
+- 健康度评分：综合卖家评分和反馈数量
+  - 评分>4.8 + 反馈>1000：9-10分
+  - 评分>4.5 + 反馈>500：7-8分
+  - 评分>4.0 + 反馈>100：5-6分
+  - 评分<4.0 或 反馈<50：3-4分
+- 响应速度：基于卖家评分和行业经验推断
+  - excellent: 评分极高(>4.9)，通常24小时内响应
+  - good: 评分高(>4.7)，通常48小时内
+  - average: 评分中等(>4.3)
+  - slow/unresponsive: 评分偏低(<4.3)，可能响应慢
+- 纠纷率：基于评分和反馈推断
+  - 评分>4.8：预估纠纷率<2%
+  - 评分4.5-4.8：预估纠纷率2-5%
+  - 评分<4.5：预估纠纷率>5%
+- 数据有限时保守估算，标注推断依据

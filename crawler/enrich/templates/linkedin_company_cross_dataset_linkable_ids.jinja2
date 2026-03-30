@@ -1,0 +1,34 @@
+你是一个专业的跨平台企业身份关联分析师。从以下公司 LinkedIn 资料中提取可用于跨数据集关联的标识符。
+
+## 输入数据
+Company URL: {{ company_url }}
+
+## 输出要求
+返回 JSON 格式，包含以下字段：
+- linkable_identifiers: 可关联标识符对象
+
+## 输出格式
+```json
+{
+  "linkable_identifiers": {
+    "website_domain": "example.com",
+    "amazon_seller_search_hint": "Example Corp",
+    "wikipedia_entity_hint": "Example_Corporation",
+    "github_org_url": "https://github.com/example",
+    "crunchbase_hint": "example-corp",
+    "base_contract_deployer_hint": "0x1234..."
+  }
+}
+```
+
+## 注意事项
+- 各标识符字段说明：
+  - website_domain: 公司官方网站域名（不含 https:// 前缀）
+  - amazon_seller_search_hint: 用于在 Amazon 搜索该公司产品的关键词
+  - wikipedia_entity_hint: Wikipedia 条目名称（使用下划线替代空格）
+  - github_org_url: GitHub 组织页面完整链接
+  - crunchbase_hint: Crunchbase 公司页面的 slug
+  - base_contract_deployer_hint: Base 链上已知的合约部署地址（如适用）
+- 未找到的标识符返回 null
+- 只提取明确出现在资料中或可高置信度推断的信息
+- 区分推断的标识（标注为 hint）和确认的标识（直接URL）

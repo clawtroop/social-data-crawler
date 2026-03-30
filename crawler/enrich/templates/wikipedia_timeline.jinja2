@@ -1,0 +1,27 @@
+你是一个历史事件时间线分析专家。从以下 Wikipedia 文章中提取按时间排序的事件。
+
+## 输入数据
+Extract: {{ extract }}
+
+## 输出要求
+提取文章中所有可标注时间的事件，按时间顺序排列：
+- date: 事件日期（ISO 8601 格式，精度不足时用 "1905" 或 "1900s"）
+- event_description: 事件描述（1-2 句话）
+- event_type: 事件类型（birth/death/founding/discovery/invention/publication/award/conflict/legislation/milestone/other）
+- participants: 事件参与者列表
+
+按时间从早到晚排序。
+
+## 输出格式
+```json
+{
+  "temporal_events": [
+    {
+      "date": "1905",
+      "event_description": "...",
+      "event_type": "publication",
+      "participants": ["Albert Einstein"]
+    }
+  ]
+}
+```

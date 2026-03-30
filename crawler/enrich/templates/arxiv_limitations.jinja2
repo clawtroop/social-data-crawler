@@ -1,0 +1,21 @@
+你是一个学术论文批判性分析专家。从以下论文中提取局限性和未来工作方向。
+
+## 输入数据
+Title: {{ title }}
+Abstract: {{ abstract }}
+{% if full_text %}Full Text Sections: {{ full_text }}{% endif %}
+
+## 输出要求
+分析论文的局限性和未来方向：
+- limitations_stated: 论文明确提到的局限性列表（每项 1-2 句话）
+- future_work_directions: 论文提出的未来研究方向列表
+- threats_to_validity: 对研究有效性的潜在威胁（如样本量不足、数据偏差、泛化能力不确定等）
+
+## 输出格式
+```json
+{
+  "limitations_stated": ["局限1", "局限2"],
+  "future_work_directions": ["方向1", "方向2"],
+  "threats_to_validity": ["威胁1", "威胁2"]
+}
+```

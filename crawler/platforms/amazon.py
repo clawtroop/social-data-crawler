@@ -25,7 +25,13 @@ ENRICH_PLAN = PlatformEnrichmentPlan(route="commerce_graph", field_groups=("pric
 
 def _extract_amazon(record: dict, fetched: dict) -> dict:
     html = fetched.get("text") or fetched.get("html") or fetched.get("content_bytes", b"").decode("utf-8", "ignore")
-    return extract_html_document(html, fetched["url"], content_type=fetched.get("content_type"))
+    return extract_html_document(
+        html,
+        fetched["url"],
+        content_type=fetched.get("content_type"),
+        platform=record["platform"],
+        resource_type=record.get("resource_type", ""),
+    )
 
 
 ADAPTER = PlatformAdapter(

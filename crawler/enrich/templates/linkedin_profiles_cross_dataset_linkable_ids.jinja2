@@ -1,0 +1,40 @@
+你是一个专业的跨平台身份关联分析师。从以下 LinkedIn 个人资料中提取可用于跨数据集关联的标识符。
+
+## 输入数据
+Profile URL: {{ profile_url }}
+
+## 输出要求
+返回 JSON 格式，包含以下字段：
+- linkable_identifiers: 可关联标识符对象，包含所有可从资料中提取的跨平台标识
+
+## 输出格式
+```json
+{
+  "linkable_identifiers": {
+    "github_urls": ["https://github.com/username"],
+    "personal_website_url": "https://example.com",
+    "twitter_handle": "@username",
+    "orcid_id": "0000-0002-1234-5678",
+    "google_scholar_url": "https://scholar.google.com/citations?user=xxx",
+    "arxiv_author_query_hint": "Author+Name",
+    "company_domains_mentioned": ["company.com"],
+    "patent_numbers_mentioned": ["US1234567"],
+    "publication_titles_mentioned": ["Paper Title One"]
+  }
+}
+```
+
+## 注意事项
+- 每个标识符字段说明：
+  - github_urls: GitHub 个人或组织页面链接（数组，可能有多个）
+  - personal_website_url: 个人网站或博客链接
+  - twitter_handle: Twitter/X 用户名（以@开头）
+  - orcid_id: ORCID 学术标识符
+  - google_scholar_url: Google Scholar 页面链接
+  - arxiv_author_query_hint: 用于 arXiv 作者搜索的查询字符串
+  - company_domains_mentioned: 提及的公司域名
+  - patent_numbers_mentioned: 提及的专利编号
+  - publication_titles_mentioned: 提及的出版物/论文标题
+- 未找到的标识符字段返回 null 或空数组
+- 只提取明确出现在资料中的信息，不做推测
+- URL 应保持完整格式

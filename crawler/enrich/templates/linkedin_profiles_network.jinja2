@@ -1,0 +1,29 @@
+你是一个专业的 LinkedIn 职业网络分析师。从以下网络和经历数据中提取职业集群和轨迹信息。
+
+## 输入数据
+Connections: {{ connections }}
+Experience: {{ experience }}
+
+## 输出要求
+返回 JSON 格式，包含以下字段：
+- professional_cluster: 所属职业集群/圈子（如 "Silicon Valley Tech", "Wall Street Finance", "Healthcare Innovation", "Academic Research"）
+- career_trajectory_vector: 职业轨迹向量，表示从起点到当前的职业发展方向（数值数组，长度为5）
+
+## 输出格式
+```json
+{
+  "professional_cluster": "Silicon Valley Tech",
+  "career_trajectory_vector": [0.8, 0.2, 0.6, 0.1, 0.9]
+}
+```
+
+## 注意事项
+- professional_cluster 根据人脉行业分布和工作经历综合判断主要职业圈层
+- career_trajectory_vector 五个维度分别代表：
+  - [0] 技术深度 (0=非技术, 1=深度技术)
+  - [1] 管理幅度 (0=个人贡献者, 1=高层管理)
+  - [2] 行业专注度 (0=跨行业, 1=单一行业深耕)
+  - [3] 创业倾向 (0=稳定就业, 1=连续创业)
+  - [4] 职业上升度 (0=平稳, 1=快速上升)
+- 每个维度取值范围 0.0-1.0
+- 根据工作经历的时间线和人脉构成综合推断

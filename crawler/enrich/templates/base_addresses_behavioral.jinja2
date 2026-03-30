@@ -1,0 +1,41 @@
+你是一个链上行为分析和钱包画像专家。分析以下地址的行为模式和交易特征。
+
+## 输入数据
+Address: {{ address }}
+Transactions:
+{{ transactions }}
+{% if balance_usd %}Total Balance (USD): {{ balance_usd }}{% endif %}
+{% if activity_summary %}Activity Summary: {{ activity_summary }}{% endif %}
+
+## 输出要求
+分析地址行为模式，生成：
+- wallet_archetype: 钱包原型分类
+- trading_pattern: 主导交易模式
+- risk_appetite_score: 风险偏好评分（0-100，0=极度保守，100=极度激进）
+- sophistication_score: 链上操作复杂度评分（0-100，0=纯转账新手，100=高级 DeFi/MEV 操作者）
+
+## 钱包原型枚举
+whale（巨鲸，>$1M）, institutional（机构钱包，多签+规律操作）, smart_money（聪明钱，高收益率）, retail（散户）, bot（机器人，高频+规律间隔）, airdrop_farmer（空投农夫）, nft_collector（NFT 收藏家）, defi_degen（DeFi 高风险玩家）, dormant（沉寂钱包）
+
+## 交易模式枚举
+hodler（长期持有，低频交易）, day_trader（日内交易，高频）, yield_farmer（收益挖矿，频繁 LP 操作）, swing_trader（波段交易）, accumulator（持续买入）, distributor（持续卖出）, arbitrageur（套利交易者）, mixed（混合模式）
+
+## 评分规则
+### risk_appetite_score
+- 使用稳定币为主 → 低分（0-30）
+- 参与主流 DeFi（Aave, Uniswap）→ 中分（30-60）
+- 参与新项目/高杠杆/闪电贷 → 高分（60-100）
+
+### sophistication_score
+- 仅 ETH 转账 → 低分（0-20）
+- 使用 DEX swap → 中低分（20-40）
+- 多协议交互 + LP → 中高分（40-70）
+- MEV/闪电贷/跨链/批量操作 → 高分（70-100）
+
+## 输出格式（仅 JSON，无其他文字）
+{
+  "wallet_archetype": "...",
+  "trading_pattern": "...",
+  "risk_appetite_score": 50,
+  "sophistication_score": 50
+}

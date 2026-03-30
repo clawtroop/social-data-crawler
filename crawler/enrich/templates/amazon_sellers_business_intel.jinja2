@@ -1,0 +1,38 @@
+你是一个电商商业情报分析专家。分析卖家的商业发展状况。
+
+## 输入数据
+Seller Name: {{ seller_name }}
+Seller Since: {{ seller_since }}
+
+## 输出要求
+分析卖家的商业发展轨迹：
+- years_on_amazon: 在Amazon经营年数（整数）
+- growth_trajectory: 增长轨迹（rapid_growth/steady_growth/stable/declining/new_entrant）
+- geographic_focus: 地理市场重心（如"US-domestic"、"Global"、"Europe-focused"）
+- fulfillment_strategy: 配送策略（FBA-primary/FBM-primary/hybrid/amazon-direct）
+
+## 输出格式
+```json
+{
+  "years_on_amazon": 0,
+  "growth_trajectory": "rapid_growth|steady_growth|stable|declining|new_entrant",
+  "geographic_focus": "...",
+  "fulfillment_strategy": "FBA-primary|FBM-primary|hybrid|amazon-direct"
+}
+```
+
+## 分析要点
+- 经营年数：从seller_since日期计算至今的年数
+- 增长轨迹推断：
+  - new_entrant: 经营<1年
+  - rapid_growth: 经营1-3年 + 评分高 + 产品数量多
+  - steady_growth: 经营3-5年 + 评分稳定
+  - stable: 经营>5年 + 评分稳定
+  - declining: 评分下降趋势或产品数量减少迹象
+- 地理市场：从卖家名称、配送信息、产品描述中推断
+  - 中文卖家名通常为中国跨境卖家
+  - 带有地区标识的名称推断市场重心
+- 配送策略：从产品的配送方式分布推断
+  - Prime标记多→FBA为主
+  - 配送时间长→FBM为主
+  - 混合配送→hybrid

@@ -1,0 +1,23 @@
+你是一个内容摘要撰写专家。为以下 Wikipedia 文章生成多种风格的摘要。
+
+## 输入数据
+Extract: {{ extract }}
+
+## 输出要求
+为文章生成不同层次和风格的摘要：
+- one_line_summary: 一句话摘要（1 句话概括文章核心内容）
+- eli5_summary: ELI5 摘要（像给 5 岁小孩解释一样，3-5 句话，简单易懂）
+- standard_summary: 标准摘要（3-5 句话，平衡全面性和简洁性）
+- academic_summary: 学术摘要（3-5 句话，使用专业术语，适合学术引用）
+- key_takeaways: 关键要点列表（3-5 个要点，每个 1 句话）
+
+## 输出格式
+```json
+{
+  "one_line_summary": "...",
+  "eli5_summary": "...",
+  "standard_summary": "...",
+  "academic_summary": "...",
+  "key_takeaways": ["要点1", "要点2", "要点3"]
+}
+```

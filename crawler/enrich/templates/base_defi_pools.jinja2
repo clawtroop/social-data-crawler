@@ -1,0 +1,48 @@
+你是一个 DeFi 流动性池分析专家。枚举以下协议的流动性池及关键指标。
+
+## 输入数据
+Protocol ID: {{ protocol_id }}
+Pools Raw Data:
+{{ pools_raw }}
+{% if protocol_name %}Protocol Name: {{ protocol_name }}{% endif %}
+{% if protocol_category %}Category: {{ protocol_category }}{% endif %}
+
+## 输出要求
+枚举协议的流动性池，每个池包含：
+- pool_address: 池合约地址
+- token_pair: 代币对（如 "ETH/USDC"、"WETH/AERO"）
+- tvl: 池中锁定的资产总值（美元）
+- volume_24h: 24 小时交易量（美元）
+- apy: 当前年化收益率（%）。包括手续费收益 + 奖励
+- fee_tier: 手续费等级（如 "0.3%"、"0.05%"、"1%"、"volatile"、"stable"）
+- utilization_rate: 利用率（0.0-1.0）。DEX 为交易量/TVL，Lending 为借款/存款
+
+## 处理规则
+- 从 pools_raw 中解析各池子的原始数据
+- APY 计算：基础手续费 APY + 奖励代币 APY
+  - DEX: (24h 手续费 * 365) / TVL * 100
+  - Lending: 存款利率 + 奖励利率
+- utilization_rate 保留 4 位小数
+- 按 tvl 降序排列
+- 如果池子数量超过 50，只返回 TVL 最高的 50 个
+
+## 特殊池类型
+- **Aerodrome**: 区分 volatile（波动性）和 stable（稳定币）池，包含 AERO 排放奖励
+- **Uniswap V3**: 集中流动性池，fee_tier 为 0.01%/0.05%/0.3%/1%
+- **Aave/Lending**: pool 为资产市场，utilization_rate 为借款利用率
+- **Curve**: 稳定币池通常多代币（3pool, tricrypto）
+
+## 输出格式（仅 JSON，无其他文字）
+{
+  "pools": [
+    {
+      "pool_address": "0x...",
+      "token_pair": "ETH/USDC",
+      "tvl": 0.0,
+      "volume_24h": 0.0,
+      "apy": 0.0,
+      "fee_tier": "0.3%",
+      "utilization_rate": 0.0
+    }
+  ]
+}

@@ -8,6 +8,7 @@ from unittest.mock import patch, AsyncMock
 import pytest
 
 from crawler.cli import parse_args
+from crawler.contracts import CrawlerConfig
 from crawler.core.pipeline import _persist_extraction_artifacts, run_command
 
 
@@ -32,6 +33,59 @@ def test_run_command_uses_new_pipeline_by_default(monkeypatch, workspace_tmp_pat
 
     assert errors == []
     assert records[0]["enrichment"]["status"] == "routed"
+
+
+def test_discovery_map_pipeline_uses_platform_specific_adapter(monkeypatch, workspace_tmp_path: Path) -> None:
+    input_path = workspace_tmp_path / "input.jsonl"
+    output_dir = workspace_tmp_path / "out"
+    input_path.write_text(
+        json.dumps({"platform": "wikipedia", "resource_type": "article", "title": "Artificial intelligence"}) + "\n",
+        encoding="utf-8",
+    )
+
+    class FakeDiscoveryAdapter:
+        def build_seed_records(self, input_record: dict) -> list[SimpleNamespace]:
+            return [
+                SimpleNamespace(
+                    platform="wikipedia",
+                    resource_type="article",
+                    discovery_mode=SimpleNamespace(value="template_construction"),
+                    canonical_url="https://en.wikipedia.org/wiki/Artificial_intelligence",
+                    identity={"title": "Artificial_intelligence"},
+                    source_seed=input_record,
+                    discovered_from=None,
+                    metadata={},
+                )
+            ]
+
+        async def map(self, seed, context: dict) -> SimpleNamespace:
+            assert context["options"].sitemap_mode == "include"
+            return SimpleNamespace(
+                accepted=[
+                    SimpleNamespace(
+                        platform="wikipedia",
+                        resource_type="article",
+                        canonical_url="https://en.wikipedia.org/wiki/Machine_learning",
+                        discovery_mode=SimpleNamespace(value="api_lookup"),
+                        seed_url=seed.canonical_url,
+                        hop_depth=1,
+                        score=0.8,
+                        metadata={},
+                    )
+                ]
+            )
+
+    monkeypatch.setattr(
+        "crawler.discovery.adapters.registry.get_discovery_adapter",
+        lambda platform: FakeDiscoveryAdapter(),
+    )
+
+    config = parse_args(["discover-map", "--input", str(input_path), "--output", str(output_dir)])
+    records, errors = run_command(config)
+
+    assert errors == []
+    assert records[0]["platform"] == "wikipedia"
+    assert records[0]["canonical_url"] == "https://en.wikipedia.org/wiki/Machine_learning"
 
 
 def test_run_command_with_legacy_flag_uses_dispatcher(monkeypatch, workspace_tmp_path: Path) -> None:
@@ -85,6 +139,77 @@ def test_crawl_command_uses_new_pipeline(workspace_tmp_path: Path) -> None:
 
     assert errors == []
     assert records[0]["status"] == "success"
+
+
+def test_new_pipeline_uses_discovery_seed_builder(monkeypatch, workspace_tmp_path: Path) -> None:
+    input_path = workspace_tmp_path / "input.jsonl"
+    output_dir = workspace_tmp_path / "out"
+    input_path.write_text(
+        json.dumps({"platform": "generic", "resource_type": "page", "url": "https://example.com/docs"}) + "\n",
+        encoding="utf-8",
+    )
+
+    class FakeAdapter:
+        requires_auth = False
+
+        def resolve_backend(self, record: dict, override_backend: str | None = None, retry_count: int = 0) -> str:
+            return "http"
+
+        def normalize_record(self, record: dict, discovered: dict, extracted: dict, supplemental: dict) -> dict:
+            return {"title": "Test"}
+
+    captured: dict[str, object] = {}
+
+    def fake_build_seed_records(record: dict) -> list[SimpleNamespace]:
+        captured["record"] = record
+        return [
+            SimpleNamespace(
+                platform="generic",
+                resource_type="page",
+                canonical_url="https://example.com/docs",
+                identity={"url": "https://example.com/docs"},
+                metadata={"artifacts": {"self": "https://example.com/docs"}},
+            )
+        ]
+
+    async def fake_fetch(
+        self,
+        url: str,
+        platform: str,
+        resource_type: str | None = None,
+        *,
+        requires_auth: bool = False,
+        override_backend: str | None = None,
+        api_fetcher=None,
+        api_kwargs=None,
+        preferred_backend: str | None = None,
+        fallback_chain=None,
+    ):
+        from datetime import datetime, timezone
+        from crawler.fetch.models import FetchTiming, RawFetchResult
+
+        return RawFetchResult(
+            url=url,
+            final_url=url,
+            backend="http",
+            fetch_time=datetime.now(timezone.utc),
+            content_type="text/html; charset=utf-8",
+            status_code=200,
+            html="<html><body><article><h1>Docs</h1></article></body></html>",
+            content_bytes=b"<html></html>",
+            timing=FetchTiming(start_ms=0, navigation_ms=1, wait_strategy_ms=0, total_ms=1),
+        )
+
+    monkeypatch.setattr("crawler.platforms.registry.get_platform_adapter", lambda platform: FakeAdapter())
+    monkeypatch.setattr("crawler.discovery.url_builder.build_seed_records", fake_build_seed_records)
+    monkeypatch.setattr("crawler.fetch.engine.FetchEngine.fetch", fake_fetch)
+
+    config = parse_args(["crawl", "--input", str(input_path), "--output", str(output_dir)])
+    records, errors = run_command(config)
+
+    assert errors == []
+    assert captured["record"] == {"platform": "generic", "resource_type": "page", "url": "https://example.com/docs"}
+    assert records[0]["canonical_url"] == "https://example.com/docs"
 
 
 def _fake_extracted_document() -> SimpleNamespace:
@@ -943,3 +1068,111 @@ def test_new_pipeline_crawls_generic_page_with_standard_html_extraction(monkeypa
     assert records[0]["metadata"]["source_url"] == "https://example.com/docs/protocol"
     assert "settlement rules" in records[0]["plain_text"]
     assert records[0]["title"] == "Data Mining Protocol"
+
+
+def test_run_command_dispatches_discover_map(monkeypatch, workspace_tmp_path: Path) -> None:
+    """Discover-map command dispatches to discovery map pipeline."""
+    input_path = workspace_tmp_path / "input.jsonl"
+    output_dir = workspace_tmp_path / "out"
+    input_path.write_text(
+        json.dumps({"url": "https://example.com/docs"}) + "\n",
+        encoding="utf-8",
+    )
+
+    async def fake_fetch(
+        self,
+        url: str,
+        platform: str,
+        resource_type: str | None = None,
+        *,
+        requires_auth: bool = False,
+        **kwargs,
+    ):
+        from datetime import datetime, timezone
+        from crawler.fetch.models import FetchTiming, RawFetchResult
+
+        html = """
+        <html><body>
+          <a href="/guide">Guide</a>
+          <a href="/api">API</a>
+        </body></html>
+        """
+        return RawFetchResult(
+            url=url,
+            final_url=url,
+            backend="http",
+            fetch_time=datetime.now(timezone.utc),
+            content_type="text/html",
+            status_code=200,
+            html=html,
+            content_bytes=html.encode("utf-8"),
+            timing=FetchTiming(start_ms=0, navigation_ms=1, wait_strategy_ms=0, total_ms=1),
+        )
+
+    monkeypatch.setattr("crawler.fetch.engine.FetchEngine.fetch", fake_fetch)
+
+    config = CrawlerConfig.from_mapping({
+        "command": "discover-map",
+        "input_path": str(input_path),
+        "output_dir": str(output_dir),
+    })
+    records, errors = run_command(config)
+
+    assert isinstance(records, list)
+    assert errors == []
+    assert len(records) >= 1
+    # Should discover links from the page
+    urls = [r["canonical_url"] for r in records]
+    assert any("guide" in url for url in urls)
+
+
+def test_run_command_dispatches_discover_crawl(monkeypatch, workspace_tmp_path: Path) -> None:
+    """Discover-crawl command dispatches to discovery crawl pipeline."""
+    input_path = workspace_tmp_path / "input.jsonl"
+    output_dir = workspace_tmp_path / "out"
+    input_path.write_text(
+        json.dumps({"url": "https://example.com/docs"}) + "\n",
+        encoding="utf-8",
+    )
+
+    async def fake_fetch(
+        self,
+        url: str,
+        platform: str,
+        resource_type: str | None = None,
+        *,
+        requires_auth: bool = False,
+        **kwargs,
+    ):
+        from datetime import datetime, timezone
+        from crawler.fetch.models import FetchTiming, RawFetchResult
+
+        html = "<html><body><h1>Docs</h1><p>Content here</p></body></html>"
+        return RawFetchResult(
+            url=url,
+            final_url=url,
+            backend="http",
+            fetch_time=datetime.now(timezone.utc),
+            content_type="text/html",
+            status_code=200,
+            html=html,
+            content_bytes=html.encode("utf-8"),
+            timing=FetchTiming(start_ms=0, navigation_ms=1, wait_strategy_ms=0, total_ms=1),
+        )
+
+    monkeypatch.setattr("crawler.fetch.engine.FetchEngine.fetch", fake_fetch)
+
+    config = CrawlerConfig.from_mapping({
+        "command": "discover-crawl",
+        "input_path": str(input_path),
+        "output_dir": str(output_dir),
+        "max_depth": 0,
+        "max_pages": 1,
+    })
+    records, errors = run_command(config)
+
+    assert isinstance(records, list)
+    assert errors == []
+    assert len(records) == 1
+    assert records[0]["canonical_url"] == "https://example.com/docs"
+    assert "fetched" in records[0]

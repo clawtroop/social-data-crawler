@@ -17,9 +17,162 @@ def run_command(config: CrawlerConfig) -> tuple[list[dict], list[dict]]:
     By default uses the new 3-layer pipeline (FetchEngine → ExtractPipeline → EnrichPipeline).
     Pass --use-legacy-pipeline to fall back to the old dispatcher-based implementation.
     """
+    if config.command is CrawlCommand.DISCOVER_MAP:
+        return _run_discovery_map_pipeline(config)
+    if config.command is CrawlCommand.DISCOVER_CRAWL:
+        return _run_discovery_crawl_pipeline(config)
     if config.use_legacy_pipeline:
         return _run_legacy_pipeline(config)
     return _run_new_pipeline(config)
+
+
+def _run_discovery_map_pipeline(config: CrawlerConfig) -> tuple[list[dict], list[dict]]:
+    """Run the discovery map pipeline."""
+    return asyncio.run(_run_discovery_map_pipeline_async(config))
+
+
+async def _run_discovery_map_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], list[dict]]:
+    """Async implementation of discovery map pipeline."""
+    from crawler.discovery.adapters.registry import get_discovery_adapter
+    from crawler.discovery.contracts import MapOptions
+    from crawler.fetch.engine import FetchEngine
+
+    records: list[dict[str, Any]] = []
+    errors: list[dict[str, Any]] = []
+
+    input_records = _read_jsonl(config.input_path)
+    options = MapOptions(
+        limit=config.max_pages,
+        sitemap_mode=config.sitemap_mode,
+    )
+
+    session_root = config.output_dir / ".sessions"
+    session_root.mkdir(parents=True, exist_ok=True)
+
+    async with FetchEngine(session_root) as fetch_engine:
+        for input_record in input_records:
+            try:
+                adapter = get_discovery_adapter(str(input_record.get("platform") or "generic"))
+                seeds = adapter.build_seed_records(input_record)
+
+                for seed in seeds:
+                    context = await _build_discovery_map_context(
+                        adapter=adapter,
+                        seed=seed,
+                        input_record=input_record,
+                        options=options,
+                        fetch_engine=fetch_engine,
+                    )
+                    map_result = await adapter.map(seed, context)
+
+                    for candidate in map_result.accepted:
+                        records.append({
+                            "platform": candidate.platform,
+                            "resource_type": candidate.resource_type,
+                            "canonical_url": candidate.canonical_url,
+                            "discovery_mode": candidate.discovery_mode.value,
+                            "seed_url": candidate.seed_url,
+                            "hop_depth": candidate.hop_depth,
+                            "score": candidate.score,
+                            "metadata": candidate.metadata,
+                        })
+
+            except Exception as exc:
+                errors.append({
+                    "platform": str(input_record.get("platform") or "generic"),
+                    "resource_type": str(input_record.get("resource_type") or "page"),
+                    "stage": "discovery_map",
+                    "status": "failed",
+                    "error_code": "DISCOVERY_MAP_FAILED",
+                    "retryable": False,
+                    "message": str(exc),
+                })
+
+    return records, errors
+
+
+def _run_discovery_crawl_pipeline(config: CrawlerConfig) -> tuple[list[dict], list[dict]]:
+    """Run the discovery crawl pipeline."""
+    return asyncio.run(_run_discovery_crawl_pipeline_async(config))
+
+
+async def _run_discovery_crawl_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], list[dict]]:
+    """Async implementation of discovery crawl pipeline."""
+    from crawler.discovery.adapters.registry import get_discovery_adapter
+    from crawler.discovery.contracts import CrawlOptions, DiscoveryCandidate, DiscoveryMode
+    from crawler.discovery.runner import run_discover_crawl
+    from crawler.fetch.engine import FetchEngine
+
+    errors: list[dict[str, Any]] = []
+
+    input_records = _read_jsonl(config.input_path)
+    options = CrawlOptions(
+        max_depth=config.max_depth,
+        max_pages=config.max_pages,
+        sitemap_mode=config.sitemap_mode,
+    )
+
+    # Build candidates from input
+    seeds: list[DiscoveryCandidate] = []
+    for input_record in input_records:
+        url = input_record.get("url") or input_record.get("canonical_url")
+        if not url:
+            continue
+        seeds.append(DiscoveryCandidate(
+            platform=input_record.get("platform", "generic"),
+            resource_type=input_record.get("resource_type", "page"),
+            canonical_url=url,
+            seed_url=url,
+            fields={},
+            discovery_mode=DiscoveryMode.DIRECT_INPUT,
+            score=1.0,
+            score_breakdown={"direct_input": 1.0},
+            hop_depth=0,
+            parent_url=None,
+            metadata={},
+        ))
+
+    session_root = config.output_dir / ".sessions"
+    session_root.mkdir(parents=True, exist_ok=True)
+
+    async with FetchEngine(session_root) as fetch_engine:
+        async def fetch_fn(target: DiscoveryCandidate | str) -> dict[str, Any]:
+            if isinstance(target, DiscoveryCandidate):
+                url = target.canonical_url or ""
+                platform = target.platform
+                resource_type = target.resource_type
+            else:
+                url = str(target)
+                platform = "generic"
+                resource_type = "page"
+            result = await fetch_engine.fetch(
+                url=url,
+                platform=platform,
+                resource_type=resource_type,
+                requires_auth=False,
+            )
+            return result.to_legacy_dict()
+
+        try:
+            records = await run_discover_crawl(
+                seeds=seeds,
+                fetch_fn=fetch_fn,
+                options=options,
+                adapter_resolver=get_discovery_adapter,
+            )
+        except Exception as exc:
+            errors.append({
+                "platform": "generic",
+                "resource_type": "page",
+                "stage": "discovery_crawl",
+                "status": "failed",
+                "error_code": "DISCOVERY_CRAWL_FAILED",
+                "retryable": False,
+                "message": str(exc),
+            })
+            records = []
+
+    return records, errors
 
 
 def _run_legacy_pipeline(config: CrawlerConfig) -> tuple[list[dict], list[dict]]:
@@ -47,7 +200,7 @@ async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], li
     from crawler.enrich.pipeline import EnrichPipeline
     from crawler.fetch.engine import FetchEngine
     from crawler.fetch.session_store import SessionStore
-    from crawler.discovery.url_builder import build_url
+    from crawler.discovery.url_builder import build_seed_records
     from crawler.platforms.registry import get_platform_adapter
     from crawler.normalize.canonical import build_canonical_record
     from crawler.output.artifact_writer import write_artifact_bytes, write_artifact_json, write_artifact_text
@@ -89,7 +242,7 @@ async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], li
             try:
                 # Step 1: URL Discovery
                 adapter = get_platform_adapter(platform)
-                discovered = build_url(record)
+                discovered = _discovered_from_seed(build_seed_records(record)[0])
                 url = discovered["canonical_url"]
                 slug = _make_slug(idx, url)
 
@@ -226,6 +379,48 @@ async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], li
 
 def _read_jsonl(path: Path) -> list[dict[str, Any]]:
     return read_jsonl_file(path)
+
+
+async def _build_discovery_map_context(
+    *,
+    adapter,
+    seed,
+    input_record: dict[str, Any],
+    options,
+    fetch_engine,
+) -> dict[str, Any]:
+    context: dict[str, Any] = {
+        "options": options,
+        "query": input_record.get("query", ""),
+        "search_type": input_record.get("search_type", ""),
+    }
+    for key in ("page_links", "search_urls", "search_candidates"):
+        if key in input_record:
+            context[key] = input_record[key]
+
+    if any(key in context for key in ("page_links", "search_urls", "search_candidates")):
+        return context
+
+    raw_result = await fetch_engine.fetch(
+        url=seed.canonical_url,
+        platform=seed.platform,
+        resource_type=seed.resource_type,
+        requires_auth=False,
+    )
+    fetched = raw_result.to_legacy_dict()
+    context["html"] = fetched.get("html", "")
+    context["fetched"] = fetched
+    return context
+
+
+def _discovered_from_seed(seed) -> dict[str, Any]:
+    return {
+        "platform": seed.platform,
+        "resource_type": seed.resource_type,
+        "canonical_url": seed.canonical_url,
+        "artifacts": dict(seed.metadata.get("artifacts", {})),
+        "fields": dict(seed.identity),
+    }
 
 
 def _resolve_storage_state_path(

@@ -8,9 +8,22 @@ except ModuleNotFoundError:  # pragma: no cover
 from .html_extract import _is_html_content_type, extract_html_document
 
 
-def extract_article_text(html: str, url: str, content_type: str | None = None) -> dict:
+def extract_article_text(
+    html: str,
+    url: str,
+    content_type: str | None = None,
+    *,
+    platform: str = "",
+    resource_type: str = "",
+) -> dict:
     if not _is_html_content_type(content_type):
-        return extract_html_document(html, url, content_type=content_type)
+        return extract_html_document(
+            html,
+            url,
+            content_type=content_type,
+            platform=platform,
+            resource_type=resource_type,
+        )
 
     if trafilatura is not None:
         markdown = trafilatura.extract(
@@ -22,7 +35,13 @@ def extract_article_text(html: str, url: str, content_type: str | None = None) -
             no_fallback=False,
         )
         if markdown:
-            result = extract_html_document(html, url, content_type=content_type)
+            result = extract_html_document(
+                html,
+                url,
+                content_type=content_type,
+                platform=platform,
+                resource_type=resource_type,
+            )
             result.update(
                 {
                     "markdown": markdown,
@@ -31,4 +50,10 @@ def extract_article_text(html: str, url: str, content_type: str | None = None) -
                 }
             )
             return result
-    return extract_html_document(html, url, content_type=content_type)
+    return extract_html_document(
+        html,
+        url,
+        content_type=content_type,
+        platform=platform,
+        resource_type=resource_type,
+    )

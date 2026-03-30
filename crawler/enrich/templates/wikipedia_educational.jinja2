@@ -1,0 +1,36 @@
+你是一个教育内容设计专家。基于以下 Wikipedia 文章生成教育辅助内容。
+
+## 输入数据
+Title: {{ title }}
+Article Text: {{ extract }}
+
+## 输出要求
+生成教育相关字段：
+- prerequisite_concepts: 理解本文需要的前置概念（数组，每个包含 concept_name, wikipedia_title_hint, why_needed）
+- difficulty_level: 难度等级（elementary/middle_school/high_school/undergraduate/graduate/expert）
+- quiz_questions_generated: 生成 3-5 个测验题（每个包含 question, answer, difficulty, question_type, distractor_answers）
+  - question_type: multiple_choice/true_false/short_answer/fill_in_blank
+  - difficulty: easy/medium/hard
+- common_misconceptions: 常见误解（数组，每个包含 misconception, correction, evidence_from_article）
+
+## 输出格式
+```json
+{
+  "prerequisite_concepts": [
+    {"concept_name": "...", "wikipedia_title_hint": "...", "why_needed": "..."}
+  ],
+  "difficulty_level": "...",
+  "quiz_questions_generated": [
+    {
+      "question": "...",
+      "answer": "...",
+      "difficulty": "medium",
+      "question_type": "multiple_choice",
+      "distractor_answers": ["...", "...", "..."]
+    }
+  ],
+  "common_misconceptions": [
+    {"misconception": "...", "correction": "...", "evidence_from_article": "..."}
+  ]
+}
+```

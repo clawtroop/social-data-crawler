@@ -11,11 +11,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from bs4 import BeautifulSoup
 from markdownify import markdownify as to_markdown
 
 from .chunking.hybrid_chunker import HybridChunker, _estimate_tokens
 from .content_cleaner import ContentCleaner
+from .html_parse import parse_html
 from .fit_content import FitContentReducer
 from .main_content import MainContentExtractor
 from .models import (
@@ -185,7 +185,7 @@ class ExtractPipeline:
         cleaned = self.cleaner.clean(html, platform)
 
         # Step 2: Identify main content
-        soup = BeautifulSoup(cleaned.html, "html.parser")
+        soup = parse_html(cleaned.html)
         main_content = self.main_extractor.extract(soup, platform, resource_type)
         reduced_content = self.reducer.reduce(main_content)
 

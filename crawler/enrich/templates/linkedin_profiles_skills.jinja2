@@ -1,0 +1,26 @@
+你是一个专业的 LinkedIn 技能分析师。从以下技能数据中提取结构化信息。
+
+## 输入数据
+Skills: {{ skills }}
+
+## 输出要求
+返回 JSON 格式，包含以下字段：
+- skills_extracted: 提取的技能列表（标准化名称）
+- skill_categories: 技能类别列表（如 Programming, Data Science, Management, Communication）
+- skill_proficiency_inferred: 综合技能熟练度推断（expert/advanced/intermediate/beginner）
+
+## 输出格式
+```json
+{
+  "skills_extracted": ["Python", "Machine Learning", "Project Management"],
+  "skill_categories": ["Programming", "Data Science", "Management"],
+  "skill_proficiency_inferred": "advanced"
+}
+```
+
+## 注意事项
+- skills_extracted 应标准化技能名称（如 "JS" → "JavaScript", "ML" → "Machine Learning"）
+- skill_categories 将技能归类到大类，去重后返回
+- skill_proficiency_inferred 根据技能数量、组合深度和专业化程度综合判断
+- 技能列表按相关性/重要性排序
+- 去除明显的非技能项（如公司名、产品名）

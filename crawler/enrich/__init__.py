@@ -11,4 +11,5 @@ Components:
 - generative/prompt_renderer: render_prompt
 - batch/async_executor: BatchEnrichmentExecutor
 - pipeline: EnrichPipeline
+- agent_executor: AgentEnrichmentExecutor, enrich_with_llm (Agent Integration Layer)
 """

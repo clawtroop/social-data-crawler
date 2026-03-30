@@ -169,8 +169,20 @@ def strategy_extractor(strategy: str) -> Callable[[dict[str, Any], dict[str, Any
         content_type = fetched.get("content_type")
         html = fetched.get("text") or fetched.get("html") or fetched.get("content_bytes", b"").decode("utf-8", "ignore")
         if strategy in {"article_html", "paper_metadata", "document"}:
-            return extract_article_text(html, fetched["url"], content_type=content_type)
-        return extract_html_document(html, fetched["url"], content_type=content_type)
+            return extract_article_text(
+                html,
+                fetched["url"],
+                content_type=content_type,
+                platform=record["platform"],
+                resource_type=record.get("resource_type", ""),
+            )
+        return extract_html_document(
+            html,
+            fetched["url"],
+            content_type=content_type,
+            platform=record["platform"],
+            resource_type=record.get("resource_type", ""),
+        )
 
     return extractor
 

@@ -1,0 +1,36 @@
+你是一个评论质量评估专家。评估评论的质量、可信度和信息价值。
+
+## 输入数据
+Review Text: {{ review_text }}
+Rating: {{ rating }}
+Verified Purchase: {{ verified_purchase }}
+
+## 输出要求
+对评论质量进行多维度评估：
+- review_quality_score: 评论质量综合评分（0-10）
+- review_type: 评论类型分类（detailed_review/brief_opinion/story_based/comparison/complaint/praise_only/question）
+- authenticity_score: 真实性评分（0-10，10为最可信）
+- information_density: 信息密度评分（0-10，衡量单位文字量的有用信息量）
+
+## 输出格式
+```json
+{
+  "review_quality_score": 0.0,
+  "review_type": "detailed_review|brief_opinion|story_based|comparison|complaint|praise_only|question",
+  "authenticity_score": 0.0,
+  "information_density": 0.0
+}
+```
+
+## 分析要点
+- 质量评分：综合评论长度、结构性、具体性、是否包含使用体验细节
+- 评论类型：
+  - detailed_review: 详细多维度评测
+  - brief_opinion: 简短意见（如"不错"、"很好"）
+  - story_based: 以使用故事叙述为主
+  - comparison: 以与竞品对比为主
+  - complaint: 投诉/差评为主
+  - praise_only: 纯好评无具体内容
+  - question: 以提问形式出现的"评论"
+- 真实性：verified_purchase加分，极端评分+空洞内容扣分，具体细节加分
+- 信息密度：有效信息占比，排除填充词和重复内容

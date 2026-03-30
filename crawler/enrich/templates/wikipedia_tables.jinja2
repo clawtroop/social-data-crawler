@@ -1,0 +1,30 @@
+你是一个 Wikipedia 表格数据提取专家。从以下文章中提取并结构化所有表格数据。
+
+## 输入数据
+Extract: {{ extract }}
+
+## 输出要求
+提取文章中所有表格并结构化：
+- table_title: 表格标题或上下文推断的标题
+- headers: 表头列名列表
+- rows: 数据行（每行为一个列表）
+- table_topic: 表格主题描述
+- data_type: 数据类型（statistical/comparison/timeline/classification/properties/other）
+
+## 输出格式
+```json
+{
+  "tables_structured": [
+    {
+      "table_title": "...",
+      "headers": ["列1", "列2", "列3"],
+      "rows": [
+        ["值1", "值2", "值3"],
+        ["值4", "值5", "值6"]
+      ],
+      "table_topic": "...",
+      "data_type": "comparison"
+    }
+  ]
+}
+```

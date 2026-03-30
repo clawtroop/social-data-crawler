@@ -13,7 +13,7 @@ from .output.jsonl_writer import write_jsonl
 from .output.summary_writer import build_summary, write_manifest, write_summary
 
 
-def _parse_command(value: str) -> CrawlCommand:
+def _parse_command(value: str) -> CrawlCommand: #->表示返回值的类型，CrawlCommand是枚举类型，value是字符串，枚举类型只能取枚举值中的一个
     try:
         return CrawlCommand(value)
     except ValueError as exc:
@@ -71,6 +71,28 @@ def build_parser() -> argparse.ArgumentParser:
             type=int,
             default=50,
             help="Overlap tokens between chunks (default: 50)",
+        )
+        # Discovery options (for discover-map and discover-crawl commands)
+        subparser.add_argument(
+            "--max-depth",
+            dest="max_depth",
+            type=int,
+            default=2,
+            help="Maximum crawl depth for discovery (default: 2)",
+        )
+        subparser.add_argument(
+            "--max-pages",
+            dest="max_pages",
+            type=int,
+            default=100,
+            help="Maximum pages to discover (default: 100)",
+        )
+        subparser.add_argument(
+            "--sitemap-mode",
+            dest="sitemap_mode",
+            choices=["include", "only", "skip"],
+            default="include",
+            help="Sitemap handling mode (default: include)",
         )
 
     # fill-enrichment command: agent fills pending_agent results with LLM responses

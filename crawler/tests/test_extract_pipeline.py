@@ -79,6 +79,45 @@ def test_cleaner_removes_hidden_elements() -> None:
     assert "Visible content" in result.html
 
 
+def test_cleaner_preserves_main_content_under_malformed_hidden_void() -> None:
+    """模拟畸形 DOM：正文被挂在 display:none 的 img 下；整棵删除会导致正文为空。"""
+    html = """
+    <html><body>
+      <img style="display:none" src="https://example.com/x.png" alt="">
+        <div id="dp-container">
+          <h1><span id="productTitle">Apple iPad Test Product Title</span></h1>
+          <p>This is a long product description that definitely exceeds the eighty character threshold for substantial hidden text preservation logic.</p>
+        </div>
+      </img>
+      <p>Outside</p>
+    </body></html>
+    """
+    cleaner = ContentCleaner()
+    result = cleaner.clean(html)
+    assert "dp-container" in result.html
+    assert "productTitle" in result.html
+    assert "eighty character" in result.html
+    assert "Outside" in result.html
+
+
+def test_cleaner_removes_long_hidden_modal_content() -> None:
+    html = """
+    <html><body>
+      <div style="display:none">
+        <div class="details-panel">
+          This hidden modal contains a lot of text that should stay hidden from
+          extracted plain text even though it is long and uses block layout.
+        </div>
+      </div>
+      <main><p>Visible product content</p></main>
+    </body></html>
+    """
+    cleaner = ContentCleaner()
+    result = cleaner.clean(html)
+    assert "should stay hidden" not in result.html
+    assert "Visible product content" in result.html
+
+
 def test_cleaner_handles_decomposed_nested_noise_nodes() -> None:
     html = """
     <html><body>

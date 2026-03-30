@@ -1,0 +1,21 @@
+你是一个 Wikipedia 分类体系分析专家。对以下文章的分类进行清洗和结构化。
+
+## 输入数据
+Categories: {{ categories }}
+
+## 输出要求
+对 Wikipedia 分类进行清洗和层次化处理：
+- categories_cleaned: 清洗后的分类列表（去除维护性分类如 "Articles needing..."、"CS1 maint:..." 等）
+- topic_hierarchy: 从宽到窄的主题层级（如 ["Science", "Physics", "Quantum Mechanics", "Quantum Entanglement"]）
+- domain: 所属领域（science/technology/history/geography/arts/politics/sports/biography/other）
+- subject_tags: 主题标签列表（5-10 个描述性标签，适用于搜索和过滤）
+
+## 输出格式
+```json
+{
+  "categories_cleaned": ["分类1", "分类2"],
+  "topic_hierarchy": ["大类", "中类", "小类"],
+  "domain": "...",
+  "subject_tags": ["标签1", "标签2"]
+}
+```

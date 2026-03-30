@@ -1,0 +1,66 @@
+你是一个智能合约安全审计专家。分析以下智能合约代码，生成深度理解报告。
+
+## 输入数据
+Contract Address: {{ address }}
+Source Code (Solidity):
+```solidity
+{{ source_code }}
+```
+
+## 输出要求
+深度分析合约代码，生成：
+
+### contract_purpose_summary
+- 用 1 段话（3-5 句）概括合约的核心用途、目标用户和在协议中的角色
+- 使用通俗语言，非技术人员也能理解
+
+### function_explanations（逐函数分析数组）
+每个函数包含：
+- function_name: 函数名
+- plain_english_description: 通俗描述该函数做什么（2-3 句话）
+- risk_assessment: 风险等级（safe/caution/dangerous）
+- risk_reasoning: 风险评估理由（1-2 句话）
+
+### admin_risk_narrative
+- 用 2 段话总结管理员权限风险
+- 第 1 段：列举管理员能做什么（mint、pause、upgrade、withdraw 等）
+- 第 2 段：评估这些权限对用户资金的潜在影响
+
+### code_quality_indicators
+- has_comments: 是否有代码注释（boolean）
+- comment_density: 注释密度（0.0-1.0，注释行数/总行数）
+- follows_style_guide: 是否遵循 Solidity 风格指南（boolean）
+- uses_safe_math: 是否使用 SafeMath 或 Solidity >= 0.8.0 的内置溢出保护（boolean）
+- has_reentrancy_guards: 是否有可重入攻击防护（boolean）
+- has_access_control: 是否有访问控制机制（boolean）
+- notable_patterns: 值得注意的代码模式列表（如 "使用 OpenZeppelin 库"、"实现 EIP-2612 permit"）
+
+## 分析重点
+- 识别 owner/admin 特权函数（pause, mint, withdraw, upgrade）
+- 检测可重入性风险（外部调用 + 状态变更顺序）
+- 评估中心化风险（单点控制 vs 多签/时间锁）
+- 代码质量：注释覆盖率、是否使用 OpenZeppelin 库
+- 关注 selfdestruct、delegatecall、tx.origin 等高风险操作
+
+## 输出格式（仅 JSON，无其他文字）
+{
+  "contract_purpose_summary": "...",
+  "function_explanations": [
+    {
+      "function_name": "...",
+      "plain_english_description": "...",
+      "risk_assessment": "safe|caution|dangerous",
+      "risk_reasoning": "..."
+    }
+  ],
+  "admin_risk_narrative": "...",
+  "code_quality_indicators": {
+    "has_comments": true,
+    "comment_density": 0.15,
+    "follows_style_guide": true,
+    "uses_safe_math": true,
+    "has_reentrancy_guards": false,
+    "has_access_control": true,
+    "notable_patterns": ["..."]
+  }
+}

@@ -48,6 +48,10 @@ class FieldGroupSpec:
     extractive_config: ExtractiveConfig | None = None
     generative_config: GenerativeConfig | None = None
     min_extractive_confidence: float = 0.8
+    # 新增字段
+    requires_vision: bool = False  # 是否需要视觉能力（多模态）
+    platform: str = ""  # 适用平台: linkedin, arxiv, wikipedia, amazon, base
+    subdataset: str = ""  # 子数据集: profiles, company, jobs, posts, products, reviews, sellers, transactions, addresses, contracts, defi
 
     def source_fields_present(self, record: dict[str, Any]) -> bool:
         """Check if the required source fields are present in the record."""
@@ -58,7 +62,15 @@ class FieldGroupSpec:
         return True
 
 
-FIELD_GROUP_REGISTRY: dict[str, FieldGroupSpec] = {
+# Import platform-specific field groups
+from crawler.enrich.schemas.linkedin_field_groups import LINKEDIN_FIELD_GROUPS
+from crawler.enrich.schemas.academic_field_groups import ACADEMIC_FIELD_GROUPS
+from crawler.enrich.schemas.amazon_field_groups import AMAZON_FIELD_GROUPS
+from crawler.enrich.schemas.base_field_groups import BASE_FIELD_GROUPS
+
+
+# Legacy/generic field groups (kept for backward compatibility)
+_LEGACY_FIELD_GROUPS: dict[str, FieldGroupSpec] = {
     "about_summary": FieldGroupSpec(
         name="about_summary",
         description="Generate a concise professional summary from the about/bio section",
@@ -164,6 +176,15 @@ FIELD_GROUP_REGISTRY: dict[str, FieldGroupSpec] = {
             min_confidence=0.9,
         ),
     ),
+}
+
+# Combine all field groups into the main registry
+FIELD_GROUP_REGISTRY: dict[str, FieldGroupSpec] = {
+    **_LEGACY_FIELD_GROUPS,
+    **LINKEDIN_FIELD_GROUPS,
+    **ACADEMIC_FIELD_GROUPS,
+    **AMAZON_FIELD_GROUPS,
+    **BASE_FIELD_GROUPS,
 }
 
 

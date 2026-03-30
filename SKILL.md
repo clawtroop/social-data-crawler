@@ -275,7 +275,54 @@ Enrichment is **extractive-first, agent-generative on demand**. No API key is ne
 | `about_summary` | generative_only | Always needs LLM |
 | `summaries` | generative_only | Always needs LLM |
 
-### Agent Workflow (No API Key Needed)
+### Agent Integration (Recommended)
+
+使用 `AgentEnrichmentExecutor` 一步完成 enrichment，无需手动协调 pending_agent 回填流程：
+
+```python
+from crawler.enrich.agent_executor import AgentEnrichmentExecutor, enrich_with_llm
+
+# 方式 1: 传入 LLM 调用函数（最简单）
+async def my_llm(prompt: str, system: str = None) -> str:
+    # 使用 agent 自己的 LLM 能力
+    return await agent.generate(prompt, system)
+
+result = await enrich_with_llm(
+    document={"platform": "linkedin", "about": "10年工程师经验..."},
+    field_groups=["linkedin_profiles_about", "linkedin_profiles_skills"],
+    llm_call=my_llm,
+    model_capabilities={"vision": False}
+)
+
+# result.structured.fields 包含所有补全字段
+print(result.structured.fields["about_summary"])
+print(result.structured.fields["skills_extracted"])
+
+
+# 方式 2: 使用 Executor 实例（更多控制）
+executor = AgentEnrichmentExecutor(
+    llm_call=my_llm,
+    model_capabilities={"vision": True}
+)
+result = await executor.enrich(document, field_groups)
+
+
+# 方式 3: 使用 subagent 并行执行（最快）
+executor = AgentEnrichmentExecutor(
+    llm_call=my_llm,
+    use_subagents=True,
+    spawn_subagent=agent.spawn_subagent,  # async (name, prompt, system) -> str
+)
+result = await executor.enrich(document, field_groups, parallel=True)
+
+
+# 方式 4: 自动选择字段组
+result = await executor.auto_enrich(document)  # 根据 platform/resource_type 自动选择
+```
+
+### CLI Workflow (Legacy)
+
+CLI 方式仍然可用，适合批量处理或调试：
 
 ```bash
 # Step 1: Run enrichment — extractive runs, generative returns pending_agent

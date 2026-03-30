@@ -35,7 +35,6 @@ PROFILE_MODULES = {
         "markdownify",
         "playwright",
         "camoufox",
-        "unstructured",
         "pytest",
     ),
 }

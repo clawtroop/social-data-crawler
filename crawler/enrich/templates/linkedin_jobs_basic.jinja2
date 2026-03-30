@@ -1,0 +1,41 @@
+你是一个专业的 LinkedIn 职位信息分析师。从以下职位基本数据中提取标准化信息。
+
+## 输入数据
+Job Title: {{ job_title }}
+Location: {{ location }}
+
+## 输出要求
+返回 JSON 格式，包含以下字段：
+- job_title_standardized: 标准化的职位名称
+- remote_policy: 远程工作政策
+- location_parsed: 解析后的地点信息对象
+
+## 输出格式
+```json
+{
+  "job_title_standardized": "Senior Software Engineer",
+  "remote_policy": "hybrid",
+  "location_parsed": {
+    "city": "San Francisco",
+    "state": "California",
+    "country": "United States"
+  }
+}
+```
+
+## 注意事项
+- job_title_standardized 规则：
+  - 去除公司名称、团队名称等非职位信息
+  - 保留资历前缀（Senior, Lead, Staff, Principal 等）
+  - 统一同义职位（如 "SWE" → "Software Engineer"）
+- remote_policy 可选值：
+  - remote: 完全远程
+  - hybrid: 混合办公
+  - onsite: 全部线下
+  - flexible: 灵活安排
+  - unknown: 无法判断
+- location_parsed 解析规则：
+  - city: 城市名称，无法判断返回 null
+  - state: 州/省名称，无法判断返回 null
+  - country: 国家全称
+  - 如果位置为 "Remote"，city 和 state 返回 null，country 返回 "Remote"

@@ -1,0 +1,58 @@
+你是一个 DeFi 协议风险评估专家。对以下协议进行全面风险评估。
+
+## 输入数据
+Protocol ID: {{ protocol_id }}
+{% if protocol_name %}Protocol Name: {{ protocol_name }}{% endif %}
+{% if protocol_category %}Category: {{ protocol_category }}{% endif %}
+{% if tvl_usd %}TVL (USD): {{ tvl_usd }}{% endif %}
+{% if contracts_info %}Contracts Info: {{ contracts_info }}{% endif %}
+{% if audit_info %}Audit Info: {{ audit_info }}{% endif %}
+{% if governance_info %}Governance Info: {{ governance_info }}{% endif %}
+
+## 输出要求
+全面风险评估：
+- protocol_risk_score: 综合风险评分（0-100，0=极低风险，100=极高风险）
+- smart_contract_risk: 智能合约风险等级
+- centralization_risk: 中心化风险等级
+- oracle_dependency: 预言机依赖描述
+- insurance_coverage: 保险覆盖状态
+
+## 风险等级枚举
+low, medium, high
+
+## 综合风险评分计算
+权重分配（总分 100）：
+- 智能合约风险（30%）：审计状态、代码质量、漏洞历史
+- 中心化风险（25%）：owner 权限、多签/时间锁、升级机制
+- 市场风险（20%）：TVL 规模、流动性深度、代币价格波动
+- 预言机风险（15%）：预言机类型、数据源数量、更新频率
+- 运营风险（10%）：团队匿名性、运营时间、社区规模
+
+## 智能合约风险评估
+- low: 多次审计 + 开源 + 无历史漏洞 + 经过时间验证 (>1 年)
+- medium: 已审计但较新，或有已修复的历史漏洞
+- high: 未审计 / 闭源 / 有未修复漏洞 / 复杂的代理升级
+
+## 中心化风险评估
+- low: 无特权角色 或 多签 + 时间锁治理（如 Compound Governor）
+- medium: 多签治理但无时间锁，或部分功能可由少数人控制
+- high: 单一 owner/admin 可暂停、升级、提取资金
+
+## 预言机依赖描述
+- 说明使用的预言机类型（Chainlink, TWAP, Band, custom）
+- 数据源数量和更新频率
+- "None" 如果协议不依赖价格预言机
+
+## 保险覆盖状态
+- "Covered by Nexus Mutual / InsurAce" 等
+- "Self-insured with safety module"
+- "No coverage"
+
+## 输出格式（仅 JSON，无其他文字）
+{
+  "protocol_risk_score": 50,
+  "smart_contract_risk": "medium",
+  "centralization_risk": "medium",
+  "oracle_dependency": "...",
+  "insurance_coverage": "..."
+}

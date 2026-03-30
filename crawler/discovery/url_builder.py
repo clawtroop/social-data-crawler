@@ -4,6 +4,8 @@ import json
 from pathlib import Path
 from urllib.parse import quote
 
+from crawler.discovery.contracts import DiscoveryMode, DiscoveryRecord
+
 
 ROOT_DIR = Path(__file__).resolve().parents[2]
 TEMPLATE_PATH = ROOT_DIR / "references" / "url_templates.json"
@@ -71,3 +73,40 @@ def build_url(record: dict) -> dict:
         "artifacts": artifacts,
         "fields": fields,
     }
+
+
+def build_seed_records(record: dict) -> list[DiscoveryRecord]:
+    if record.get("canonical_url"):
+        canonical_url = str(record["canonical_url"])
+        identity = {
+            key: str(value)
+            for key, value in record.items()
+            if key not in {"plain_text", "markdown", "structured", "metadata", "artifacts"}
+            and value not in (None, "", [], {})
+        }
+        return [
+            DiscoveryRecord(
+                platform=str(record.get("platform") or "generic"),
+                resource_type=str(record.get("resource_type") or "page"),
+                discovery_mode=DiscoveryMode.CANONICALIZED_INPUT,
+                canonical_url=canonical_url,
+                identity=identity or {"canonical_url": canonical_url},
+                source_seed=record,
+                discovered_from=None,
+                metadata={"artifacts": dict(record.get("artifacts") or {})},
+            )
+        ]
+
+    discovered = build_url(record)
+    return [
+        DiscoveryRecord(
+            platform=str(discovered.get("platform") or record.get("platform") or "generic"),
+            resource_type=str(discovered.get("resource_type") or record.get("resource_type") or "page"),
+            discovery_mode=DiscoveryMode.TEMPLATE_CONSTRUCTION,
+            canonical_url=discovered["canonical_url"],
+            identity=dict(discovered["fields"]),
+            source_seed=record,
+            discovered_from=None,
+            metadata={"artifacts": discovered["artifacts"]},
+        )
+    ]

@@ -84,14 +84,25 @@ class EnrichPipeline:
         self,
         document: dict[str, Any],
         field_groups: list[str],
+        model_capabilities: dict[str, bool] | None = None,
     ) -> EnrichedRecord:
         """Enrich a document across requested field groups.
 
         For each field group:
-        1. Check if required source fields are present
-        2. Run extractive enrichment (lookup/regex) — zero cost, instant
-        3. If generative is needed, return ``pending_agent`` with prompt
+        1. Check if model capabilities match (e.g., vision for multimodal)
+        2. Check if required source fields are present
+        3. Run extractive enrichment (lookup/regex) — zero cost, instant
+        4. If generative is needed, return ``pending_agent`` with prompt
+
+        Args:
+            document: The document to enrich.
+            field_groups: List of field group names to apply.
+            model_capabilities: Optional dict indicating model capabilities.
+                - "vision": bool - whether the model supports image analysis.
+                If a field group requires vision but model doesn't support it,
+                the group will be skipped with an informative message.
         """
+        model_capabilities = model_capabilities or {}
         record = EnrichedRecord(
             doc_id=document.get("doc_id", document.get("canonical_url", "")),
             source_url=document.get("canonical_url", ""),
@@ -111,7 +122,7 @@ class EnrichPipeline:
                 record.merge_field_group_result(result)
                 continue
 
-            result = await self._run_field_group(spec, document)
+            result = await self._run_field_group(spec, document, model_capabilities)
             record.merge_field_group_result(result)
 
         return record
@@ -160,9 +171,20 @@ class EnrichPipeline:
         self,
         spec: FieldGroupSpec,
         document: dict[str, Any],
+        model_capabilities: dict[str, bool] | None = None,
     ) -> FieldGroupResult:
         """Execute a single field group according to its strategy."""
         start = time.monotonic()
+        model_capabilities = model_capabilities or {}
+
+        # Check vision capability for multimodal field groups
+        if spec.requires_vision and not model_capabilities.get("vision", False):
+            return FieldGroupResult(
+                field_group=spec.name,
+                status="skipped",
+                error="需要视觉能力但当前模型不支持 (requires_vision=True but model lacks vision capability)",
+                latency_ms=int((time.monotonic() - start) * 1000),
+            )
 
         source_fields = self._collect_source_fields(spec, document)
 

@@ -1,0 +1,25 @@
+你是一个专业的企业架构分析师。从以下公司数据中提取企业组织结构信息。
+
+## 输入数据
+Company Name: {{ company_name }}
+
+## 输出要求
+返回 JSON 格式，包含以下字段：
+- company_legal_name_inferred: 推断的公司法律全称（如 "Alphabet Inc." 对应 "Google"）
+- parent_company: 母公司名称（如无则返回 null）
+- subsidiary_tree: 已知子公司/关联公司列表
+
+## 输出格式
+```json
+{
+  "company_legal_name_inferred": "Alphabet Inc.",
+  "parent_company": null,
+  "subsidiary_tree": ["Google LLC", "Waymo", "DeepMind", "Verily"]
+}
+```
+
+## 注意事项
+- company_legal_name_inferred 应包含完整的法律实体后缀（Inc., Ltd., GmbH, Corp. 等）
+- parent_company 只填写直接母公司，如果是顶级公司则返回 null
+- subsidiary_tree 列出已知的主要子公司和关联实体，未知则返回空数组
+- 基于公开信息推断，不确定的信息应标注为推断结果

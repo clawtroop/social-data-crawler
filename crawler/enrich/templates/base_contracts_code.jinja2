@@ -1,0 +1,39 @@
+你是一个智能合约分类和标准检测专家。分析以下合约的类型、所属协议和实现的标准。
+
+## 输入数据
+Contract Address: {{ address }}
+Source Code:
+```solidity
+{{ source_code }}
+```
+ABI:
+{{ abi }}
+
+## 输出要求
+分类合约并识别标准：
+- contract_type_classified: 合约类型分类
+- protocol_name: 所属协议名称。未知则返回 "Unknown"
+- implements_standards: 实现的 ERC 标准列表
+
+## 合约类型枚举
+ERC20, ERC721, ERC1155, DEX_Router, DEX_Pool, DEX_Factory, Lending_Pool, Lending_Controller, Yield_Vault, Bridge, Governance_Governor, Governance_Timelock, Staking, Rewards_Distributor, Proxy_Transparent, Proxy_UUPS, Proxy_Beacon, Multisig, Oracle, NFT_Marketplace, Token_Vesting, Airdrop, Other
+
+## 标准检测规则
+- **ERC20**: 包含 transfer, approve, transferFrom, balanceOf, totalSupply, allowance
+- **ERC721**: 包含 ownerOf, safeTransferFrom, tokenURI + Transfer(address,address,uint256) 事件
+- **ERC1155**: 包含 balanceOfBatch, safeTransferFrom + TransferSingle/TransferBatch 事件
+- **ERC2612**: ERC20 + permit 函数
+- **ERC4626**: ERC20 + deposit, withdraw, convertToShares, convertToAssets
+- **ERC1967**: 代理合约标准（implementation slot）
+
+## 协议识别
+- 从合约名称、import 路径、注释中识别所属协议
+- 常见模式：OpenZeppelin 库（@openzeppelin/）、Uniswap（@uniswap/）等
+- 检查合约是否为已知协议的工厂部署产物
+
+## 输出格式（仅 JSON，无其他文字）
+{
+  "contract_type_classified": "...",
+  "protocol_name": "...",
+  "implements_standards": ["ERC20", "ERC2612"]
+}

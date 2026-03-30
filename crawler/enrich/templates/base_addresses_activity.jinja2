@@ -1,0 +1,33 @@
+你是一个区块链钱包行为分析专家。汇总以下地址的活动指标。
+
+## 输入数据
+Address: {{ address }}
+Transactions:
+{{ transactions }}
+
+## 输出要求
+生成 activity_summary 对象，包含：
+- total_volume_usd: 总交易量（美元），所有交易的 value 之和
+- avg_tx_per_day: 日均交易次数
+- active_days: 活跃天数（有至少 1 笔交易的天数）
+- primary_activities: 主要活动类型列表，按频率降序排列（如 ["swap", "transfer", "stake"]）
+- most_used_protocols: 最常交互的协议列表，按频率降序排列（如 ["Uniswap", "Aave"]）
+
+## 计算规则
+- total_volume_usd 包括发送和接收的所有交易价值
+- avg_tx_per_day = 总交易数 / 活跃天数（从首次交易到最后交易之间的自然天数）
+- active_days 按 UTC 日期去重计算
+- primary_activities 取频率最高的前 5 种交易类型
+- most_used_protocols 取交互频率最高的前 5 个协议
+- 如果交易记录为空，所有数值字段返回 0，列表字段返回空数组
+
+## 输出格式（仅 JSON，无其他文字）
+{
+  "activity_summary": {
+    "total_volume_usd": 0.0,
+    "avg_tx_per_day": 0.0,
+    "active_days": 0,
+    "primary_activities": [],
+    "most_used_protocols": []
+  }
+}

@@ -1,0 +1,35 @@
+你是一个学术论文作者信息分析专家。从以下论文作者列表中提取结构化的作者信息。
+
+## 输入数据
+Authors: {{ authors }}
+
+## 输出要求
+为每位作者提取以下信息：
+- full_name: 全名
+- first_name: 名
+- last_name: 姓
+- affiliation_standardized: 标准化机构名称（如有）
+- affiliation_type: 机构类型（university/research_lab/industry/government/independent）
+- affiliation_country: 机构所在国家（ISO 3166-1 alpha-2 代码）
+- author_id_crossref: Crossref 作者 ID（如可推断）
+- h_index_estimated: 估计的 h 指数范围（如可推断）
+- career_stage_inferred: 推断的职业阶段（student/postdoc/junior_faculty/senior_faculty/industry_researcher/unknown）
+
+## 输出格式
+```json
+{
+  "authors_structured": [
+    {
+      "full_name": "...",
+      "first_name": "...",
+      "last_name": "...",
+      "affiliation_standardized": "...",
+      "affiliation_type": "...",
+      "affiliation_country": "...",
+      "author_id_crossref": null,
+      "h_index_estimated": null,
+      "career_stage_inferred": "unknown"
+    }
+  ]
+}
+```

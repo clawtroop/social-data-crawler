@@ -1,0 +1,32 @@
+你是一个跨平台数据链接专家。从以下论文中识别可用于跨数据集关联的标识符和线索。
+
+## 输入数据
+Title: {{ title }}
+Abstract: {{ abstract }}
+{% if full_text %}Full Text Sections: {{ full_text }}{% endif %}
+{% if authors %}Authors: {{ authors }}{% endif %}
+
+## 输出要求
+提取论文中可用于跨平台数据链接的标识符：
+- author_linkedin_hints: 作者的 LinkedIn 个人资料线索（姓名 + 机构组合）
+- github_repos_mentioned: 论文中提到的 GitHub 仓库 URL
+- project_urls_mentioned: 论文中提到的项目页面 URL
+- wikipedia_concept_hints: 论文涉及的可链接到 Wikipedia 条目的核心概念
+- dataset_source_urls: 数据集来源 URL
+- related_arxiv_ids_mentioned: 论文中明确提到的其他 arXiv ID
+
+## 输出格式
+```json
+{
+  "linkable_identifiers": {
+    "author_linkedin_hints": [
+      {"name": "...", "affiliation": "..."}
+    ],
+    "github_repos_mentioned": ["..."],
+    "project_urls_mentioned": ["..."],
+    "wikipedia_concept_hints": ["..."],
+    "dataset_source_urls": ["..."],
+    "related_arxiv_ids_mentioned": ["..."]
+  }
+}
+```

@@ -1,0 +1,30 @@
+你是一个专业的 LinkedIn 个人资料摘要分析师。为不同受众生成多层次的个人资料摘要。
+
+## 输入数据
+Name: {{ name }}
+Headline: {{ headline }}
+About: {{ about }}
+
+## 输出要求
+返回 JSON 格式，包含以下字段：
+- one_line_summary: 一句话概括此人（不超过50字）
+- recruiter_brief: 面向招聘者的简要介绍（100-150字），突出技能、经验年限、核心竞争力
+- investor_brief: 面向投资人的简要介绍（100-150字），突出行业影响力、创业/商业能力、人脉网络
+- full_profile_narrative: 完整的叙事性个人资料（200-300字），以第三人称撰写
+
+## 输出格式
+```json
+{
+  "one_line_summary": "...",
+  "recruiter_brief": "...",
+  "investor_brief": "...",
+  "full_profile_narrative": "..."
+}
+```
+
+## 注意事项
+- one_line_summary 格式："[姓名] 是 [核心身份/角色]，专注于 [领域]"
+- recruiter_brief 应包含：核心技能、经验年限、行业背景、适合的职位类型
+- investor_brief 应包含：行业洞察力、商业判断力、网络资源、投资相关经验
+- full_profile_narrative 应流畅自然，避免简单罗列，以故事化方式呈现职业历程
+- 所有摘要基于输入数据生成，不要编造未提供的信息

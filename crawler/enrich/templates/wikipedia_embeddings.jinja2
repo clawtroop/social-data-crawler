@@ -1,0 +1,16 @@
+此字段组由 embedding 模型生成，非 LLM 直接输出。
+
+## 说明
+wikipedia_embeddings 字段组包含以下向量嵌入，由专用的 embedding 模型（如 text-embedding-3-small, BGE, E5 等）生成：
+
+- article_embedding: 文章整体的向量嵌入（array<number>）
+- section_embeddings: 每个章节的向量嵌入列表（array<array<number>>）
+
+## 输入数据
+Extract: {{ extract }}
+
+## 处理流程
+1. 将文章全文送入 embedding 模型，生成 article_embedding
+2. 将文章按章节分割，每个章节独立送入 embedding 模型，生成 section_embeddings
+
+注意：此模板仅作说明用途，实际嵌入由 embedding pipeline 生成，不经过 LLM 处理。
