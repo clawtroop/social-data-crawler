@@ -22,7 +22,14 @@ from .base import (
 FETCH_PLAN = PlatformFetchPlan(default_backend="api", fallback_backends=("http", "playwright"))
 EXTRACT_PLAN = PlatformExtractPlan(strategy="paper_metadata")
 NORMALIZE_PLAN = PlatformNormalizePlan(hook_name="arxiv")
-ENRICH_PLAN = PlatformEnrichmentPlan(route="research_graph", field_groups=("summaries", "citations"))
+ENRICH_PLAN = PlatformEnrichmentPlan(
+    route="research_graph",
+    field_groups=(
+        "summaries",
+        "arxiv_multi_level_summary",
+        "arxiv_references",
+    ),
+)
 
 
 def _fetch_arxiv_api(record: dict, discovered: dict, storage_state_path: str | None) -> dict:

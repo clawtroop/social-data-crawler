@@ -1,13 +1,13 @@
 from __future__ import annotations
 
 import asyncio
-import hashlib
 import json
 import os
 from pathlib import Path
 from typing import Any
 
 from crawler.contracts import CrawlCommand, CrawlerConfig
+from crawler.enrich.input_normalizer import build_enrich_input
 from crawler.io import read_json_file, read_jsonl_file
 
 
@@ -196,6 +196,10 @@ def _run_new_pipeline(config: CrawlerConfig) -> tuple[list[dict], list[dict]]:
 
 async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], list[dict]]:
     """Async implementation of the new pipeline."""
+    import logging
+    import signal
+
+    from crawler.core.progress import ProgressTracker
     from crawler.extract.pipeline import ExtractPipeline
     from crawler.enrich.pipeline import EnrichPipeline
     from crawler.fetch.engine import FetchEngine
@@ -206,6 +210,7 @@ async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], li
     from crawler.output.artifact_writer import write_artifact_bytes, write_artifact_json, write_artifact_text
     from crawler.schema_runtime.model_config import load_model_config
 
+    logger = logging.getLogger(__name__)
     results: list[dict[str, Any]] = []
     errors: list[dict[str, Any]] = []
 
@@ -234,146 +239,226 @@ async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], li
         model_config=model_config,
     )
 
-    async with FetchEngine(session_root) as fetch_engine:
-        for idx, record in enumerate(records, start=1):
-            platform = record.get("platform", "unknown")
-            resource_type = record.get("resource_type", "unknown")
+    # Always track progress; only load prior state when --resume is set.
+    progress = ProgressTracker(config.output_dir, load_existing=config.resume)
+    if not config.resume:
+        progress.reset()
 
-            try:
-                # Step 1: URL Discovery
-                adapter = get_platform_adapter(platform)
-                discovered = _discovered_from_seed(build_seed_records(record)[0])
-                url = discovered["canonical_url"]
-                slug = _make_slug(idx, url)
+    # Flush progress on termination for graceful shutdown.
+    _prev_handler = signal.getsignal(signal.SIGINT)
+    _prev_term_handler = signal.getsignal(signal.SIGTERM) if hasattr(signal, "SIGTERM") else None
 
-                # Step 2: Fetch (using new FetchEngine)
-                requires_auth = getattr(adapter, "requires_auth", False)
-                storage_state_path = _resolve_storage_state_path(
-                    config=config,
+    def _flush_and_delegate(sig: int, frame: Any) -> None:
+        signal_name = signal.Signals(sig).name if sig in signal.Signals._value2member_map_ else str(sig)
+        logger.info("%s received, flushing progress before exit", signal_name)
+        progress.flush()
+        previous = _prev_handler if sig == signal.SIGINT else _prev_term_handler
+        if callable(previous) and previous not in (signal.SIG_DFL, signal.SIG_IGN):
+            previous(sig, frame)
+            return
+        raise KeyboardInterrupt
+
+    signal.signal(signal.SIGINT, _flush_and_delegate)
+    if hasattr(signal, "SIGTERM"):
+        signal.signal(signal.SIGTERM, _flush_and_delegate)
+
+    # Concurrency control
+    semaphore = asyncio.Semaphore(config.concurrency)
+
+    async def _process_one(idx: int, record: dict) -> tuple[dict | None, dict | None]:
+        """Process a single record. Returns (result, error)."""
+        platform = record.get("platform", "unknown")
+        resource_type = record.get("resource_type", "unknown")
+
+        try:
+            # Step 1: URL Discovery
+            adapter = get_platform_adapter(platform)
+            discovered = _discovered_from_seed(build_seed_records(record)[0])
+            url = discovered["canonical_url"]
+
+            # Skip if already completed (resume mode)
+            if progress.is_done(url):
+                logger.info("[%d] Skipping (already done): %s", idx, url)
+                return None, None
+
+            slug = _make_slug(idx, url)
+
+            # Step 2: Fetch (using new FetchEngine)
+            requires_auth = getattr(adapter, "requires_auth", False)
+            storage_state_path = _resolve_storage_state_path(
+                config=config,
+                platform=platform,
+                requires_auth=requires_auth,
+                session_store=session_store,
+            )
+            if requires_auth and storage_state_path is None:
+                return None, _build_auth_required_error(platform=platform, resource_type=resource_type)
+
+            # For API backends, we need the adapter's API fetcher
+            initial_backend = adapter.resolve_backend(record, config.backend, retry_count=0)
+            if initial_backend == "api":
+                raw_result = await fetch_engine.fetch(
+                    url=url,
                     platform=platform,
+                    resource_type=resource_type,
                     requires_auth=requires_auth,
-                    session_store=session_store,
+                    override_backend=config.backend,
+                    preferred_backend=initial_backend if config.backend is None else None,
+                    fallback_chain=list(getattr(adapter, "fallback_backends", ())),
+                    api_fetcher=lambda _url, **_kwargs: adapter.fetch_record(
+                        record,
+                        discovered,
+                        "api",
+                        storage_state_path,
+                    ),
                 )
-                if requires_auth and storage_state_path is None:
-                    errors.append(_build_auth_required_error(platform=platform, resource_type=resource_type))
-                    continue
-
-                # For API backends, we need the adapter's API fetcher
-                initial_backend = adapter.resolve_backend(record, config.backend, retry_count=0)
-                if initial_backend == "api":
-                    raw_result = await fetch_engine.fetch(
-                        url=url,
-                        platform=platform,
-                        resource_type=resource_type,
-                        requires_auth=requires_auth,
-                        override_backend=config.backend,
-                        preferred_backend=initial_backend if config.backend is None else None,
-                        fallback_chain=list(getattr(adapter, "fallback_backends", ())),
-                        api_fetcher=lambda _url, **_kwargs: adapter.fetch_record(
-                            record,
-                            discovered,
-                            "api",
-                            storage_state_path,
-                        ),
-                    )
-                    fetch_result = raw_result.to_legacy_dict()
-                else:
-                    raw_result = await fetch_engine.fetch(
-                        url=url,
-                        platform=platform,
-                        resource_type=resource_type,
-                        requires_auth=requires_auth,
-                        override_backend=config.backend,
-                    )
-                    fetch_result = raw_result.to_legacy_dict()
-
-                # Persist fetch artifacts
-                fetch_artifacts = _persist_fetch_artifacts_new(
-                    artifact_root=artifact_root,
-                    slug=slug,
-                    fetched=fetch_result,
-                    root_for_rel=config.output_dir,
-                )
-
-                # Step 3: Extract (using new ExtractPipeline)
-                extracted_doc = extract_pipeline.extract(fetch_result, platform, resource_type)
-                legacy_extracted = _build_legacy_compatible_extracted(
-                    adapter=adapter,
-                    record=record,
-                    discovered=discovered,
-                    fetch_result=fetch_result,
-                    extracted_doc=extracted_doc,
-                )
-
-                # Persist extraction artifacts
-                extraction_artifacts = _persist_extraction_artifacts(
-                    artifact_root=artifact_root,
-                    slug=slug,
-                    extracted=extracted_doc,
-                    root_for_rel=config.output_dir,
-                )
-
-                # Step 4: Enrich (if field_groups specified or running full pipeline)
-                field_groups = list(config.field_groups) if config.field_groups else ["summaries"]
-                if config.command in (CrawlCommand.RUN, CrawlCommand.ENRICH):
-                    # Prepare document for enrichment
-                    enrich_input = {
-                        "doc_id": extracted_doc.doc_id,
-                        "canonical_url": url,
-                        "platform": platform,
-                        "resource_type": resource_type,
-                        "plain_text": extracted_doc.full_text,
-                        "markdown": extracted_doc.full_markdown,
-                        "structured": extracted_doc.structured.platform_fields,
-                        "title": extracted_doc.structured.title,
-                        "description": extracted_doc.structured.description,
-                    }
-                    enriched = await enrich_pipeline.enrich(enrich_input, field_groups)
-                    enrichment_result = enriched.to_dict()
-                else:
-                    enrichment_result = None
-
-                # Build final record
-                normalized = build_canonical_record(
+                fetch_result = raw_result.to_legacy_dict()
+            else:
+                raw_result = await fetch_engine.fetch(
+                    url=url,
                     platform=platform,
-                    entity_type=resource_type,
-                    canonical_url=url,
+                    resource_type=resource_type,
+                    requires_auth=requires_auth,
+                    override_backend=config.backend,
                 )
-                normalized["artifacts"] = fetch_artifacts + extraction_artifacts
-                normalized["discovery"] = discovered
-                normalized["source"] = record
-                normalized["metadata"] = legacy_extracted.get("metadata", {})
-                normalized["plain_text"] = extracted_doc.full_text
-                normalized["markdown"] = extracted_doc.full_markdown
-                normalized["structured"] = extracted_doc.structured.platform_fields
-                normalized["document_blocks"] = legacy_extracted.get("document_blocks", [])
-                normalized["chunks"] = [chunk.to_dict() for chunk in extracted_doc.chunks]
-                normalized["extraction_quality"] = {
-                    "content_ratio": extracted_doc.quality.content_ratio,
-                    "noise_removed": extracted_doc.quality.noise_removed,
-                    "chunking_strategy": extracted_doc.quality.chunking_strategy,
-                    "total_chunks": extracted_doc.total_chunks,
-                }
-                normalized_structured = adapter.normalize_record(record, discovered, legacy_extracted, {})
-                if isinstance(normalized_structured, dict):
-                    normalized.update({key: value for key, value in normalized_structured.items() if key not in normalized})
-                if enrichment_result:
-                    normalized["enrichment"] = enrichment_result
+                fetch_result = raw_result.to_legacy_dict()
 
-                results.append(normalized)
+            # Persist fetch artifacts
+            fetch_artifacts = _persist_fetch_artifacts_new(
+                artifact_root=artifact_root,
+                slug=slug,
+                fetched=fetch_result,
+                root_for_rel=config.output_dir,
+            )
 
-            except Exception as exc:
-                errors.append({
+            # Step 3: Extract (using new ExtractPipeline)
+            extracted_doc = await asyncio.to_thread(
+                extract_pipeline.extract,
+                fetch_result,
+                platform,
+                resource_type,
+            )
+            legacy_extracted = _build_legacy_compatible_extracted(
+                adapter=adapter,
+                record=record,
+                discovered=discovered,
+                fetch_result=fetch_result,
+                extracted_doc=extracted_doc,
+            )
+            # Persist extraction artifacts
+            extraction_artifacts = _persist_extraction_artifacts(
+                artifact_root=artifact_root,
+                slug=slug,
+                extracted=extracted_doc,
+                root_for_rel=config.output_dir,
+            )
+
+            # Step 4: Enrich (if field_groups specified or running full pipeline)
+            field_groups = list(config.field_groups) if config.field_groups else ["summaries"]
+            if config.command in (CrawlCommand.RUN, CrawlCommand.ENRICH):
+                # Prepare document for enrichment
+                enrich_input = _build_enrich_input_from_record({
+                    "doc_id": extracted_doc.doc_id,
+                    "canonical_url": url,
                     "platform": platform,
                     "resource_type": resource_type,
-                    "stage": "new_pipeline",
-                    "status": "failed",
-                    "error_code": f"{platform.upper()}_PIPELINE_FAILED",
-                    "retryable": False,
-                    "next_action": "inspect error and retry",
-                    "message": str(exc),
+                    "plain_text": extracted_doc.full_text,
+                    "markdown": extracted_doc.full_markdown,
+                    "structured": extracted_doc.structured.platform_fields,
+                    "title": extracted_doc.structured.title,
+                    "description": extracted_doc.structured.description,
                 })
+                enriched = await enrich_pipeline.enrich(enrich_input, field_groups)
+                enrichment_result = enriched.to_dict()
+            else:
+                enrichment_result = None
 
+            # Build final record
+            normalized = build_canonical_record(
+                platform=platform,
+                entity_type=resource_type,
+                canonical_url=url,
+            )
+            normalized["artifacts"] = fetch_artifacts + extraction_artifacts
+            normalized["discovery"] = discovered
+            normalized["source"] = record
+            normalized["metadata"] = legacy_extracted.get("metadata", {})
+            normalized["plain_text"] = extracted_doc.full_text
+            normalized["markdown"] = extracted_doc.full_markdown
+            normalized["structured"] = extracted_doc.structured.platform_fields
+            normalized["document_blocks"] = legacy_extracted.get("document_blocks", [])
+            normalized["chunks"] = [chunk.to_dict() for chunk in extracted_doc.chunks]
+            normalized["extraction_quality"] = {
+                "content_ratio": extracted_doc.quality.content_ratio,
+                "noise_removed": extracted_doc.quality.noise_removed,
+                "chunking_strategy": extracted_doc.quality.chunking_strategy,
+                "total_chunks": extracted_doc.total_chunks,
+            }
+            normalized_structured = adapter.normalize_record(record, discovered, legacy_extracted, {})
+            if isinstance(normalized_structured, dict):
+                normalized.update({key: value for key, value in normalized_structured.items() if key not in normalized})
+            if enrichment_result:
+                normalized["enrichment"] = enrichment_result
+
+            # Attach content-level warnings from fetch
+            if raw_result.fetch_error:
+                normalized["fetch_warning"] = {
+                    "error_code": raw_result.fetch_error.error_code,
+                    "agent_hint": raw_result.fetch_error.agent_hint,
+                    "message": raw_result.fetch_error.message,
+                }
+
+            progress.mark_done(url)
+            return normalized, None
+
+        except Exception as exc:
+            # Extract structured error info if available
+            fetch_error = getattr(exc, "fetch_error", None)
+            error_code = fetch_error.error_code if fetch_error else f"{platform.upper()}_PIPELINE_FAILED"
+            agent_hint = fetch_error.agent_hint if fetch_error else "inspect error and retry"
+            retryable = fetch_error.retryable if fetch_error else False
+            return None, {
+                "platform": platform,
+                "resource_type": resource_type,
+                "stage": "new_pipeline",
+                "status": "failed",
+                "error_code": error_code,
+                "retryable": retryable,
+                "next_action": agent_hint,
+                "canonical_url": record.get("canonical_url"),
+                "message": str(exc),
+            }
+
+    try:
+        async with FetchEngine(session_root) as fetch_engine:
+            async def _guarded(idx: int, record: dict) -> tuple[dict | None, dict | None]:
+                async with semaphore:
+                    return await _process_one(idx, record)
+
+            tasks = [_guarded(idx, rec) for idx, rec in enumerate(records, start=1)]
+            outcomes = await asyncio.gather(*tasks, return_exceptions=True)
+
+            for outcome in outcomes:
+                if isinstance(outcome, BaseException):
+                    errors.append({
+                        "stage": "new_pipeline",
+                        "status": "failed",
+                        "error_code": "UNEXPECTED_ERROR",
+                        "retryable": False,
+                        "next_action": "inspect",
+                        "message": str(outcome),
+                    })
+                else:
+                    result, error = outcome
+                    if result is not None:
+                        results.append(result)
+                    if error is not None:
+                        errors.append(error)
+    finally:
+        progress.flush()
+        signal.signal(signal.SIGINT, _prev_handler)
+        if hasattr(signal, "SIGTERM") and _prev_term_handler is not None:
+            signal.signal(signal.SIGTERM, _prev_term_handler)
     return results, errors
 
 
@@ -465,24 +550,8 @@ def _export_linkedin_session_via_auto_browser(session_store) -> str:
     return str(session_store.import_cookies("linkedin", exported_path))
 
 
-def _build_doc_id(canonical_url: str, platform: str) -> str:
-    payload = f"{platform}:{canonical_url}".encode("utf-8")
-    return hashlib.sha256(payload).hexdigest()[:16]
-
-
 def _build_enrich_input_from_record(record: dict[str, Any]) -> dict[str, Any]:
-    metadata = record.get("metadata") if isinstance(record.get("metadata"), dict) else {}
-    return {
-        "doc_id": record.get("doc_id") or _build_doc_id(record["canonical_url"], record.get("platform", "unknown")),
-        "canonical_url": record["canonical_url"],
-        "platform": record.get("platform", "unknown"),
-        "resource_type": record.get("resource_type") or record.get("entity_type") or "unknown",
-        "plain_text": record.get("plain_text", ""),
-        "markdown": record.get("markdown", ""),
-        "structured": record.get("structured", {}),
-        "title": metadata.get("title"),
-        "description": metadata.get("description"),
-    }
+    return build_enrich_input(record)
 
 
 async def _run_new_enrich_only_pipeline(
@@ -560,9 +629,10 @@ def _persist_fetch_artifacts_new(
             })
 
     # Screenshot
-    if fetched.get("screenshot"):
+    screenshot = fetched.get("screenshot") or fetched.get("screenshot_bytes")
+    if screenshot:
         screenshot_path = artifact_root / slug / "screenshot.png"
-        write_artifact_bytes(screenshot_path, fetched["screenshot"])
+        write_artifact_bytes(screenshot_path, screenshot)
         written.append({
             "kind": "screenshot",
             "path": _artifact_relpath(screenshot_path, root_for_rel),

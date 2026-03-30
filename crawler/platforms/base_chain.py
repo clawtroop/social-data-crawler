@@ -23,7 +23,14 @@ from .base import (
 FETCH_PLAN = PlatformFetchPlan(default_backend="api", fallback_backends=("http", "playwright"))
 EXTRACT_PLAN = PlatformExtractPlan(strategy="blockchain_scan")
 NORMALIZE_PLAN = PlatformNormalizePlan(hook_name="base_chain")
-ENRICH_PLAN = PlatformEnrichmentPlan(route="onchain_graph", field_groups=("balances", "activity"))
+ENRICH_PLAN = PlatformEnrichmentPlan(
+    route="onchain_graph",
+    field_groups=(
+        "base_addresses_basic",
+        "base_addresses_activity",
+        "base_transactions_basic",
+    ),
+)
 
 
 def _fetch_base_api(record: dict, discovered: dict, storage_state_path: str | None) -> dict:

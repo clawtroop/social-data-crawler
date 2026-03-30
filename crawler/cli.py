@@ -18,7 +18,7 @@ def _parse_command(value: str) -> CrawlCommand: #->表示返回值的类型，Cr
         return CrawlCommand(value)
     except ValueError as exc:
         raise argparse.ArgumentTypeError(
-            f"invalid command {value!r}; expected one of: crawl, run, enrich, fill-enrichment"
+            f"invalid command {value!r}; expected one of: discover-map, discover-crawl, crawl, run, enrich, fill-enrichment"
         ) from exc
 
 
@@ -71,6 +71,12 @@ def build_parser() -> argparse.ArgumentParser:
             type=int,
             default=50,
             help="Overlap tokens between chunks (default: 50)",
+        )
+        subparser.add_argument(
+            "--concurrency",
+            type=int,
+            default=3,
+            help="Max parallel record processing (default: 3)",
         )
         # Discovery options (for discover-map and discover-crawl commands)
         subparser.add_argument(
@@ -161,6 +167,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             "resume": config.resume,
             "strict": config.strict,
             "backend": config.backend,
+            "concurrency": config.concurrency,
             "generated_at": datetime.now(UTC).isoformat(),
         },
     )

@@ -9,7 +9,7 @@ import pytest
 
 from crawler.cli import parse_args
 from crawler.contracts import CrawlerConfig
-from crawler.core.pipeline import _persist_extraction_artifacts, run_command
+from crawler.core.pipeline import _build_enrich_input_from_record, _persist_extraction_artifacts, run_command
 
 
 def test_run_command_uses_new_pipeline_by_default(monkeypatch, workspace_tmp_path: Path) -> None:
@@ -915,6 +915,7 @@ def test_new_pipeline_enrich_uses_existing_record_without_build_url(monkeypatch,
     async def fake_enrich(self, record: dict, field_groups: list[str]) -> FakeEnrichmentResult:
         assert record["canonical_url"] == "https://www.linkedin.com/in/test/"
         assert record["plain_text"].startswith("Python engineer")
+        assert record["headline"] == "Senior Python Engineer"
         return FakeEnrichmentResult()
 
     monkeypatch.setattr("crawler.discovery.url_builder.build_url", fail_build_url)
@@ -928,6 +929,247 @@ def test_new_pipeline_enrich_uses_existing_record_without_build_url(monkeypatch,
     assert errors == []
     assert records[0]["canonical_url"] == "https://www.linkedin.com/in/test/"
     assert records[0]["enrichment"]["doc_id"] == "doc-1"
+
+
+def test_build_enrich_input_from_record_promotes_structured_fields_for_other_platforms() -> None:
+    enrich_input = _build_enrich_input_from_record(
+        {
+            "platform": "wikipedia",
+            "resource_type": "article",
+            "canonical_url": "https://en.wikipedia.org/wiki/Artificial_intelligence",
+            "plain_text": "Artificial intelligence is the capability of computational systems.",
+            "markdown": "# Artificial intelligence\n\nArtificial intelligence is the capability of computational systems.",
+            "structured": {
+                "categories": ["Artificial intelligence"],
+                "wikipedia": {
+                    "summary": "Intelligence demonstrated by machines",
+                    "infobox": {"field": "value"},
+                },
+            },
+            "metadata": {
+                "title": "Artificial intelligence",
+                "description": "Intelligence of machines",
+            },
+        }
+    )
+
+    assert enrich_input["title"] == "Artificial intelligence"
+    assert enrich_input["description"] == "Intelligence of machines"
+    assert enrich_input["categories"] == ["Artificial intelligence"]
+    assert enrich_input["summary"] == "Intelligence demonstrated by machines"
+
+
+def test_build_enrich_input_from_record_adds_linkedin_company_aliases() -> None:
+    enrich_input = _build_enrich_input_from_record(
+        {
+            "platform": "linkedin",
+            "resource_type": "company",
+            "canonical_url": "https://www.linkedin.com/company/openai/",
+            "plain_text": "OpenAI builds safe AGI.",
+            "markdown": "# OpenAI\n\nOpenAI builds safe AGI.",
+            "structured": {
+                "company_slug": "openai",
+                "staff_count": 7716,
+            },
+            "metadata": {
+                "title": "OpenAI",
+                "description": "OpenAI builds safe AGI.",
+            },
+        }
+    )
+
+    assert enrich_input["company_name"] == "OpenAI"
+    assert enrich_input["about"] == "OpenAI builds safe AGI."
+    assert enrich_input["employee_count"] == 7716
+    assert enrich_input["company_url"] == "https://www.linkedin.com/company/openai/"
+
+
+def test_build_enrich_input_from_record_adds_linkedin_job_aliases() -> None:
+    enrich_input = _build_enrich_input_from_record(
+        {
+            "platform": "linkedin",
+            "resource_type": "job",
+            "canonical_url": "https://www.linkedin.com/jobs/view/123/",
+            "plain_text": "Design and ship production LLM systems.",
+            "metadata": {
+                "title": "Staff AI Engineer",
+                "description": "Design and ship production LLM systems.",
+            },
+            "published_at": "2026-03-01",
+        }
+    )
+
+    assert enrich_input["job_title"] == "Staff AI Engineer"
+    assert enrich_input["job_description"] == "Design and ship production LLM systems."
+    assert enrich_input["posted_date"] == "2026-03-01"
+
+
+def test_build_enrich_input_from_record_adds_amazon_aliases() -> None:
+    enrich_input = _build_enrich_input_from_record(
+        {
+            "platform": "amazon",
+            "resource_type": "review",
+            "canonical_url": "https://www.amazon.com/review/example",
+            "plain_text": "Great keyboard with tactile switches.",
+            "markdown": "Great keyboard with tactile switches.",
+            "title": "Mechanical Keyboard",
+            "review_count": 1520,
+            "review_body": "Great keyboard with tactile switches.",
+            "seller": "Keychron",
+            "structured": {
+                "category_path": ["Electronics", "Keyboards"],
+                "highlights": ["Hot swappable", "RGB"],
+            },
+        }
+    )
+
+    assert enrich_input["reviews_count"] == 1520
+    assert enrich_input["review_text"] == "Great keyboard with tactile switches."
+    assert enrich_input["seller_name"] == "Keychron"
+    assert enrich_input["category"] == ["Electronics", "Keyboards"]
+    assert enrich_input["bullet_points"] == ["Hot swappable", "RGB"]
+
+
+def test_build_enrich_input_from_record_adds_amazon_product_and_seller_aliases() -> None:
+    product_enrich_input = _build_enrich_input_from_record(
+        {
+            "platform": "amazon",
+            "resource_type": "product",
+            "canonical_url": "https://www.amazon.com/dp/B000TEST",
+            "rating": 4.8,
+            "manufacturer": "Keychron",
+            "current_price": "$99.99",
+            "stock_status": "In Stock",
+            "shipping_type": "Prime",
+            "structured": {
+                "category_path": ["Electronics", "Keyboards"],
+                "highlights": ["Wireless", "Low-profile"],
+                "image_urls": ["https://example.com/image.jpg"],
+            },
+            "metadata": {
+                "title": "Keychron K3",
+                "description": "Low-profile wireless mechanical keyboard.",
+            },
+        }
+    )
+    seller_enrich_input = _build_enrich_input_from_record(
+        {
+            "platform": "amazon",
+            "resource_type": "seller",
+            "canonical_url": "https://www.amazon.com/sp?seller=ABC",
+            "name": "Keychron Official",
+            "seller_rating": 4.9,
+            "feedback_count": 8421,
+        }
+    )
+
+    assert product_enrich_input["brand"] == "Keychron"
+    assert product_enrich_input["price"] == "$99.99"
+    assert product_enrich_input["availability"] == "In Stock"
+    assert product_enrich_input["fulfillment"] == "Prime"
+    assert product_enrich_input["images"] == ["https://example.com/image.jpg"]
+    assert seller_enrich_input["seller_name"] == "Keychron Official"
+
+
+def test_build_enrich_input_from_record_adds_base_aliases() -> None:
+    enrich_input = _build_enrich_input_from_record(
+        {
+            "platform": "base",
+            "resource_type": "transaction",
+            "canonical_url": "https://basescan.org/tx/0xabc",
+            "identifier": "0xabc",
+            "structured": {
+                "hash": "0xabc",
+                "from": "0xfrom",
+                "to": "0xto",
+                "input_data": "0xa9059cbb",
+                "gasUsed": 21000,
+                "gasPrice": 1000000000,
+                "blockNumber": 12345,
+                "events": [{"address": "0xtoken"}],
+            },
+        }
+    )
+
+    assert enrich_input["tx_hash"] == "0xabc"
+    assert enrich_input["from_address"] == "0xfrom"
+    assert enrich_input["to_address"] == "0xto"
+    assert enrich_input["input"] == "0xa9059cbb"
+    assert enrich_input["gas_used"] == 21000
+    assert enrich_input["gas_price"] == 1000000000
+    assert enrich_input["block_number"] == 12345
+    assert enrich_input["logs"] == [{"address": "0xtoken"}]
+
+
+def test_build_enrich_input_from_record_adds_base_address_contract_and_defi_aliases() -> None:
+    address_enrich_input = _build_enrich_input_from_record(
+        {
+            "platform": "base",
+            "resource_type": "address",
+            "canonical_url": "https://basescan.org/address/0xwallet",
+            "identifier": "0xwallet",
+            "eth_balance": "1.5",
+            "tokens": [{"symbol": "ETH", "amount": "1.5"}],
+            "transaction_list": [{"hash": "0x1"}],
+            "bytecode": "0x",
+        }
+    )
+    contract_enrich_input = _build_enrich_input_from_record(
+        {
+            "platform": "base",
+            "resource_type": "contract",
+            "canonical_url": "https://basescan.org/address/0xcontract",
+            "identifier": "0xcontract",
+            "bytecode": "0x6000",
+            "verified_source": "contract Token {}",
+            "contract_abi": [{"type": "function", "name": "balanceOf"}],
+            "transaction_list": [{"hash": "0x2"}],
+        }
+    )
+    defi_enrich_input = _build_enrich_input_from_record(
+        {
+            "platform": "base",
+            "resource_type": "defi",
+            "canonical_url": "https://defillama.com/protocol/aerodrome",
+            "identifier": "aerodrome",
+            "raw_metrics": {"tvl": 123},
+        }
+    )
+
+    assert address_enrich_input["address"] == "0xwallet"
+    assert address_enrich_input["balance"] == "1.5"
+    assert address_enrich_input["token_balances"] == [{"symbol": "ETH", "amount": "1.5"}]
+    assert address_enrich_input["transactions"] == [{"hash": "0x1"}]
+    assert contract_enrich_input["address"] == "0xcontract"
+    assert contract_enrich_input["source_code"] == "contract Token {}"
+    assert contract_enrich_input["abi"] == [{"type": "function", "name": "balanceOf"}]
+    assert defi_enrich_input["protocol_id"] == "aerodrome"
+
+
+def test_build_enrich_input_from_record_adds_arxiv_aliases() -> None:
+    enrich_input = _build_enrich_input_from_record(
+        {
+            "platform": "arxiv",
+            "resource_type": "paper",
+            "canonical_url": "https://arxiv.org/abs/2401.12345",
+            "plain_text": "This paper studies robust receive combining.",
+            "markdown": "# Paper\n\nThis paper studies robust receive combining.",
+            "structured": {
+                "authors": ["Alice", "Bob"],
+                "citations": ["Ref A"],
+                "figures": ["fig1.png"],
+            },
+            "metadata": {
+                "title": "Distributionally Robust Receive Combining",
+            },
+        }
+    )
+
+    assert enrich_input["abstract"] == "This paper studies robust receive combining."
+    assert enrich_input["full_text"] == "This paper studies robust receive combining."
+    assert enrich_input["references"] == ["Ref A"]
+    assert enrich_input["authors"] == ["Alice", "Bob"]
+    assert enrich_input["figures"] == ["fig1.png"]
 
 
 def test_new_pipeline_crawls_linkedin_search_results(monkeypatch, workspace_tmp_path: Path) -> None:

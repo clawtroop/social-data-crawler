@@ -22,7 +22,14 @@ from .base import (
 FETCH_PLAN = PlatformFetchPlan(default_backend="api", fallback_backends=("http", "playwright"))
 EXTRACT_PLAN = PlatformExtractPlan(strategy="article_html")
 NORMALIZE_PLAN = PlatformNormalizePlan(hook_name="wikipedia")
-ENRICH_PLAN = PlatformEnrichmentPlan(route="knowledge_base", field_groups=("summaries", "references"))
+ENRICH_PLAN = PlatformEnrichmentPlan(
+    route="knowledge_base",
+    field_groups=(
+        "summaries",
+        "wikipedia_multi_level_summary",
+        "wikipedia_relations",
+    ),
+)
 
 
 def _fetch_wikipedia_api(record: dict, discovered: dict, storage_state_path: str | None) -> dict:

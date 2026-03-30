@@ -5,7 +5,6 @@ from typing import Any, Callable, Mapping
 
 from crawler.contracts import NormalizedError
 from crawler.extract.html_extract import extract_html_document
-from crawler.extract.trafilatura_extract import extract_article_text
 from crawler.fetch.unified import unified_fetch
 
 
@@ -168,14 +167,6 @@ def strategy_extractor(strategy: str) -> Callable[[dict[str, Any], dict[str, Any
     def extractor(record: dict[str, Any], fetched: dict[str, Any]) -> dict[str, Any]:
         content_type = fetched.get("content_type")
         html = fetched.get("text") or fetched.get("html") or fetched.get("content_bytes", b"").decode("utf-8", "ignore")
-        if strategy in {"article_html", "paper_metadata", "document"}:
-            return extract_article_text(
-                html,
-                fetched["url"],
-                content_type=content_type,
-                platform=record["platform"],
-                resource_type=record.get("resource_type", ""),
-            )
         return extract_html_document(
             html,
             fetched["url"],

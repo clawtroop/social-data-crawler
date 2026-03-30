@@ -11,13 +11,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from bs4 import Tag
 from markdownify import markdownify as to_markdown
 
 from .chunking.hybrid_chunker import HybridChunker, _estimate_tokens
-from .content_cleaner import ContentCleaner
+from .crawl4ai_extract import extract_html_with_crawl4ai
 from .html_parse import parse_html
 from .fit_content import FitContentReducer
-from .main_content import MainContentExtractor
+from .main_content import _extract_sections
 from .models import (
     ContentChunk,
     ContentSection,
@@ -37,6 +38,22 @@ def _generate_doc_id(url: str, platform: str) -> str:
     return hashlib.sha256(hash_input).hexdigest()[:16]
 
 
+def _build_main_content_from_html(html: str, selector_used: str) -> MainContent:
+    soup = parse_html(html)
+    container = next((node for node in soup.contents if isinstance(node, Tag)), None)
+    if container is None:
+        return MainContent(html="", text="", markdown="", sections=[], selector_used=selector_used)
+
+    container_html = str(container)
+    return MainContent(
+        html=container_html,
+        text=container.get_text("\n", strip=True),
+        markdown=to_markdown(container_html, heading_style="ATX", bullets="-"),
+        sections=_extract_sections(container),
+        selector_used=selector_used,
+    )
+
+
 class ExtractPipeline:
     def __init__(
         self,
@@ -47,8 +64,6 @@ class ExtractPipeline:
         extract_llm_schema_path: Path | None = None,
         model_config: dict[str, Any] | None = None,
     ):
-        self.cleaner = ContentCleaner()
-        self.main_extractor = MainContentExtractor()
         self.reducer = FitContentReducer()
         self.chunker = HybridChunker(
             max_chunk_tokens=max_chunk_tokens,
@@ -173,7 +188,7 @@ class ExtractPipeline:
         url: str,
         doc_id: str,
     ) -> ExtractedDocument:
-        """Branch 2: HTML -> clean -> main content -> chunk -> structured."""
+        """Branch 2: HTML -> crawl4ai extract -> compact -> chunk -> structured."""
         html = (
             fetch_result.get("text")
             or fetch_result.get("html")
@@ -181,13 +196,28 @@ class ExtractPipeline:
         )
         original_size = len(html)
 
-        # Step 1: Clean HTML
-        cleaned = self.cleaner.clean(html, platform)
+        # Step 1: Use crawl4ai as the primary HTML extraction layer.
+        extracted_html = extract_html_with_crawl4ai(
+            html,
+            url,
+            platform=platform,
+            resource_type=resource_type,
+        )
 
-        # Step 2: Identify main content
-        soup = parse_html(cleaned.html)
-        main_content = self.main_extractor.extract(soup, platform, resource_type)
+        # Step 2: Build a chunkable main-content view from crawl4ai-selected HTML.
+        main_content = _build_main_content_from_html(
+            extracted_html.html or extracted_html.cleaned_html,
+            extracted_html.selector_used,
+        )
         reduced_content = self.reducer.reduce(main_content)
+        if not reduced_content.text and (extracted_html.text or extracted_html.markdown):
+            reduced_content = MainContent(
+                html=extracted_html.html,
+                text=extracted_html.text,
+                markdown=extracted_html.markdown,
+                sections=main_content.sections,
+                selector_used=extracted_html.selector_used,
+            )
 
         # Step 3: Chunk content
         chunks = self.chunker.chunk(reduced_content, doc_id=doc_id)
@@ -201,7 +231,7 @@ class ExtractPipeline:
         )
         if self.css_extractor is not None:
             css_structured = self.css_extractor.extract(
-                html=cleaned.html,
+                html=extracted_html.cleaned_html or reduced_content.html,
                 canonical_url=url,
                 platform=platform,
                 resource_type=resource_type,
@@ -224,10 +254,11 @@ class ExtractPipeline:
 
         # Quality metrics
         content_size = len(reduced_content.text)
+        cleaned_size = len(extracted_html.cleaned_html or "")
         quality = ExtractionQuality(
             content_ratio=content_size / max(original_size, 1),
-            noise_removed=cleaned.noise_removed,
-            chunking_strategy=f"hybrid:{main_content.selector_used}",
+            noise_removed=max(original_size - cleaned_size, 0),
+            chunking_strategy=f"hybrid:{extracted_html.selector_used}",
         )
 
         return ExtractedDocument(
@@ -242,7 +273,7 @@ class ExtractPipeline:
             full_markdown=reduced_content.markdown,
             structured=structured,
             quality=quality,
-            cleaned_html=reduced_content.html,
+            cleaned_html=extracted_html.cleaned_html or reduced_content.html,
         )
 
     def _merge_structured_fields(
@@ -284,6 +315,6 @@ class ExtractPipeline:
             "plain_text": doc.full_text,
             "document_blocks": [],
             "structured": doc.structured.platform_fields,
-            "extractor": "extract_pipeline",
+            "extractor": "crawl4ai" if "crawl4ai:" in doc.quality.chunking_strategy else "extract_pipeline",
             "extract_document": doc.to_dict(),
         }

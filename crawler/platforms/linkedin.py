@@ -29,7 +29,14 @@ from .base import (
 FETCH_PLAN = PlatformFetchPlan(default_backend="api", fallback_backends=("playwright", "camoufox"), requires_auth=True)
 EXTRACT_PLAN = PlatformExtractPlan(strategy="document")
 NORMALIZE_PLAN = PlatformNormalizePlan(hook_name="linkedin")
-ENRICH_PLAN = PlatformEnrichmentPlan(route="social_graph", field_groups=("profiles", "activity"))
+ENRICH_PLAN = PlatformEnrichmentPlan(
+    route="social_graph",
+    field_groups=(
+        "linkedin_profiles_identity",
+        "linkedin_profiles_current_role",
+        "linkedin_profiles_about",
+    ),
+)
 
 QUERY_IDS = {
     "profile_by_vanity": "voyagerIdentityDashProfiles.34ead06db82a2cc9a778fac97f69ad6a",

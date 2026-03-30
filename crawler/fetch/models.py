@@ -3,7 +3,10 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from enum import Enum
-from typing import Literal
+from typing import TYPE_CHECKING, Any, Literal
+
+if TYPE_CHECKING:
+    from .error_classifier import FetchError
 
 
 class SessionStatus(str, Enum):
@@ -38,6 +41,7 @@ class RawFetchResult:
     wait_strategy_used: str = "none"
     resources_blocked: list[str] = field(default_factory=list)
     timing: FetchTiming = field(default_factory=lambda: FetchTiming(0, 0, 0, 0))
+    fetch_error: FetchError | None = None
 
     @classmethod
     def from_legacy(cls, data: dict, *, backend: str, url: str) -> RawFetchResult:

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import replace
-from typing import Any
+from typing import Any, Awaitable, Callable
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
@@ -14,7 +14,14 @@ from crawler.discovery.contracts import (
     DiscoveryMode,
     DiscoveryRecord,
 )
+from crawler.discovery.expand.base import ExpandResult
 from crawler.discovery.map_engine import MapResult
+from crawler.discovery.normalize.amazon import (
+    build_product_url,
+    extract_asins_from_html,
+    normalize_amazon_url,
+)
+from crawler.discovery.normalize.base import NormalizeResult
 
 
 class AmazonDiscoveryAdapter(BaseDiscoveryAdapter):
@@ -142,3 +149,24 @@ class AmazonDiscoveryAdapter(BaseDiscoveryAdapter):
             "fetched": fetched,
             "spawned_candidates": spawned_candidates,
         }
+
+    # --- BFS support methods ---
+
+    def normalize_url(self, url: str) -> NormalizeResult:
+        """Normalize an Amazon URL using the migrated normalizer."""
+        return normalize_amazon_url(url)
+
+    def discover_from_html(self, html: str, base_url: str) -> list[str]:
+        """Extract Amazon product URLs from HTML."""
+        asins = extract_asins_from_html(html)
+        return [build_product_url(asin) for asin in asins]
+
+    async def expand(
+        self,
+        candidate: DiscoveryCandidate,
+        fetch_fn: Callable[[str], Awaitable[str]],
+        options: dict[str, Any] | None = None,
+    ) -> ExpandResult:
+        """Expand an Amazon product page to discover related products."""
+        from crawler.discovery.expand.amazon_product import expand_product
+        return await expand_product(candidate.canonical_url, fetch_fn)

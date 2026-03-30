@@ -27,6 +27,7 @@ from crawler.enrich.generative.llm_client import parse_json_response
 from crawler.enrich.generative.prompt_renderer import render_prompt, list_templates
 from crawler.enrich.pipeline import EnrichPipeline
 from crawler.enrich.batch.async_executor import BatchEnrichmentExecutor
+from crawler.core.pipeline import _build_enrich_input_from_record
 
 
 # ─── Model Tests ─────────────────────────────────────────────────────
@@ -447,6 +448,116 @@ class TestEnrichPipeline:
         # generative_only group returns pending_agent with prompt for agent execution
         assert record.enrichment_results["about_summary"].status == "pending_agent"
         assert record.enrichment_results["about_summary"].agent_prompt is not None
+
+    def test_pipeline_accepts_normalized_linkedin_company_aliases(self) -> None:
+        pipeline = EnrichPipeline()
+        enrich_input = _build_enrich_input_from_record(
+            {
+                "platform": "linkedin",
+                "resource_type": "company",
+                "canonical_url": "https://www.linkedin.com/company/openai/",
+                "plain_text": "OpenAI builds advanced AI systems for broad public benefit.",
+                "markdown": "# OpenAI\n\nOpenAI builds advanced AI systems for broad public benefit.",
+                "structured": {"staff_count": 7716},
+                "metadata": {
+                    "title": "OpenAI",
+                    "description": "OpenAI builds advanced AI systems for broad public benefit.",
+                },
+            }
+        )
+        record = asyncio.run(
+            pipeline.enrich(
+                enrich_input,
+                field_groups=["linkedin_company_profile", "linkedin_company_scale"],
+            )
+        )
+
+        assert record.enrichment_results["linkedin_company_profile"].status == "pending_agent"
+        assert record.enrichment_results["linkedin_company_scale"].status == "pending_agent"
+
+    def test_pipeline_accepts_normalized_base_transaction_aliases(self) -> None:
+        pipeline = EnrichPipeline()
+        enrich_input = _build_enrich_input_from_record(
+            {
+                "platform": "base",
+                "resource_type": "transaction",
+                "canonical_url": "https://basescan.org/tx/0xabc",
+                "structured": {
+                    "hash": "0xabc",
+                    "from": "0xfrom",
+                    "to": "0xto",
+                    "input_data": "0xa9059cbb",
+                    "gasUsed": 21000,
+                    "gasPrice": 1000000000,
+                    "blockNumber": 12345,
+                    "events": [{"address": "0xtoken"}],
+                    "value": "1000000000000000000",
+                },
+            }
+        )
+        record = asyncio.run(
+            pipeline.enrich(
+                enrich_input,
+                field_groups=["base_transactions_basic", "base_transactions_context"],
+            )
+        )
+
+        assert record.enrichment_results["base_transactions_basic"].status == "pending_agent"
+        assert record.enrichment_results["base_transactions_context"].status == "pending_agent"
+
+    def test_pipeline_accepts_normalized_amazon_product_aliases(self) -> None:
+        pipeline = EnrichPipeline()
+        enrich_input = _build_enrich_input_from_record(
+            {
+                "platform": "amazon",
+                "resource_type": "product",
+                "canonical_url": "https://www.amazon.com/dp/B000TEST",
+                "rating": 4.8,
+                "manufacturer": "Keychron",
+                "current_price": "$99.99",
+                "stock_status": "In Stock",
+                "shipping_type": "Prime",
+                "structured": {
+                    "category_path": ["Electronics", "Keyboards"],
+                    "highlights": ["Wireless", "Low-profile"],
+                },
+                "metadata": {
+                    "title": "Keychron K3",
+                    "description": "Low-profile wireless mechanical keyboard.",
+                },
+            }
+        )
+        record = asyncio.run(
+            pipeline.enrich(
+                enrich_input,
+                field_groups=["amazon_products_identity", "amazon_products_description"],
+            )
+        )
+
+        assert record.enrichment_results["amazon_products_identity"].status == "pending_agent"
+        assert record.enrichment_results["amazon_products_description"].status == "pending_agent"
+
+    def test_pipeline_accepts_normalized_wikipedia_aliases(self) -> None:
+        pipeline = EnrichPipeline()
+        enrich_input = _build_enrich_input_from_record(
+            {
+                "platform": "wikipedia",
+                "resource_type": "article",
+                "canonical_url": "https://en.wikipedia.org/wiki/Artificial_intelligence",
+                "plain_text": "Artificial intelligence is intelligence demonstrated by machines.",
+                "structured": {"categories": ["Artificial intelligence"]},
+                "metadata": {"title": "Artificial intelligence"},
+            }
+        )
+        record = asyncio.run(
+            pipeline.enrich(
+                enrich_input,
+                field_groups=["wikipedia_identity", "wikipedia_categories"],
+            )
+        )
+
+        assert record.enrichment_results["wikipedia_identity"].status == "pending_agent"
+        assert record.enrichment_results["wikipedia_categories"].status == "pending_agent"
 
 
 # ─── Batch Executor Tests ──────────────────────────────────────────

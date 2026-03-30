@@ -4,10 +4,8 @@ from urllib.parse import urljoin
 
 from markdownify import markdownify as to_markdown
 
-from .content_cleaner import ContentCleaner
-from .fit_content import FitContentReducer
 from .html_parse import parse_html
-from .main_content import MainContentExtractor
+from .pipeline import ExtractPipeline
 
 
 def _is_html_content_type(content_type: str | None) -> bool:
@@ -35,18 +33,15 @@ def extract_html_document(
     markdown = to_markdown(str(soup), heading_style="ATX", bullets="-")
     plain_text = soup.get_text("\n", strip=True)
     if _is_html_content_type(content_type):
-        cleaned = ContentCleaner().clean(html, platform=platform)
-        cleaned_soup = parse_html(cleaned.html)
-        main_content = MainContentExtractor().extract(
-            cleaned_soup,
+        return ExtractPipeline().extract_to_legacy(
+            {
+                "url": url,
+                "text": html,
+                "content_type": content_type,
+            },
             platform,
             resource_type,
         )
-        reduced_content = FitContentReducer().reduce(main_content)
-        if reduced_content.markdown:
-            markdown = reduced_content.markdown
-        if reduced_content.text:
-            plain_text = reduced_content.text
 
     return {
         "metadata": {

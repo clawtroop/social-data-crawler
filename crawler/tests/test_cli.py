@@ -82,6 +82,8 @@ def test_parse_args_supports_execution_controls() -> None:
             "--artifacts-dir",
             "output/custom-artifacts",
             "--strict",
+            "--concurrency",
+            "5",
         ]
     )
 
@@ -90,6 +92,7 @@ def test_parse_args_supports_execution_controls() -> None:
     assert config.resume is True
     assert config.artifacts_dir == Path("output/custom-artifacts")
     assert config.strict is True
+    assert config.concurrency == 5
 
 
 def test_parse_args_supports_css_schema() -> None:

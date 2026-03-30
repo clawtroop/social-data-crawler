@@ -9,9 +9,11 @@ from typing import Any
 
 import httpx
 
-from .backend_router import get_escalation_backend, resolve_backend
+from .backend_router import resolve_backend
 from .browser_pool import BrowserPool
+from .error_classifier import FetchError, classify, classify_content
 from .models import FetchTiming, RawFetchResult
+from .rate_limiter import RateLimiter
 from .session_manager import SessionManager
 from .wait_strategy import apply_wait_strategy
 
@@ -39,6 +41,7 @@ class FetchEngine:
         self._http_timeout = http_timeout
         self._pool = BrowserPool(session_root)
         self._session_mgr = SessionManager(session_root)
+        self._rate_limiter = RateLimiter()
         self._started = False
 
     @property
@@ -91,11 +94,15 @@ class FetchEngine:
 
         backends_to_try = [initial_backend] + fallback_chain
         last_error: Exception | None = None
+        last_fetch_error: FetchError | None = None
 
         for attempt, backend in enumerate(backends_to_try):
             if attempt > self._max_retries:
                 break
             try:
+                # Enforce per-platform rate limit before each request
+                await self._rate_limiter.acquire(platform)
+
                 result = await self._fetch_with_backend(
                     url=url,
                     platform=platform,
@@ -104,18 +111,41 @@ class FetchEngine:
                     api_fetcher=api_fetcher,
                     api_kwargs=api_kwargs,
                 )
+
+                content_error = None
+                if result.html is not None or "html" in result.content_type.lower():
+                    content_error = classify_content(result.html, result.final_url)
+                if content_error:
+                    err = RuntimeError(content_error.message)
+                    err.fetch_error = content_error  # type: ignore[attr-defined]
+                    raise err
                 return result
             except Exception as exc:
                 last_error = exc
+                last_fetch_error = getattr(exc, "fetch_error", None) or classify(exc)
                 logger.warning(
-                    "Fetch failed with backend=%s for %s (attempt %d): %s",
-                    backend, url, attempt + 1, exc,
+                    "Fetch failed with backend=%s for %s (attempt %d): [%s] %s",
+                    backend, url, attempt + 1,
+                    last_fetch_error.error_code if last_fetch_error else "UNKNOWN",
+                    exc,
                 )
+                if last_fetch_error and last_fetch_error.retryable:
+                    backoff_seconds = self._rate_limiter.get_backoff_seconds(platform, attempt)
+                    if backoff_seconds > 0:
+                        logger.info(
+                            "Backing off %.1fs for %s after %s",
+                            backoff_seconds,
+                            url,
+                            last_fetch_error.error_code,
+                        )
+                        await asyncio.sleep(backoff_seconds)
                 continue
 
-        raise RuntimeError(
+        err = RuntimeError(
             f"All backends exhausted for {url} (tried {backends_to_try[:self._max_retries + 1]})"
-        ) from last_error
+        )
+        err.fetch_error = last_fetch_error  # type: ignore[attr-defined]
+        raise err from last_error
 
     async def _fetch_with_backend(
         self,

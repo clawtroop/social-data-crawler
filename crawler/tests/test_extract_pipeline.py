@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from crawler.extract.content_cleaner import ContentCleaner
+from crawler.extract.crawl4ai_extract import Crawl4AIExtractionResult
 from crawler.extract.main_content import MainContentExtractor
 from crawler.extract.chunking.hybrid_chunker import HybridChunker, _estimate_tokens
 from crawler.extract.structured.json_extractor import JsonExtractor
@@ -431,6 +432,34 @@ def test_json_extractor_html_meta() -> None:
 # ---------------------------------------------------------------------------
 # ExtractPipeline integration tests
 # ---------------------------------------------------------------------------
+
+
+def test_pipeline_html_extraction_prefers_crawl4ai_adapter(monkeypatch) -> None:
+    fetch_result = {
+        "url": "https://example.com/post",
+        "text": "<html><body><article><h1>Primary Title</h1><p>Primary body text.</p></article></body></html>",
+        "content_type": "text/html",
+    }
+
+    monkeypatch.setattr(
+        "crawler.extract.pipeline.extract_html_with_crawl4ai",
+        lambda html, url, platform="", resource_type="": Crawl4AIExtractionResult(
+            html="<article><h1>Primary Title</h1><p>Primary body text.</p></article>",
+            cleaned_html="<article><h1>Primary Title</h1><p>Primary body text.</p></article>",
+            markdown="# Primary Title\n\nPrimary body text.",
+            text="Primary Title\nPrimary body text.",
+            selector_used="crawl4ai:fit_html",
+            extractor="crawl4ai",
+        ),
+    )
+
+    pipeline = ExtractPipeline()
+    doc = pipeline.extract(fetch_result, "generic", "page")
+
+    assert "Primary Title" in doc.full_text
+    assert "Primary body text." in doc.full_text
+    assert doc.quality.chunking_strategy == "hybrid:crawl4ai:fit_html"
+    assert "<article>" in doc.cleaned_html
 
 
 def test_pipeline_html_extraction() -> None:

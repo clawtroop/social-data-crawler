@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from crawler.extract.html_extract import extract_html_document
-from crawler.extract.trafilatura_extract import extract_article_text
 from crawler.extract.unstructured_extract import extract_document_blocks
 
 
@@ -52,34 +51,35 @@ def test_extract_html_document_excludes_hidden_modal_text() -> None:
     assert "Hello" in result["plain_text"]
 
 
-def test_extract_article_text_prefers_trafilatura_for_html(monkeypatch) -> None:
+def test_extract_html_document_delegates_to_extract_pipeline(monkeypatch) -> None:
+    expected = {
+        "metadata": {
+            "title": "Delegated Title",
+            "description": "Delegated Description",
+            "content_type": "text/html",
+            "source_url": "https://example.com",
+        },
+        "markdown": "# Delegated Title",
+        "plain_text": "Delegated Title",
+        "document_blocks": [],
+        "structured": {"headline": "Delegated Title"},
+        "extractor": "crawl4ai",
+    }
+
     monkeypatch.setattr(
-        "crawler.extract.trafilatura_extract.trafilatura.extract",
-        lambda html, **kwargs: "## Extracted article",
+        "crawler.extract.html_extract.ExtractPipeline.extract_to_legacy",
+        lambda self, fetch_result, platform, resource_type: expected,
     )
 
-    result = extract_article_text("<html><body><article>Hello</article></body></html>", "https://example.com")
-
-    assert result["markdown"] == "## Extracted article"
-    assert result["plain_text"] == "## Extracted article"
-    assert result["extractor"] == "trafilatura"
-
-
-def test_extract_article_text_skips_trafilatura_for_non_html_content_type(monkeypatch) -> None:
-    def fail_extract(*args, **kwargs):  # pragma: no cover - defensive in test
-        raise AssertionError("trafilatura should not be called for non-html content")
-
-    monkeypatch.setattr("crawler.extract.trafilatura_extract.trafilatura.extract", fail_extract)
-
-    result = extract_article_text(
-        "<html><head><title>Fallback</title></head><body><p>Plain</p></body></html>",
+    result = extract_html_document(
+        "<html><body><article>Hello</article></body></html>",
         "https://example.com",
-        content_type="application/pdf",
+        content_type="text/html",
+        platform="generic",
+        resource_type="page",
     )
 
-    assert result["metadata"]["title"] == "Fallback"
-    assert "Plain" in result["plain_text"]
-    assert result["extractor"] == "html"
+    assert result == expected
 
 
 def test_extract_document_blocks_returns_empty_for_missing_file() -> None:

@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import replace
-from typing import Any
+from typing import Any, Awaitable, Callable
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
@@ -14,7 +14,13 @@ from crawler.discovery.contracts import (
     DiscoveryMode,
     DiscoveryRecord,
 )
+from crawler.discovery.expand.base import ExpandResult
 from crawler.discovery.map_engine import MapResult
+from crawler.discovery.normalize.base import NormalizeResult
+from crawler.discovery.normalize.linkedin import (
+    discover_from_html_deep,
+    normalize_linkedin_url,
+)
 
 
 class LinkedInDiscoveryAdapter(BaseDiscoveryAdapter):
@@ -157,3 +163,67 @@ class LinkedInDiscoveryAdapter(BaseDiscoveryAdapter):
             "fetched": fetched,
             "spawned_candidates": spawned_candidates,
         }
+
+    # --- BFS support methods ---
+
+    def normalize_url(self, url: str) -> NormalizeResult:
+        """Normalize a LinkedIn URL using the migrated normalizer."""
+        return normalize_linkedin_url(url)
+
+    def discover_from_html(self, html: str, base_url: str) -> list[str]:
+        """Extract LinkedIn URLs from HTML using deep discovery."""
+        return discover_from_html_deep(html, base_url=base_url)
+
+    async def expand(
+        self,
+        candidate: DiscoveryCandidate,
+        fetch_fn: Callable[[str], Awaitable[str]],
+        options: dict[str, Any] | None = None,
+    ) -> ExpandResult:
+        """Expand a LinkedIn entity to discover related URLs.
+
+        Dispatches to entity-specific expanders based on resource_type.
+        """
+        opts = options or {}
+        entity_type = candidate.resource_type
+
+        if entity_type == "profile":
+            from crawler.discovery.expand.linkedin_profile import expand_profile
+            return await expand_profile(
+                candidate.canonical_url,
+                fetch_fn,
+                also_fetch_activity=opts.get("also_fetch_activity", True),
+                filter_nav=opts.get("filter_nav", True),
+            )
+
+        if entity_type == "company":
+            from crawler.discovery.expand.linkedin_company import expand_company
+            return await expand_company(
+                candidate.canonical_url,
+                fetch_fn,
+                fetch_jobs_tab=opts.get("fetch_jobs_tab", True),
+                fetch_people_tab=opts.get("fetch_people_tab", True),
+                fetch_posts_tab=opts.get("fetch_posts_tab", True),
+                filter_nav=opts.get("filter_nav", True),
+            )
+
+        if entity_type == "post":
+            from crawler.discovery.expand.linkedin_post import expand_post
+            return await expand_post(
+                candidate.canonical_url,
+                fetch_fn,
+                filter_nav=opts.get("filter_nav", True),
+            )
+
+        if entity_type == "job":
+            from crawler.discovery.expand.linkedin_job import expand_job
+            return await expand_job(
+                candidate.canonical_url,
+                fetch_fn,
+                filter_nav=opts.get("filter_nav", True),
+            )
+
+        # Fallback: just fetch and discover
+        html = await fetch_fn(candidate.canonical_url)
+        urls = self.discover_from_html(html, candidate.canonical_url)
+        return ExpandResult(urls=urls, buckets={}, metadata={})

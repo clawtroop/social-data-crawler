@@ -20,7 +20,14 @@ from .base import (
 FETCH_PLAN = PlatformFetchPlan(default_backend="http", fallback_backends=("playwright", "camoufox"))
 EXTRACT_PLAN = PlatformExtractPlan(strategy="commerce_page")
 NORMALIZE_PLAN = PlatformNormalizePlan(hook_name="amazon")
-ENRICH_PLAN = PlatformEnrichmentPlan(route="commerce_graph", field_groups=("pricing", "availability"))
+ENRICH_PLAN = PlatformEnrichmentPlan(
+    route="commerce_graph",
+    field_groups=(
+        "amazon_products_pricing",
+        "amazon_products_availability",
+        "amazon_products_description",
+    ),
+)
 
 
 def _extract_amazon(record: dict, fetched: dict) -> dict:

@@ -83,7 +83,8 @@ class CrawlerConfig:
     use_legacy_pipeline: bool = False
     max_chunk_tokens: int = 512
     chunk_overlap: int = 50
-    # Discovery options (for discover-map and discover-crawl commands)
+    # Runtime / discovery options
+    concurrency: int = 3
     max_depth: int = 2
     max_pages: int = 100
     sitemap_mode: str = "include"
@@ -133,6 +134,7 @@ class CrawlerConfig:
             use_legacy_pipeline=bool(values.get("use_legacy_pipeline", False)),
             max_chunk_tokens=int(values.get("max_chunk_tokens", 512)),
             chunk_overlap=int(values.get("chunk_overlap", 50)),
+            concurrency=int(values.get("concurrency", 3)),
             max_depth=int(values.get("max_depth", 2)),
             max_pages=int(values.get("max_pages", 100)),
             sitemap_mode=str(values.get("sitemap_mode", "include")),
