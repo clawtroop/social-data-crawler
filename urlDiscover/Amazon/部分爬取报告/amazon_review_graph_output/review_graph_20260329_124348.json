@@ -1,0 +1,23 @@
+{
+  "summary": {
+    "products": 1,
+    "profiles": 0,
+    "reviews": 0,
+    "edges": 0,
+    "visited_urls": 1
+  },
+  "products": [
+    {
+      "url": "https://www.amazon.com/dp/B0D1XD1ZV3/",
+      "timestamp": "2026-03-29T12:43:46.631347",
+      "extracted_fields": {
+        "asin": "B0D1XD1ZV3",
+        "title": "Apple AirPods Pro 2 Wireless Earbuds, Active Noise Cancellation, Hearing Aid Feature, Bluetooth Headphones, Transparency, Personalized Spatial Audio, High-Fidelity Sound, H2 Chip, USB-C Charging"
+      }
+    }
+  ],
+  "profiles": [],
+  "reviews": [],
+  "edges": [],
+  "pending_urls": []
+}

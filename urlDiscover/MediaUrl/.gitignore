@@ -1,0 +1,14 @@
+# 登录态（勿提交）
+.secrets/
+*.storage_state.json
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.env
+
+# 脚本保存的页面 HTML
+output/

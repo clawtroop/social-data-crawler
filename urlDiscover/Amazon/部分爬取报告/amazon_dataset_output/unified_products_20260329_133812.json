@@ -1,0 +1,5119 @@
+[
+  {
+    "url": "https://www.amazon.com/dp/B0D1XD1ZV3/",
+    "timestamp": "2026-03-29T12:38:13.322243",
+    "extracted_fields": {
+      "asin": "B0D1XD1ZV3",
+      "title": "Apple AirPods Pro 2 Wireless Earbuds, Active Noise Cancellation, Hearing Aid Feature, Bluetooth Headphones, Transparency, Personalized Spatial Audio, High-Fidelity Sound, H2 Chip, USB-C Charging",
+      "brand": "Apple",
+      "rating": "4.6",
+      "images": [
+        "https://m.media-amazon.com/images/I/31TdpXa6wpL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/21h1wxTIGwL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71d1WoCdwwL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/611pEx7220L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31bRcDw4HnL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FQFB8FMG/",
+    "timestamp": "2026-03-29T12:38:27.944815",
+    "extracted_fields": {
+      "asin": "B0FQFB8FMG",
+      "title": "Apple AirPods Pro 3 Wireless Earbuds, Active Noise Cancellation, Live Translation, Heart Rate Sensing, Hearing Aid Feature, Bluetooth Headphones, Spatial Audio, High-Fidelity Sound, USB-C Charging",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "2.8",
+      "images": [
+        "https://m.media-amazon.com/images/I/218Mmzk0EaL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/714cmrFzdWL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61h9Etg5SOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31lVocDBpEL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/318+f0Z6WOL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGJ7HYG1/",
+    "timestamp": "2026-03-29T12:38:44.022409",
+    "extracted_fields": {
+      "asin": "B0DGJ7HYG1",
+      "title": "Apple AirPods 4 Wireless Earbuds, Bluetooth Headphones, with Active Noise Cancellation, Adaptive, Transparency Mode, Personalized Spatial Audio, USB-C Charging Case, Wireless Charging, H2 Chip",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "2.8",
+      "images": [
+        "https://m.media-amazon.com/images/I/614HncE30VL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/418-b9XEsUL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61iBtxCUabL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31Q34BMOe3L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51ppBwqC4xL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DCH8VDXF/",
+    "timestamp": "2026-03-29T12:38:54.291883",
+    "extracted_fields": {
+      "asin": "B0DCH8VDXF",
+      "title": "Apple EarPods Headphones with USB-C Plug, Wired Ear Buds with Built-in Remote to Control Music, Phone Calls, and Volume",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.6",
+      "images": [
+        "https://m.media-amazon.com/images/I/51P4BxC-GTL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51mL0eHVIpL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/21WIW6o3SLL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51-AyUL-c2L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/21jKMKVXcOL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GSS4SGZR/",
+    "timestamp": "2026-03-29T12:39:16.919420",
+    "extracted_fields": {
+      "asin": "B0GSS4SGZR",
+      "title": "Apple AirPods Max 2 Wireless Over-Ear Headphones, Active Noise Cancellation, Adaptive Audio, Personalized Spatial Audio, Live Translation, Bluetooth Headphones for iPhone – Midnight",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "2.8",
+      "images": [
+        "https://m.media-amazon.com/images/I/71umw2cCkOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71BLGXjQsNL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31iaTE8QStL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61zUxv16KyL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71yLAXoJ0+L._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0G2F2SRY1/",
+    "timestamp": "2026-03-29T12:39:23.735601",
+    "extracted_fields": {
+      "asin": "B0G2F2SRY1",
+      "title": "AppleCare+ for AirPods Pro 3 (Monthly)",
+      "brand": "Apple",
+      "rating": "2.8",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51YaIvHLpmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/215Nsp-0lHL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FQFBWQQY/",
+    "timestamp": "2026-03-29T12:39:30.419026",
+    "extracted_fields": {
+      "asin": "B0FQFBWQQY",
+      "title": "AppleCare+ for Headphones - AirPods Pro (2 years)",
+      "brand": "Apple",
+      "rating": "2.8",
+      "reviews_count": "20997",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51YaIvHLpmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/215Nsp-0lHL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0G2F51B46/",
+    "timestamp": "2026-03-29T12:39:36.309976",
+    "extracted_fields": {
+      "asin": "B0G2F51B46",
+      "title": "AppleCare+ for AirPods (monthly)",
+      "brand": "Apple",
+      "rating": "2.8",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51YaIvHLpmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/215Nsp-0lHL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGHMNQ5Z/",
+    "timestamp": "2026-03-29T12:39:44.633485",
+    "extracted_fields": {
+      "asin": "B0DGHMNQ5Z",
+      "title": "Apple AirPods 4 Wireless Earbuds, Bluetooth Headphones, Personalized Spatial Audio, Sweat and Water Resistant, USB-C Charging Case, H2 Chip, Up to 30 Hours of Battery Life, Effortless Setup for iPhone",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "2.8",
+      "images": [
+        "https://m.media-amazon.com/images/I/31Q34BMOe3L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61iBtxCUabL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71c1ABI5GAL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51ppBwqC4xL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41LAVaaec1L._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BFCR8HCF/",
+    "timestamp": "2026-03-29T12:40:07.999526",
+    "extracted_fields": {
+      "asin": "B0BFCR8HCF",
+      "title": "AppleCare+ for Headphones (2 Years)",
+      "brand": "Apple",
+      "rating": "2.8",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51YaIvHLpmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/215Nsp-0lHL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGVT3T92/",
+    "timestamp": "2026-03-29T12:40:15.036460",
+    "extracted_fields": {
+      "asin": "B0DGVT3T92",
+      "title": "Apple AirPods 4 Wireless Earbuds, Bluetooth Headphones, with Active Noise Cancellation, Adaptive Audio, Transparency Mode, Personalized Spatial Audio, USB-C Charging Case with AppleCare+ (2 Years)",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "images": [
+        "https://m.media-amazon.com/images/I/313RSf6j5wL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41Xic73s78L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31Q34BMOe3L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71KKNoqUm3L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61iBtxCUabL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGW54P27/",
+    "timestamp": "2026-03-29T12:40:22.372464",
+    "extracted_fields": {
+      "asin": "B0DGW54P27",
+      "title": "Apple AirPods 4 Wireless Earbuds, Bluetooth Headphones, Personalized Spatial Audio, Sweat and Water Resistant, USB-C Charging Case, H2 Chip, Up to 30 Hours of Battery Life with AppleCare+ (2 Years)",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "images": [
+        "https://m.media-amazon.com/images/I/313RSf6j5wL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31Q34BMOe3L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61iBtxCUabL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61e9gEj-lDL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61H0lDhZOvL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0D9ML2N4G/",
+    "timestamp": "2026-03-29T12:40:30.234836",
+    "extracted_fields": {
+      "asin": "B0D9ML2N4G",
+      "title": "Apple EarPods Headphones with 3.5mm Plug, Wired Ear Buds with Built-in Remote to Control Music, Phone Calls, and Volume",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.6",
+      "images": [
+        "https://m.media-amazon.com/images/I/21irBFnTYoL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/317eB4+yU6L._AC_SL1024_.jpg",
+        "https://m.media-amazon.com/images/I/21VT-jAJblL._AC_SL1024_.jpg",
+        "https://m.media-amazon.com/images/I/11JTJ-SKfPL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41FvaOcSBZL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGJC52FP/",
+    "timestamp": "2026-03-29T12:40:39.796688",
+    "extracted_fields": {
+      "asin": "B0DGJC52FP",
+      "title": "Apple AirPods Max Wireless Over-Ear Headphones, Pro-Level Active Noise Cancellation, Transparency Mode, Personalized Spatial Audio, USB-C Charging, Bluetooth Headphones for iPhone - Midnight",
+      "brand": "Apple",
+      "rating": "4.6",
+      "images": [
+        "https://m.media-amazon.com/images/I/6105xBN9l-L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31gDQI+q0IL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31f0ce2LZbL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/615mL++GeCL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/311M64oxqNL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0D7FVQ1ZB/",
+    "timestamp": "2026-03-29T12:40:46.991838",
+    "extracted_fields": {
+      "asin": "B0D7FVQ1ZB",
+      "title": "Apple EarPods Headphones with Lightning Connector, Wired Ear Buds for iPhone with Built-in Remote to Control Music, Phone Calls, and Volume",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.6",
+      "images": [
+        "https://m.media-amazon.com/images/I/21irBFnTYoL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/317eB4+yU6L._AC_SL1024_.jpg",
+        "https://m.media-amazon.com/images/I/41FvaOcSBZL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/218fJ3g3TDL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/21WIW6o3SLL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FY6Y9WZT/",
+    "timestamp": "2026-03-29T12:40:57.473766",
+    "extracted_fields": {
+      "asin": "B0FY6Y9WZT",
+      "title": "PlayStation DualSense™ Wireless Controller – Midnight Black - For PS5, PC, MAC &amp; Mobile",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31N46yHpNwL.jpg",
+        "https://m.media-amazon.com/images/I/31pt5lqJVeL.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DSLTZ6M3/",
+    "timestamp": "2026-03-29T12:41:08.419881",
+    "extracted_fields": {
+      "asin": "B0DSLTZ6M3",
+      "title": "PlayStation 5 Portal Remote Player - Midnight Black",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/71c1dJCp94L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41Ky6ZC4RTL.jpg",
+        "https://m.media-amazon.com/images/I/61S0ZRxKJFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41PcavZ-xkL.jpg",
+        "https://m.media-amazon.com/images/I/61n8yq-QF+L._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CQKL27GN/",
+    "timestamp": "2026-03-29T12:41:18.367602",
+    "extracted_fields": {
+      "asin": "B0CQKL27GN",
+      "title": "PlayStation DualSense® Wireless Controller - Galactic Purple",
+      "brand": "PlayStation",
+      "seller_id": "A21QINWEWAKJ9Y",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41tdexQ7VzL.jpg",
+        "https://m.media-amazon.com/images/I/6122oDGafJL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/315clItHsmL.jpg",
+        "https://m.media-amazon.com/images/I/61mtIjtbMuL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61QWtX+qgJL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BSYFB99D/",
+    "timestamp": "2026-03-29T12:41:36.627952",
+    "extracted_fields": {
+      "asin": "B0BSYFB99D",
+      "title": "PlayStation DualSense Edge Wireless Controller",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51XakHsX32L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/411Oky0aB0L.jpg",
+        "https://m.media-amazon.com/images/I/71HmvRrbmpL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/416C7cMRj+L.jpg",
+        "https://m.media-amazon.com/images/I/31bosqdHtBL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F3GWXLTS/",
+    "timestamp": "2026-03-29T12:41:46.906591",
+    "extracted_fields": {
+      "asin": "B0F3GWXLTS",
+      "title": "Nintendo Switch 2 System",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories",
+        "Faceplates, Protectors &amp; Skins"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/417Pfcv9z+L._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/615ir3fm25L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51WJrmRGMvL._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/31-hIUhnpFL.jpg",
+        "https://m.media-amazon.com/images/I/31K3Fzwja8L.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F1J1JTKP/",
+    "timestamp": "2026-03-29T12:41:57.202306",
+    "extracted_fields": {
+      "asin": "B0F1J1JTKP",
+      "title": "Xbox Wireless Gaming Controller + USB-C® Cable (2025) – Carbon Black – Play on Xbox, Windows, Android, iOS, FireTV Sticks, Smart TVs, VR Headsets",
+      "brand": "Xbox",
+      "rating": "4.6",
+      "breadcrumbs": [
+        "Video Games",
+        "Xbox One",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/311FnCk9XPL.jpg",
+        "https://m.media-amazon.com/images/I/61KWVj9nZ6L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/719tNOtacqL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61gwuRFORbL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71rv35beLxL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FY6PBWWJ/",
+    "timestamp": "2026-03-29T12:42:03.832994",
+    "extracted_fields": {
+      "asin": "B0FY6PBWWJ",
+      "title": "PlayStation DualSense™ Wireless Controller – Galactic Purple - For PS5, PC, MAC &amp; Mobile",
+      "brand": "PlayStation",
+      "seller_id": "A2L77EE7U53NWQ",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31oc0gzpkyL.jpg",
+        "https://m.media-amazon.com/images/I/31XcpblcglL.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GFQ25QWY/",
+    "timestamp": "2026-03-29T12:42:14.373166",
+    "extracted_fields": {
+      "asin": "B0GFQ25QWY",
+      "title": "Nintendo Joy-Con™ 2 (L)/(R) Light Purple/Light Green",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/71nr2RXtdTL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41QbwyIQmSL.jpg",
+        "https://m.media-amazon.com/images/I/71HL2D3eUWL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71VZaEeGLxL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61UM47MlCXL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CQKKHT5J/",
+    "timestamp": "2026-03-29T12:42:25.172154",
+    "extracted_fields": {
+      "asin": "B0CQKKHT5J",
+      "title": "PlayStation DualSense® Wireless Controller - Midnight Black",
+      "brand": "PlayStation",
+      "seller_id": "A27RIP0968G1L9",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/315clItHsmL.jpg",
+        "https://m.media-amazon.com/images/I/61QWtX+qgJL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/310Ll3dwS9L.jpg",
+        "https://m.media-amazon.com/images/I/61O+qEOU7NL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/6117SsHEKIL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CQKLDWY8/",
+    "timestamp": "2026-03-29T12:42:40.910795",
+    "extracted_fields": {
+      "asin": "B0CQKLDWY8",
+      "title": "PlayStation DualSense® Wireless Controller - Gray Camouflage",
+      "brand": "PlayStation",
+      "seller_id": "A21QINWEWAKJ9Y",
+      "rating": "4.5",
+      "reviews_count": "14451",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31OjIt+gCmL.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg",
+        "https://m.media-amazon.com/images/I/31XcpblcglL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DSQQ1P8D/",
+    "timestamp": "2026-03-29T12:42:52.735723",
+    "extracted_fields": {
+      "asin": "B0DSQQ1P8D",
+      "title": "PlayStation DualSense Edge Wireless Controller - Midnight Black",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31QB+Xt4qfL.jpg",
+        "https://m.media-amazon.com/images/I/61eXEcwYZRL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/617U78JO+fL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31oU7+5QzTL.jpg",
+        "https://m.media-amazon.com/images/I/61iHtpHuiPL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FRGMYJMG/",
+    "timestamp": "2026-03-29T12:43:03.222983",
+    "extracted_fields": {
+      "asin": "B0FRGMYJMG",
+      "title": "PlayStation®5 Digital Edition – 825GB",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Consoles"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31fTKdQoZ7L.jpg",
+        "https://m.media-amazon.com/images/I/41Gr-cDOI5L.jpg",
+        "https://m.media-amazon.com/images/I/21pybROD6BL.jpg",
+        "https://m.media-amazon.com/images/I/51Rn4HSa6BL.jpg",
+        "https://m.media-amazon.com/images/I/51qB5b0pkNL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FQXNCFWT/",
+    "timestamp": "2026-03-29T12:43:13.892204",
+    "extracted_fields": {
+      "asin": "B0FQXNCFWT",
+      "title": "Mario Tennis™ Fever (Nintendo Switch 2)",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.6",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Games"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41hoGAqKu+L.jpg",
+        "https://m.media-amazon.com/images/I/41rBmq5HF6L.jpg",
+        "https://m.media-amazon.com/images/I/512+k-Hz0fL.jpg",
+        "https://m.media-amazon.com/images/I/91O7n-lpLzL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51WepDX7nbL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F3VTCZK8/",
+    "timestamp": "2026-03-29T12:43:23.593077",
+    "extracted_fields": {
+      "asin": "B0F3VTCZK8",
+      "title": "Samsung microSD Express Card – 256GB for Nintendo Switch™ 2",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.8",
+      "reviews_count": "14451",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51+NEcdWJFL._SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/41ZLI62zULL.jpg",
+        "https://m.media-amazon.com/images/I/41M+RSWBsTL.jpg",
+        "https://m.media-amazon.com/images/I/51sXUHCKw5L.jpg",
+        "https://m.media-amazon.com/images/I/51dRH6ugarL._SL1000_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0G4S3GZ5N/",
+    "timestamp": "2026-03-29T12:44:23.284736",
+    "extracted_fields": {
+      "asin": "B0G4S3GZ5N",
+      "title": "PlayStation DualSense® Wireless Controller – Genshin Impact Limited Edition",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg",
+        "https://m.media-amazon.com/images/I/31XcpblcglL.jpg",
+        "https://m.media-amazon.com/images/I/6181WAoqURL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DHY92HBL/",
+    "timestamp": "2026-03-29T12:44:32.977513",
+    "extracted_fields": {
+      "asin": "B0DHY92HBL",
+      "title": "PlayStation DualSense™ Wireless Controller – Chroma Indigo",
+      "brand": "PlayStation",
+      "seller_id": "A3C2UZZKYRDEBM",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41tdexQ7VzL.jpg",
+        "https://m.media-amazon.com/images/I/315clItHsmL.jpg",
+        "https://m.media-amazon.com/images/I/61c9CENN8+L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61QWtX+qgJL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31BkVR0oKIL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F66KLYVH/",
+    "timestamp": "2026-03-29T12:45:07.841506",
+    "extracted_fields": {
+      "asin": "B0F66KLYVH",
+      "title": "Donkey Kong Bananza (Nintendo Switch 2)",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.8",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Games"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41JZ-wRxlxL.jpg",
+        "https://m.media-amazon.com/images/I/41pbWLSDXcL.jpg",
+        "https://m.media-amazon.com/images/I/41FakKOPAQL.jpg",
+        "https://m.media-amazon.com/images/I/81Vz4Mm3ZnL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/81bWYMkGacL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CJSY6961/",
+    "timestamp": "2026-03-29T12:45:18.523465",
+    "extracted_fields": {
+      "asin": "B0CJSY6961",
+      "title": "PlayStation DualSense Wireless Controller - Cobalt Blue",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg",
+        "https://m.media-amazon.com/images/I/31XcpblcglL.jpg",
+        "https://m.media-amazon.com/images/I/61GNEp3auhL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FY6VF3Q5/",
+    "timestamp": "2026-03-29T12:45:29.566151",
+    "extracted_fields": {
+      "asin": "B0FY6VF3Q5",
+      "title": "PlayStation DualSense™ Wireless Controller – Cosmic Red - for PS5, PC, MAC &amp; Mobile",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg",
+        "https://m.media-amazon.com/images/I/31XcpblcglL.jpg",
+        "https://m.media-amazon.com/images/I/61GNEp3auhL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F66GQLHH/",
+    "timestamp": "2026-03-29T12:45:54.106655",
+    "extracted_fields": {
+      "asin": "B0F66GQLHH",
+      "title": "Mario Kart™ World (Nintendo Switch 2)",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.6",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Games"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41ewpr7bVmL.jpg",
+        "https://m.media-amazon.com/images/I/81tfNHZvxcL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/81M2Uh-Vw5L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41Y2JioOSOL.jpg",
+        "https://m.media-amazon.com/images/I/41mgSNRv45L.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FY6YRGRS/",
+    "timestamp": "2026-03-29T12:46:04.413956",
+    "extracted_fields": {
+      "asin": "B0FY6YRGRS",
+      "title": "PlayStation DualSense™ Wireless Controller – Gray Camouflage - For PS5, PC, MAC &amp; Mobile",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41tdexQ7VzL.jpg",
+        "https://m.media-amazon.com/images/I/31hOzAcAQIL.jpg",
+        "https://m.media-amazon.com/images/I/31OjIt+gCmL.jpg",
+        "https://m.media-amazon.com/images/I/31lcR3PaXKL.jpg",
+        "https://m.media-amazon.com/images/I/61LGIkjLgEL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FC5FJZ9Z/",
+    "timestamp": "2026-03-29T12:46:24.596872",
+    "extracted_fields": {
+      "asin": "B0FC5FJZ9Z",
+      "title": "Nintendo Switch 2 + Mario Kart World Bundle",
+      "brand": "Nintendo",
+      "rating": "4.7",
+      "reviews_count": "14451",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Consoles"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/615ir3fm25L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/81M2Uh-Vw5L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41Y2JioOSOL.jpg",
+        "https://m.media-amazon.com/images/I/41mgSNRv45L.jpg",
+        "https://m.media-amazon.com/images/I/31K3Fzwja8L.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F2GYMC8H/",
+    "timestamp": "2026-03-29T12:46:30.744741",
+    "extracted_fields": {
+      "asin": "B0F2GYMC8H",
+      "title": "Meta Quest 3S 128GB | VR Headset — Thirty-Three Percent More Memory — 2X Graphical Processing Power — Virtual Reality Without Wires — Access to 40+ Games with a 3-Month Trial of Meta Horizon+ Included",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.3",
+      "breadcrumbs": [
+        "Video Games",
+        "Virtual Reality",
+        "Standalone Hardware",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41HRSLoeY6L.jpg",
+        "https://m.media-amazon.com/images/I/81LHXEmiD8L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31syzfyPv3L.jpg",
+        "https://m.media-amazon.com/images/I/4147Ahc8fhL.jpg",
+        "https://m.media-amazon.com/images/I/71wZ17uCcdL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0G2DWWZY8/",
+    "timestamp": "2026-03-29T12:46:40.751629",
+    "extracted_fields": {
+      "asin": "B0G2DWWZY8",
+      "title": "AppleCare+ for AirPods Max (monthly)",
+      "brand": "Apple",
+      "rating": "2.8",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51YaIvHLpmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/215Nsp-0lHL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GSS5TK8R/",
+    "timestamp": "2026-03-29T12:46:48.301655",
+    "extracted_fields": {
+      "asin": "B0GSS5TK8R",
+      "title": "Apple AirPods Max 2 Wireless Over-Ear Headphones, Active Noise Cancellation, Adaptive Audio, Personalized Spatial Audio, Live Translation, Bluetooth Headphones for iPhone – Purple",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "2.8",
+      "images": [
+        "https://m.media-amazon.com/images/I/31iaTE8QStL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71umw2cCkOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71BLGXjQsNL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61zUxv16KyL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/318Dl89Rg0L._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GSXKB9XS/",
+    "timestamp": "2026-03-29T12:46:54.159183",
+    "extracted_fields": {
+      "asin": "B0GSXKB9XS",
+      "title": "Apple AirPods Max 2 Wireless Over-Ear Headphones, Active Noise Cancellation, Adaptive Audio, Personalized Spatial Audio, Live Translation, Bluetooth Headphones – Blue with AppleCare+ (2 years)",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "images": [
+        "https://m.media-amazon.com/images/I/71umw2cCkOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71BLGXjQsNL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31iaTE8QStL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61zUxv16KyL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71yLAXoJ0+L._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B087Z94ZSB/",
+    "timestamp": "2026-03-29T12:47:00.971861",
+    "extracted_fields": {
+      "asin": "B087Z94ZSB",
+      "title": "AppleCare+ for AirPods Max (2 Years)",
+      "brand": "Apple",
+      "rating": "2.8",
+      "images": [
+        "https://m.media-amazon.com/images/I/51YaIvHLpmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/215Nsp-0lHL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GSXPXXC3/",
+    "timestamp": "2026-03-29T12:47:07.347298",
+    "extracted_fields": {
+      "asin": "B0GSXPXXC3",
+      "title": "Apple AirPods Max 2 Wireless Over-Ear Headphones, Active Noise Cancellation, Adaptive Audio, Personalized Spatial Audio, Live Translation, Bluetooth Headphones – Midnight with AppleCare+ (2 years)",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "images": [
+        "https://m.media-amazon.com/images/I/71umw2cCkOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71BLGXjQsNL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31iaTE8QStL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61zUxv16KyL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71yLAXoJ0+L._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GSXB5ZVW/",
+    "timestamp": "2026-03-29T12:47:13.683862",
+    "extracted_fields": {
+      "asin": "B0GSXB5ZVW",
+      "title": "Apple AirPods Max 2 Wireless Over-Ear Headphones, Active Noise Cancellation, Adaptive Audio, Personalized Spatial Audio, Live Translation, Bluetooth Headphones – Purple with AppleCare+ (2 years)",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "images": [
+        "https://m.media-amazon.com/images/I/71umw2cCkOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71BLGXjQsNL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31iaTE8QStL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61zUxv16KyL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/318Dl89Rg0L._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GSXSFMSJ/",
+    "timestamp": "2026-03-29T12:47:21.029587",
+    "extracted_fields": {
+      "asin": "B0GSXSFMSJ",
+      "title": "Apple AirPods Max 2 Wireless Over-Ear Headphones, Active Noise Cancellation, Adaptive Audio, Personalized Spatial Audio, Live Translation, Bluetooth Headphones – Starlight with AppleCare+ (2 years)",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "images": [
+        "https://m.media-amazon.com/images/I/71umw2cCkOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71BLGXjQsNL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31iaTE8QStL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61zUxv16KyL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71yLAXoJ0+L._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GSRYXZM5/",
+    "timestamp": "2026-03-29T12:47:28.625471",
+    "extracted_fields": {
+      "asin": "B0GSRYXZM5",
+      "title": "Apple AirPods Max 2 Wireless Over-Ear Headphones, Active Noise Cancellation, Adaptive Audio, Personalized Spatial Audio, Live Translation, Bluetooth Headphones for iPhone – Starlight",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "2.8",
+      "images": [
+        "https://m.media-amazon.com/images/I/71BLGXjQsNL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71umw2cCkOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31iaTE8QStL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61zUxv16KyL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71yLAXoJ0+L._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GSS72GZJ/",
+    "timestamp": "2026-03-29T12:47:35.104395",
+    "extracted_fields": {
+      "asin": "B0GSS72GZJ",
+      "title": "Apple AirPods Max 2 Wireless Over-Ear Headphones, Active Noise Cancellation, Adaptive Audio, Personalized Spatial Audio, Live Translation, Bluetooth Headphones for iPhone – Blue",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "2.8",
+      "images": [
+        "https://m.media-amazon.com/images/I/71umw2cCkOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71BLGXjQsNL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31iaTE8QStL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61zUxv16KyL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71yLAXoJ0+L._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GSXF7BVN/",
+    "timestamp": "2026-03-29T12:47:42.349631",
+    "extracted_fields": {
+      "asin": "B0GSXF7BVN",
+      "title": "Apple AirPods Max 2 Wireless Over-Ear Headphones, Active Noise Cancellation, Adaptive Audio, Personalized Spatial Audio, Live Translation, Bluetooth Headphones – Orange with AppleCare+ (2 years)",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "images": [
+        "https://m.media-amazon.com/images/I/71umw2cCkOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71BLGXjQsNL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31iaTE8QStL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61zUxv16KyL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71yLAXoJ0+L._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GSS6F226/",
+    "timestamp": "2026-03-29T12:47:48.510239",
+    "extracted_fields": {
+      "asin": "B0GSS6F226",
+      "title": "Apple AirPods Max 2 Wireless Over-Ear Headphones, Active Noise Cancellation, Adaptive Audio, Personalized Spatial Audio, Live Translation, Bluetooth Headphones for iPhone – Orange",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "2.8",
+      "images": [
+        "https://m.media-amazon.com/images/I/71umw2cCkOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71BLGXjQsNL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31iaTE8QStL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61zUxv16KyL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71yLAXoJ0+L._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0D61DJQFS/",
+    "timestamp": "2026-03-29T12:47:55.964254",
+    "extracted_fields": {
+      "asin": "B0D61DJQFS",
+      "title": "AppleCare+ for Beats Speaker (2 Years)",
+      "brand": "Apple",
+      "rating": "2.8",
+      "reviews_count": "1497",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51YaIvHLpmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/215Nsp-0lHL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CMZ9X5XN/",
+    "timestamp": "2026-03-29T12:48:03.200074",
+    "extracted_fields": {
+      "asin": "B0CMZ9X5XN",
+      "title": "AppleCare+ for Beats Studio Pro (2 Years)",
+      "brand": "Apple",
+      "rating": "2.8",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51YaIvHLpmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/215Nsp-0lHL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BFCW49PW/",
+    "timestamp": "2026-03-29T12:48:10.436016",
+    "extracted_fields": {
+      "asin": "B0BFCW49PW",
+      "title": "AppleCare+ for Headphones - AirPods Pro (2 Years)",
+      "brand": "Apple",
+      "rating": "2.8",
+      "reviews_count": "1497",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51YaIvHLpmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/215Nsp-0lHL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0G2F1B4RJ/",
+    "timestamp": "2026-03-29T12:48:15.912492",
+    "extracted_fields": {
+      "asin": "B0G2F1B4RJ",
+      "title": "AppleCare+ for Beats (monthly)",
+      "brand": "Apple",
+      "rating": "2.8",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51YaIvHLpmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/215Nsp-0lHL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DVMN53CN/",
+    "timestamp": "2026-03-29T12:48:23.916986",
+    "extracted_fields": {
+      "asin": "B0DVMN53CN",
+      "title": "AppleCare+ for Headphones - Beats",
+      "brand": "Apple",
+      "rating": "2.8",
+      "reviews_count": "1497",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51YaIvHLpmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/215Nsp-0lHL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0D1ZKGZS2/",
+    "timestamp": "2026-03-29T12:48:30.617205",
+    "extracted_fields": {
+      "asin": "B0D1ZKGZS2",
+      "title": "AppleCare+ for Beats Solo4 (2 Years)",
+      "brand": "Apple",
+      "rating": "2.8",
+      "reviews_count": "1497",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51YaIvHLpmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/215Nsp-0lHL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FRDMHHZ8/",
+    "timestamp": "2026-03-29T12:48:38.671071",
+    "extracted_fields": {
+      "asin": "B0FRDMHHZ8",
+      "title": "AppleCare+ for Headphones - Beats (2 Years)",
+      "brand": "Apple",
+      "rating": "2.8",
+      "reviews_count": "1497",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51YaIvHLpmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/215Nsp-0lHL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BNJNP1P6/",
+    "timestamp": "2026-03-29T12:48:46.723654",
+    "extracted_fields": {
+      "asin": "B0BNJNP1P6",
+      "title": "Apple AirPods with Lightning Charging Case (3rd Generation) (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A1W3JAPFP88EHS",
+      "rating": "4.6",
+      "reviews_count": "6608",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31xOYFN-MYL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/11aWAB7uTQL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31FcVdwmisL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41sEwmtn65L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51UA5cqqrvL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07QGVMCJG/",
+    "timestamp": "2026-03-29T12:50:04.568386",
+    "extracted_fields": {
+      "asin": "B07QGVMCJG",
+      "title": "ZIHNIC Bluetooth Headphones Over-Ear, Foldable Wireless and Wired Stereo Headset Micro SD/TF, FM for Cell Phone,PC,Soft Earmuffs &amp;Light Weight for Prolonged Wearing (Black/Blue)",
+      "brand": "ZIHNIC",
+      "seller_id": "A3Q7KK2GT06VYU",
+      "rating": "4.4",
+      "reviews_count": "14434",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Over-Ear Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/81UwBOVaFeL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41e4m5gAIbL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61F24uyXuCL._AC_SL1498_.jpg",
+        "https://m.media-amazon.com/images/I/71MkTwTpeVL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61J0Wb97xXL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F61Q7FM3/",
+    "timestamp": "2026-03-29T12:50:20.662379",
+    "extracted_fields": {
+      "asin": "B0F61Q7FM3",
+      "title": "Meenova A2084 Left Earbud Replacement, Single Left Ear Side Only for Original Pod Pro 1st Gen, Compatible with OEM Pods Pro Charging Case A2190, Genuine A2083 Air Pros 1",
+      "brand": "Meenova",
+      "seller_id": "A1DNQ2TO380RGE",
+      "rating": "3.9",
+      "reviews_count": "1233",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/712XT4XgXUL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/91+Vr0KcrFL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61CEVi6tVnL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/716aQByMlRL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41H0jzKQHRL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0G2S6269S/",
+    "timestamp": "2026-03-29T12:50:39.826325",
+    "extracted_fields": {
+      "asin": "B0G2S6269S",
+      "title": "23-in-1 Home Drinking Water Testing Kit - 155 Strips,Tap and Well Water Test Kit for Hardness, Lead, Iron, Copper, Chlorine, Fluoride",
+      "seller_id": "A2K3O02BTB6PS6",
+      "rating": "4.7",
+      "reviews_count": "603",
+      "breadcrumbs": [
+        "Industrial &amp; Scientific",
+        "Lab &amp; Scientific Products"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/81k2FYSaruL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71VQtY9b2RL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71OJQJbnrEL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/81SjYSFVygL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51SlYniMA5L.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BFCSTKQ1/",
+    "timestamp": "2026-03-29T12:51:08.108591",
+    "extracted_fields": {
+      "asin": "B0BFCSTKQ1",
+      "title": "AppleCare+ for Headphones - Beats (2 Years)",
+      "brand": "Apple",
+      "rating": "2.8",
+      "reviews_count": "1497",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51YaIvHLpmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/215Nsp-0lHL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DYDVGMWF/",
+    "timestamp": "2026-03-29T12:51:15.194001",
+    "extracted_fields": {
+      "asin": "B0DYDVGMWF",
+      "title": "Meenova OEM Right Earbuds Replacement for Pods Pro (2nd Generation) A3047, A3048, A3049, Genuine Single Right Ear Side Only, Compatible with Original Air Pro 2 A2968 Charging Case",
+      "brand": "Meenova",
+      "seller_id": "A1DNQ2TO380RGE",
+      "rating": "4.6",
+      "reviews_count": "3",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31FF2CbTh6L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41smQaYhGpL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61gQsk1do3L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71hckUjpIAL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61S9Sw-wyrL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F8JLGHG5/",
+    "timestamp": "2026-03-29T12:51:23.667591",
+    "extracted_fields": {
+      "asin": "B0F8JLGHG5",
+      "title": "Apple Airpods 4 (Renewed Premium)",
+      "brand": "Amazon Renewed",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "45343",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41OwmnXjueL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0828BJGD2/",
+    "timestamp": "2026-03-29T12:51:55.941487",
+    "extracted_fields": {
+      "asin": "B0828BJGD2",
+      "title": "Apple AirPods Pro - 1st Gen (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A36UZVYSKR2ZI5",
+      "rating": "4.4",
+      "reviews_count": "45343",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51Up3W5z9bL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31ZRHF2i8-L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61suB7SdJkL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/312jLsZnPzL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31jCTsVO7lL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BG63JJ3T/",
+    "timestamp": "2026-03-29T12:53:01.381619",
+    "extracted_fields": {
+      "asin": "B0BG63JJ3T",
+      "title": "TESPERT Drinking Water Test Strips 125ct 16 in 1 – 30s Quick Screening for Hardness, pH, Iron, Nitrite, Copper, Chlorine, Nitrite, Carbonate,Lead, Alkalinity...Well, Tap, Home, City Water Testing",
+      "brand": "TESPERT",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "377",
+      "breadcrumbs": [
+        "Patio, Lawn &amp; Garden",
+        "Pools, Hot Tubs &amp; Supplies",
+        "Cleaning Tools &amp; Chemicals",
+        "Chemicals &amp; Water Testing Products",
+        "Water Test Kits"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/514yOzSA-KL.jpg",
+        "https://m.media-amazon.com/images/I/51ohaVr3ZYL.jpg",
+        "https://m.media-amazon.com/images/I/51tKA1g8pbL.jpg",
+        "https://m.media-amazon.com/images/I/518kTRnk+pL.jpg",
+        "https://m.media-amazon.com/images/I/51nmN5oOXGL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGJBQSJY/",
+    "timestamp": "2026-03-29T12:53:13.399211",
+    "extracted_fields": {
+      "asin": "B0DGJBQSJY",
+      "title": "Apple AirPods Max Wireless Over-Ear Headphones, Pro-Level Active Noise Cancellation, Transparency Mode, Personalized Spatial Audio, USB-C Charging, Bluetooth Headphones for iPhone - Purple",
+      "brand": "Apple",
+      "seller_id": "A2L77EE7U53NWQ",
+      "seller_name": "Amazon Resale",
+      "rating": "4.6",
+      "reviews_count": "16538",
+      "images": [
+        "https://m.media-amazon.com/images/I/6105xBN9l-L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31gDQI+q0IL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/615mL++GeCL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/311M64oxqNL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71MNXchmJjL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGW57KXJ/",
+    "timestamp": "2026-03-29T12:53:24.835768",
+    "extracted_fields": {
+      "asin": "B0DGW57KXJ",
+      "title": "Apple AirPods Max Wireless Over-Ear Headphones, Pro-Level Active Noise Cancellation, Transparency Mode, Personalized Spatial Audio, USB-C Charging, Bluetooth Headphones for iPhone - Blue",
+      "brand": "Apple",
+      "seller_id": "A2L77EE7U53NWQ",
+      "seller_name": "Amazon Resale",
+      "rating": "4.6",
+      "reviews_count": "16538",
+      "images": [
+        "https://m.media-amazon.com/images/I/6105xBN9l-L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31gDQI+q0IL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31f0ce2LZbL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/615mL++GeCL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/311M64oxqNL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGJJDFPR/",
+    "timestamp": "2026-03-29T12:53:35.838293",
+    "extracted_fields": {
+      "asin": "B0DGJJDFPR",
+      "title": "Apple AirPods Max Wireless Over-Ear Headphones, Pro-Level Active Noise Cancellation, Transparency Mode, Personalized Spatial Audio, USB-C Charging, Bluetooth Headphones for iPhone - Blue",
+      "brand": "Apple",
+      "seller_id": "A2L77EE7U53NWQ",
+      "seller_name": "Amazon Resale",
+      "rating": "4.6",
+      "reviews_count": "16538",
+      "images": [
+        "https://m.media-amazon.com/images/I/6105xBN9l-L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31gDQI+q0IL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31f0ce2LZbL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/615mL++GeCL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/311M64oxqNL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGVRV73L/",
+    "timestamp": "2026-03-29T12:53:47.249870",
+    "extracted_fields": {
+      "asin": "B0DGVRV73L",
+      "title": "Apple AirPods Max Wireless Over-Ear Headphones, Pro-Level Active Noise Cancellation, Transparency Mode, Personalized Spatial Audio, USB-C Charging, Bluetooth Headphones for iPhone - Purple",
+      "brand": "Apple",
+      "seller_id": "A2L77EE7U53NWQ",
+      "seller_name": "Amazon Resale",
+      "rating": "4.6",
+      "reviews_count": "16538",
+      "images": [
+        "https://m.media-amazon.com/images/I/6105xBN9l-L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31gDQI+q0IL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/615mL++GeCL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/311M64oxqNL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71MNXchmJjL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGW5JQSQ/",
+    "timestamp": "2026-03-29T12:53:57.794592",
+    "extracted_fields": {
+      "asin": "B0DGW5JQSQ",
+      "title": "Apple AirPods Max Wireless Over-Ear Headphones, Pro-Level Active Noise Cancellation, Transparency Mode, Personalized Spatial Audio - Orange with AppleCare+ (2 Years)",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "5.0",
+      "reviews_count": "5",
+      "images": [
+        "https://m.media-amazon.com/images/I/6105xBN9l-L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31gDQI+q0IL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41oeCp5jH6L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/615mL++GeCL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31f0ce2LZbL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGVTBRTZ/",
+    "timestamp": "2026-03-29T12:54:04.696703",
+    "extracted_fields": {
+      "asin": "B0DGVTBRTZ",
+      "title": "Apple AirPods Max Wireless Over-Ear Headphones, Pro-Level Active Noise Cancellation, Transparency Mode, Personalized Spatial Audio, USB-C Charging, Bluetooth Headphones for iPhone - Midnight",
+      "brand": "Apple",
+      "rating": "4.6",
+      "reviews_count": "16538",
+      "images": [
+        "https://m.media-amazon.com/images/I/6105xBN9l-L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31gDQI+q0IL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31f0ce2LZbL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/615mL++GeCL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/311M64oxqNL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGJKT2X9/",
+    "timestamp": "2026-03-29T12:54:11.348148",
+    "extracted_fields": {
+      "asin": "B0DGJKT2X9",
+      "title": "Apple AirPods Max Wireless Over-Ear Headphones, Pro-Level Active Noise Cancellation, Transparency Mode, Personalized Spatial Audio, USB-C Charging, Bluetooth Headphones for iPhone - Starlight",
+      "brand": "Apple",
+      "rating": "4.6",
+      "reviews_count": "16538",
+      "images": [
+        "https://m.media-amazon.com/images/I/6105xBN9l-L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31gDQI+q0IL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31f0ce2LZbL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/615mL++GeCL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/311M64oxqNL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGVQ3LGG/",
+    "timestamp": "2026-03-29T12:54:18.745905",
+    "extracted_fields": {
+      "asin": "B0DGVQ3LGG",
+      "title": "Apple AirPods Max Wireless Over-Ear Headphones, Pro-Level Active Noise Cancellation, Transparency Mode, Personalized Spatial Audio, USB-C Charging, Bluetooth Headphones for iPhone - Starlight",
+      "brand": "Apple",
+      "rating": "4.6",
+      "reviews_count": "16538",
+      "images": [
+        "https://m.media-amazon.com/images/I/6105xBN9l-L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31gDQI+q0IL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31f0ce2LZbL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/615mL++GeCL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/311M64oxqNL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGHYDZSD/",
+    "timestamp": "2026-03-29T12:54:26.616462",
+    "extracted_fields": {
+      "asin": "B0DGHYDZSD",
+      "title": "Apple AirPods Max Wireless Over-Ear Headphones, Pro-Level Active Noise Cancellation, Transparency Mode, Personalized Spatial Audio, USB-C Charging, Bluetooth Headphones for iPhone - Orange",
+      "brand": "Apple",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "2.8",
+      "reviews_count": "16538",
+      "images": [
+        "https://m.media-amazon.com/images/I/6105xBN9l-L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31gDQI+q0IL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31f0ce2LZbL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/615mL++GeCL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/311M64oxqNL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07Q4783K9/",
+    "timestamp": "2026-03-29T12:54:37.650458",
+    "extracted_fields": {
+      "asin": "B07Q4783K9",
+      "title": "ASURION 3 Year Portable Electronic Accident Protection Plan ($70 - $79.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.6",
+      "reviews_count": "2588",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51eJ7QftV8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71tBpBjvfqL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51Yt3TQl5UL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41J36J+-6YL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41xG8Yh0rlL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07RZ3LSHM/",
+    "timestamp": "2026-03-29T12:54:51.510979",
+    "extracted_fields": {
+      "asin": "B07RZ3LSHM",
+      "title": "Complete Protect: One simple plan covers all eligible past &amp; future Amazon Purchases",
+      "brand": "ASURION",
+      "rating": "4.0",
+      "reviews_count": "2263",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51z6yic-PQL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51MmPHru02L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51aMhrFlyRL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51IDulRY0vL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61gFiFw3k4L._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FY6X2XXY/",
+    "timestamp": "2026-03-29T12:54:59.892186",
+    "extracted_fields": {
+      "asin": "B0FY6X2XXY",
+      "title": "PlayStation DualSense™ Wireless Controller - for PS5, PC, MAC &amp; Mobile",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "reviews_count": "87",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61QuHSQM4FL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg",
+        "https://m.media-amazon.com/images/I/31XcpblcglL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GFQ2YZM7/",
+    "timestamp": "2026-03-29T12:55:31.460471",
+    "extracted_fields": {
+      "asin": "B0GFQ2YZM7",
+      "title": "PlayStation DualSense® Wireless Controller – Techno Red - For PS5, PC, MAC &amp; Mobile",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "237",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61Vja81QqdL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31jhgVzdmkL.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FY6X8VFS/",
+    "timestamp": "2026-03-29T12:55:43.130046",
+    "extracted_fields": {
+      "asin": "B0FY6X8VFS",
+      "title": "PlayStation DualSense™ Wireless Controller – Chroma Pearl - For PS5, PC, MAC &amp; Mobile",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "reviews_count": "12656",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg",
+        "https://m.media-amazon.com/images/I/31XcpblcglL.jpg",
+        "https://m.media-amazon.com/images/I/61S-R8LPo6L._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FY6Y5YDQ/",
+    "timestamp": "2026-03-29T12:55:55.870340",
+    "extracted_fields": {
+      "asin": "B0FY6Y5YDQ",
+      "title": "PlayStation DualSense™ Wireless Controller – Chroma Teal - For PS5, PC, MAC &amp; Mobile",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "reviews_count": "1788",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61mmg8qQZwL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31h+91BOlIL.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CQKL4YTB/",
+    "timestamp": "2026-03-29T12:56:07.814650",
+    "extracted_fields": {
+      "asin": "B0CQKL4YTB",
+      "title": "PlayStation DualSense® Wireless Controller - Starlight Blue",
+      "brand": "PlayStation",
+      "seller_id": "A2PQBA7L2BFM79",
+      "rating": "4.5",
+      "reviews_count": "12656",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg",
+        "https://m.media-amazon.com/images/I/31XcpblcglL.jpg",
+        "https://m.media-amazon.com/images/I/61GNEp3auhL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GFQBQ4KZ/",
+    "timestamp": "2026-03-29T12:56:51.258869",
+    "extracted_fields": {
+      "asin": "B0GFQBQ4KZ",
+      "title": "PlayStation DualSense® Wireless Controller – Rhythm Blue - for PS5, PC, MAC &amp; Mobile",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "237",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg",
+        "https://m.media-amazon.com/images/I/61oUk70HHWL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31XcpblcglL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GFQ2Z3BM/",
+    "timestamp": "2026-03-29T12:57:03.761269",
+    "extracted_fields": {
+      "asin": "B0GFQ2Z3BM",
+      "title": "PlayStation DualSense® Wireless Controller – Remix Green - for PS5, PC, MAC &amp; Mobile",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "237",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg",
+        "https://m.media-amazon.com/images/I/31XcpblcglL.jpg",
+        "https://m.media-amazon.com/images/I/61GNEp3auhL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CJTCQRNL/",
+    "timestamp": "2026-03-29T12:57:16.574587",
+    "extracted_fields": {
+      "asin": "B0CJTCQRNL",
+      "title": "PlayStation DualSense Wireless Controller - Sterling Silver",
+      "brand": "PlayStation",
+      "seller_id": "A3C2UZZKYRDEBM",
+      "rating": "4.5",
+      "reviews_count": "12656",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61FpmrI30eL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg",
+        "https://m.media-amazon.com/images/I/31XcpblcglL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FY66Q9MP/",
+    "timestamp": "2026-03-29T12:57:55.514463",
+    "extracted_fields": {
+      "asin": "B0FY66Q9MP",
+      "title": "PlayStation DualSense™ Wireless Controller – Chroma Indigo - For PS5, PC, MAC &amp; Mobile",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "reviews_count": "12656",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sjlex4a3L.jpg",
+        "https://m.media-amazon.com/images/I/61nQGukkRFL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31u2VKvUI2L.jpg",
+        "https://m.media-amazon.com/images/I/31XcpblcglL.jpg",
+        "https://m.media-amazon.com/images/I/61GNEp3auhL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07Q4786ZX/",
+    "timestamp": "2026-03-29T12:58:07.626525",
+    "extracted_fields": {
+      "asin": "B07Q4786ZX",
+      "title": "ASURION 2 Year Portable Electronic Accident Protection Plan ($70 - $79.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.5",
+      "reviews_count": "13316",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51Xr76m2WLL._AC_SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/51eJ7QftV8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41msggSuaoL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71adcKLAXsL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41HSmNoJnCL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07P97VVG1/",
+    "timestamp": "2026-03-29T12:58:15.352383",
+    "extracted_fields": {
+      "asin": "B07P97VVG1",
+      "title": "ASURION 2 Year Portable Electronic Accident Protection Plan ($175 - $199.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.4",
+      "reviews_count": "10130",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51Xr76m2WLL._AC_SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/51eJ7QftV8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41msggSuaoL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71adcKLAXsL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41HSmNoJnCL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07P83ZFZT/",
+    "timestamp": "2026-03-29T12:58:22.381578",
+    "extracted_fields": {
+      "asin": "B07P83ZFZT",
+      "title": "ASURION 3 Year Portable Electronic Accident Protection Plan ($175 - $199.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.4",
+      "reviews_count": "5275",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51eJ7QftV8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71tBpBjvfqL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51Yt3TQl5UL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41J36J+-6YL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41xG8Yh0rlL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CJT5DJ16/",
+    "timestamp": "2026-03-29T12:58:30.814043",
+    "extracted_fields": {
+      "asin": "B0CJT5DJ16",
+      "title": "PlayStation 5 Portal Remote Player",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "146",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/71c1dJCp94L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71wF90tDoML._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31nlL0Im1NL.jpg",
+        "https://m.media-amazon.com/images/I/71738irsaiL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41JJCMCFqLL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DHY8DC6R/",
+    "timestamp": "2026-03-29T12:59:45.447881",
+    "extracted_fields": {
+      "asin": "B0DHY8DC6R",
+      "title": "PlayStation DualSense™ Wireless Controller – Chroma Teal",
+      "brand": "PlayStation",
+      "seller_id": "A27RIP0968G1L9",
+      "rating": "4.5",
+      "reviews_count": "20873",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61mmg8qQZwL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31h+91BOlIL.jpg",
+        "https://m.media-amazon.com/images/I/31XcpblcglL.jpg",
+        "https://m.media-amazon.com/images/I/61E8dHsSYCL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61GNEp3auhL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BYQP73Q5/",
+    "timestamp": "2026-03-29T13:00:17.939196",
+    "extracted_fields": {
+      "asin": "B0BYQP73Q5",
+      "title": "PlayStation Sony DualSense Edge Wireless Controller - White (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A18IW5B63ZEKEY",
+      "rating": "4.3",
+      "reviews_count": "1323",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31l006CV0IL.jpg",
+        "https://m.media-amazon.com/images/I/51hWQouxKWL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/610FpvRfnSL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31oc0gzpkyL.jpg",
+        "https://m.media-amazon.com/images/I/21fLtMzjgaL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FY3PT325/",
+    "timestamp": "2026-03-29T13:01:02.794550",
+    "extracted_fields": {
+      "asin": "B0FY3PT325",
+      "title": "Nintendo Switch 2 System with Donkey Kong Bananza Game Bundle",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "10257",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories",
+        "Faceplates, Protectors &amp; Skins"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/417Pfcv9z+L._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/51Wn5QHabCL._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/31qrqqozVgL.jpg",
+        "https://m.media-amazon.com/images/I/31U2efUVzGL.jpg",
+        "https://m.media-amazon.com/images/I/51WJrmRGMvL._SL1001_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GQWCGVFV/",
+    "timestamp": "2026-03-29T13:01:09.773719",
+    "extracted_fields": {
+      "asin": "B0GQWCGVFV",
+      "title": "Nintendo Switch 2 System with Mario Kart World Game Bundle",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "252",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories",
+        "Faceplates, Protectors &amp; Skins"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/417Pfcv9z+L._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/51Wn5QHabCL._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/31qrqqozVgL.jpg",
+        "https://m.media-amazon.com/images/I/31U2efUVzGL.jpg",
+        "https://m.media-amazon.com/images/I/51WJrmRGMvL._SL1001_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FY3KRRWL/",
+    "timestamp": "2026-03-29T13:01:17.091852",
+    "extracted_fields": {
+      "asin": "B0FY3KRRWL",
+      "title": "Nintendo Switch 2 System Switch Online + Expansion Pack 12-Month Individual Membership Digital Bundle",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.0",
+      "reviews_count": "10257",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories",
+        "Faceplates, Protectors &amp; Skins"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/417Pfcv9z+L._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/51Wn5QHabCL._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/31qrqqozVgL.jpg",
+        "https://m.media-amazon.com/images/I/31U2efUVzGL.jpg",
+        "https://m.media-amazon.com/images/I/51WJrmRGMvL._SL1001_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FFF1BV7J/",
+    "timestamp": "2026-03-29T13:01:25.126215",
+    "extracted_fields": {
+      "asin": "B0FFF1BV7J",
+      "title": "Nintendo Switch 2 System with Pro Controller Bundle",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "3.7",
+      "reviews_count": "2045",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories",
+        "Faceplates, Protectors &amp; Skins"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/417Pfcv9z+L._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/51Wn5QHabCL._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/31qrqqozVgL.jpg",
+        "https://m.media-amazon.com/images/I/31U2efUVzGL.jpg",
+        "https://m.media-amazon.com/images/I/51WJrmRGMvL._SL1001_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0G19J3J98/",
+    "timestamp": "2026-03-29T13:01:32.202923",
+    "extracted_fields": {
+      "asin": "B0G19J3J98",
+      "title": "Nintendo Switch 2 System with Samsung 256GB microSD Express Card Bundle",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "5.0",
+      "reviews_count": "10257",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories",
+        "Faceplates, Protectors &amp; Skins"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51Wn5QHabCL._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/417Pfcv9z+L._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/31U2efUVzGL.jpg",
+        "https://m.media-amazon.com/images/I/31qrqqozVgL.jpg",
+        "https://m.media-amazon.com/images/I/51WJrmRGMvL._SL1001_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07P83ZKHQ/",
+    "timestamp": "2026-03-29T13:01:39.296499",
+    "extracted_fields": {
+      "asin": "B07P83ZKHQ",
+      "title": "ASURION 2 Year Portable Electronic Accident Protection Plan ($400 - $449.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.4",
+      "reviews_count": "12830",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51Xr76m2WLL._AC_SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/51eJ7QftV8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41msggSuaoL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71adcKLAXsL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41HSmNoJnCL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GQX61CMS/",
+    "timestamp": "2026-03-29T13:01:47.143952",
+    "extracted_fields": {
+      "asin": "B0GQX61CMS",
+      "title": "Nintendo Switch 2 System with Super Mario Galaxy + Super Mario Galaxy 2 Bundle",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "5.0",
+      "reviews_count": "239",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories",
+        "Faceplates, Protectors &amp; Skins"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/417Pfcv9z+L._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/51Wn5QHabCL._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/31qrqqozVgL.jpg",
+        "https://m.media-amazon.com/images/I/31U2efUVzGL.jpg",
+        "https://m.media-amazon.com/images/I/51WJrmRGMvL._SL1001_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GTBT73PK/",
+    "timestamp": "2026-03-29T13:01:53.814269",
+    "extracted_fields": {
+      "asin": "B0GTBT73PK",
+      "title": "Nintendo Switch 2 System with Super Mario Galaxy + Super Mario Galaxy 2 Digital Bundle",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "5.0",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories",
+        "Faceplates, Protectors &amp; Skins"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/417Pfcv9z+L._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/51Wn5QHabCL._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/31qrqqozVgL.jpg",
+        "https://m.media-amazon.com/images/I/31U2efUVzGL.jpg",
+        "https://m.media-amazon.com/images/I/51WJrmRGMvL._SL1001_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0G19QJ39Q/",
+    "timestamp": "2026-03-29T13:02:01.519717",
+    "extracted_fields": {
+      "asin": "B0G19QJ39Q",
+      "title": "Nintendo Switch 2 System with Game Traveler Deluxe Licensed System Case - Console Bundle with 12-Game Storage and Protective Carrying Case",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "3.6",
+      "reviews_count": "10257",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories",
+        "Faceplates, Protectors &amp; Skins"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/417Pfcv9z+L._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/51Wn5QHabCL._SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/31qrqqozVgL.jpg",
+        "https://m.media-amazon.com/images/I/31U2efUVzGL.jpg",
+        "https://m.media-amazon.com/images/I/51WJrmRGMvL._SL1001_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07PBD5P78/",
+    "timestamp": "2026-03-29T13:02:08.528628",
+    "extracted_fields": {
+      "asin": "B07PBD5P78",
+      "title": "ASURION 3 Year Portable Electronic Accident Protection Plan ($400 - $449.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.3",
+      "reviews_count": "2156",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51eJ7QftV8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71tBpBjvfqL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51Yt3TQl5UL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41J36J+-6YL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41xG8Yh0rlL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F1HDBJKH/",
+    "timestamp": "2026-03-29T13:02:17.069990",
+    "extracted_fields": {
+      "asin": "B0F1HDBJKH",
+      "title": "Xbox Wireless Gaming Controller (2025) – Pulse Red – Play on Xbox, Windows, Android, iOS, FireTV Sticks, Smart TVs, VR Headsets",
+      "brand": "Xbox",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "3749",
+      "breadcrumbs": [
+        "Video Games",
+        "Xbox Series X &amp; S",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/311FnCk9XPL.jpg",
+        "https://m.media-amazon.com/images/I/61g+yOruJzL._SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/61gwuRFORbL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/415RhEXEjUL.jpg",
+        "https://m.media-amazon.com/images/I/51EXI-0xl3L._SL1200_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F1J12R6N/",
+    "timestamp": "2026-03-29T13:03:00.124511",
+    "extracted_fields": {
+      "asin": "B0F1J12R6N",
+      "title": "Xbox Wireless Gaming Controller (2025) – Shock Blue – Play on Xbox, Windows, Android, iOS, FireTV Sticks, Smart TVs, VR Headsets",
+      "brand": "Xbox",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "3749",
+      "breadcrumbs": [
+        "Video Games",
+        "PC",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/311FnCk9XPL.jpg",
+        "https://m.media-amazon.com/images/I/616Gecual1L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61gwuRFORbL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71i1wm-XftL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61NlIRlKo5L._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F1HX3WXX/",
+    "timestamp": "2026-03-29T13:03:26.543801",
+    "extracted_fields": {
+      "asin": "B0F1HX3WXX",
+      "title": "Xbox Wireless Gaming Controller (2025) – Carbon Black – Play on Xbox, Windows, Android, iOS, FireTV Sticks, Smart TVs, VR Headsets",
+      "brand": "Xbox",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "13073",
+      "breadcrumbs": [
+        "Video Games",
+        "Xbox Series X &amp; S",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41ts+60DI5L.jpg",
+        "https://m.media-amazon.com/images/I/311FnCk9XPL.jpg",
+        "https://m.media-amazon.com/images/I/41Ac7x1xmqL.jpg",
+        "https://m.media-amazon.com/images/I/41juMHM-6CL.jpg",
+        "https://m.media-amazon.com/images/I/61gwuRFORbL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DT52LVMS/",
+    "timestamp": "2026-03-29T13:04:09.188244",
+    "extracted_fields": {
+      "asin": "B0DT52LVMS",
+      "title": "Xbox Wireless Gaming Controller (2025) – Deep Pink – Play on, Windows, Android, iOS, FireTV Sticks, Smart TVs, VR Headsets",
+      "brand": "Xbox",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "3749",
+      "breadcrumbs": [
+        "Video Games",
+        "Legacy Systems",
+        "Xbox Systems",
+        "Xbox",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/71hiXwm6D5L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/311FnCk9XPL.jpg",
+        "https://m.media-amazon.com/images/I/41Z8FtHo4vL.jpg",
+        "https://m.media-amazon.com/images/I/41066B1qBsL.jpg",
+        "https://m.media-amazon.com/images/I/61gwuRFORbL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FHXSL5M8/",
+    "timestamp": "2026-03-29T13:04:28.106768",
+    "extracted_fields": {
+      "asin": "B0FHXSL5M8",
+      "title": "Xbox Wireless Controller Storm Breaker Special Edition - Wireless &amp; Bluetooth Connectivity - New Hybrid D-Pad - New Share Button - Featuring Textured Grip",
+      "brand": "Xbox",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "3749",
+      "breadcrumbs": [
+        "Video Games",
+        "Legacy Systems",
+        "Microconsoles",
+        "GEM Box"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/311FnCk9XPL.jpg",
+        "https://m.media-amazon.com/images/I/51LOKCpMeDL.jpg",
+        "https://m.media-amazon.com/images/I/61gwuRFORbL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61NlIRlKo5L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71M7CxIFX6L._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FLLL1ZD8/",
+    "timestamp": "2026-03-29T13:05:11.817181",
+    "extracted_fields": {
+      "asin": "B0FLLL1ZD8",
+      "title": "Xbox Wireless Controller Heart Breaker Special Edition - Wireless &amp; Bluetooth Connectivity - New Hybrid D-Pad &amp; Share Button - Featuring Textured Grip",
+      "brand": "Xbox",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "65",
+      "breadcrumbs": [
+        "Video Games",
+        "Legacy Systems",
+        "Microconsoles",
+        "GEM Box"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/311FnCk9XPL.jpg",
+        "https://m.media-amazon.com/images/I/7196FGtO-vL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41p+PiBUcTL.jpg",
+        "https://m.media-amazon.com/images/I/61gwuRFORbL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41GxBnaOJHL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DT5SQ84T/",
+    "timestamp": "2026-03-29T13:05:37.833017",
+    "extracted_fields": {
+      "asin": "B0DT5SQ84T",
+      "title": "Xbox Wireless Gaming Controller (2025) – Velocity Green – Play on, Windows, Android, iOS, FireTV Sticks, Smart TVs, VR Headsets",
+      "brand": "Xbox",
+      "rating": "4.6",
+      "reviews_count": "3749",
+      "breadcrumbs": [
+        "Video Games",
+        "Legacy Systems",
+        "Xbox Systems",
+        "Xbox",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/311FnCk9XPL.jpg",
+        "https://m.media-amazon.com/images/I/715m3u4s4ZL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41ePMDtIqwL.jpg",
+        "https://m.media-amazon.com/images/I/71JAtpKa4hL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61-euzvlraL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F1HTGDTL/",
+    "timestamp": "2026-03-29T13:05:46.311991",
+    "extracted_fields": {
+      "asin": "B0F1HTGDTL",
+      "title": "Xbox Wireless Gaming Controller (2025) – Robot White – Play on Xbox, Windows, Android, iOS, FireTV Sticks, Smart TVs, VR Headsets",
+      "brand": "Xbox",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "734",
+      "breadcrumbs": [
+        "Video Games",
+        "Xbox Series X &amp; S",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41Gk16KXg3L.jpg",
+        "https://m.media-amazon.com/images/I/311FnCk9XPL.jpg",
+        "https://m.media-amazon.com/images/I/61gwuRFORbL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41je+4R2fkL.jpg",
+        "https://m.media-amazon.com/images/I/61NlIRlKo5L._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B08ZNQN1FP/",
+    "timestamp": "2026-03-29T13:06:39.730744",
+    "extracted_fields": {
+      "asin": "B08ZNQN1FP",
+      "title": "Xbox Core Wireless Gaming Controller – Electric Volt Series X|S, One, Windows PC, Android, and iOS",
+      "brand": "Xbox",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "3749",
+      "breadcrumbs": [
+        "Video Games",
+        "Xbox One",
+        "Accessories",
+        "Controllers",
+        "Gamepads &amp; Standard Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/619+XDyZ-ML._SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/311FnCk9XPL.jpg",
+        "https://m.media-amazon.com/images/I/51EBqPeCB-L.jpg",
+        "https://m.media-amazon.com/images/I/41Zd1ozmIIL.jpg",
+        "https://m.media-amazon.com/images/I/61gwuRFORbL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FTQ5RJM7/",
+    "timestamp": "2026-03-29T13:07:26.062434",
+    "extracted_fields": {
+      "asin": "B0FTQ5RJM7",
+      "title": "Xbox Wireless Gaming Controller – Fallout Pip-Boy Edition – Play on Console, Windows, and Cloud Devices",
+      "brand": "Xbox",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "reviews_count": "3889",
+      "breadcrumbs": [
+        "Video Games",
+        "Legacy Systems",
+        "Xbox Systems",
+        "Xbox",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41HqdMmVrlL.jpg",
+        "https://m.media-amazon.com/images/I/311FnCk9XPL.jpg",
+        "https://m.media-amazon.com/images/I/81jhXHTWlnL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/81B3yJrH2JL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61gwuRFORbL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FLLXHPM9/",
+    "timestamp": "2026-03-29T13:07:37.270685",
+    "extracted_fields": {
+      "asin": "B0FLLXHPM9",
+      "title": "Xbox Wireless Controller Ice Breaker Special Edition - Wireless &amp; Bluetooth Connectivity - New Hybrid D-Pad &amp; Share Button - Featuring Textured Grip",
+      "brand": "Xbox",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Video Games",
+        "Legacy Systems",
+        "Microconsoles",
+        "GEM Box"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/311FnCk9XPL.jpg",
+        "https://m.media-amazon.com/images/I/71DWxbfCUWL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71NiThMNLxL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61gwuRFORbL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61NlIRlKo5L._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F5X2MS9D/",
+    "timestamp": "2026-03-29T13:08:00.122773",
+    "extracted_fields": {
+      "asin": "B0F5X2MS9D",
+      "title": "Joy-Con™ 2 Straps (set of 2) Light Blue/Light Red",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.8",
+      "reviews_count": "457",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41++2zpKNwL.jpg",
+        "https://m.media-amazon.com/images/I/71bRiR2ei1L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61UM47MlCXL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31iLYRVw8oL.jpg",
+        "https://m.media-amazon.com/images/I/31FpwqpTZiL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07Q474C34/",
+    "timestamp": "2026-03-29T13:08:18.543000",
+    "extracted_fields": {
+      "asin": "B07Q474C34",
+      "title": "ASURION 2 Year Portable Electronic Accident Protection Plan ($90 - $99.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.5",
+      "reviews_count": "1552",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51Xr76m2WLL._AC_SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/51eJ7QftV8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41msggSuaoL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71adcKLAXsL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41HSmNoJnCL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09Z1KQKVV/",
+    "timestamp": "2026-03-29T13:08:25.858333",
+    "extracted_fields": {
+      "asin": "B09Z1KQKVV",
+      "title": "Joy-Con™ 2 (L) Light Blue",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61rTUjVubyL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61UM47MlCXL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31iLYRVw8oL.jpg",
+        "https://m.media-amazon.com/images/I/61TWU19VvgL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31EPfQawqUL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B08JMG11PT/",
+    "timestamp": "2026-03-29T13:08:36.624299",
+    "extracted_fields": {
+      "asin": "B08JMG11PT",
+      "title": "ASURION 3 Year Portable Electronic Accident Protection Plan ($90 - $99.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51eJ7QftV8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71tBpBjvfqL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51Yt3TQl5UL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41J36J+-6YL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41xG8Yh0rlL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09Z1FRQ3J/",
+    "timestamp": "2026-03-29T13:08:44.003222",
+    "extracted_fields": {
+      "asin": "B09Z1FRQ3J",
+      "title": "Joy-Con™ 2 Charging Grip",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.3",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61Qh9Ys28uL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61UM47MlCXL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31iLYRVw8oL.jpg",
+        "https://m.media-amazon.com/images/I/61NhbxoNHyL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61HzMQMRyzL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09YZVR177/",
+    "timestamp": "2026-03-29T13:08:54.707496",
+    "extracted_fields": {
+      "asin": "B09YZVR177",
+      "title": "Nintendo Joy-Con™ 2 (R) Light Red",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Games"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31GQZUtmxxL.jpg",
+        "https://m.media-amazon.com/images/I/31m-6Nm2J0L.jpg",
+        "https://m.media-amazon.com/images/I/61UM47MlCXL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31iLYRVw8oL.jpg",
+        "https://m.media-amazon.com/images/I/61NhbxoNHyL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09Z1KQLW2/",
+    "timestamp": "2026-03-29T13:09:10.330748",
+    "extracted_fields": {
+      "asin": "B09Z1KQLW2",
+      "title": "Nintendo Joy-Con 2 (L)/(R) Light Blue/Light Red",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61G+h1Y81YL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71e4x02w9bL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61UM47MlCXL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/716Ks5SloHL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51wSpaM+iwL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09Z1FRRJP/",
+    "timestamp": "2026-03-29T13:09:20.083859",
+    "extracted_fields": {
+      "asin": "B09Z1FRRJP",
+      "title": "Nintendo Joy-Con™ 2 Wheel (set of 2)",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.7",
+      "reviews_count": "81460",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/419XP-Ur8jL.jpg",
+        "https://m.media-amazon.com/images/I/61UM47MlCXL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31iLYRVw8oL.jpg",
+        "https://m.media-amazon.com/images/I/61NhbxoNHyL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71I0BIGQt9L._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07RZ74VLR/",
+    "timestamp": "2026-03-29T13:09:36.346958",
+    "extracted_fields": {
+      "asin": "B07RZ74VLR",
+      "title": "Roblox Digital Gift Card - 1,000 Robux [Includes Exclusive Virtual Item] [Digital Code]",
+      "brand": "Roblox",
+      "seller_id": "A3ODHND3J0WMC8",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Video Games",
+        "PC"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61s70-2HoBL._SL1010_.jpg",
+        "https://m.media-amazon.com/images/I/61ZAa0U4J1L._SL1010_.jpg",
+        "https://m.media-amazon.com/images/I/41qfPBerecL.jpg",
+        "https://m.media-amazon.com/images/I/41O+f8ZB16L.jpg",
+        "https://m.media-amazon.com/images/I/61vuyAUj0rL._SL1010_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B00GAC1D2G/",
+    "timestamp": "2026-03-29T13:09:49.079474",
+    "extracted_fields": {
+      "asin": "B00GAC1D2G",
+      "title": "$10 -PlayStation Store Gift Card [Digital Code]",
+      "brand": "PlayStation",
+      "seller_id": "A3ODHND3J0WMC8",
+      "rating": "4.6",
+      "reviews_count": "276504",
+      "breadcrumbs": [
+        "Video Games",
+        "Online Game Services",
+        "PlayStation Network",
+        "Store Currency Cards"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41MT2s0Gm2L.jpg",
+        "https://m.media-amazon.com/images/I/61H7K1p1sSL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41cEZpeUA1L.jpg",
+        "https://m.media-amazon.com/images/I/41pxGtRlIZL.jpg",
+        "https://m.media-amazon.com/images/I/41S8VmKESoL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B00F4CEHNK/",
+    "timestamp": "2026-03-29T13:09:56.028364",
+    "extracted_fields": {
+      "asin": "B00F4CEHNK",
+      "title": "$10 Xbox Gift Card [Digital Code]",
+      "brand": "Xbox",
+      "seller_id": "A3ODHND3J0WMC8",
+      "rating": "4.6",
+      "reviews_count": "276504",
+      "breadcrumbs": [
+        "Video Games",
+        "Online Game Services",
+        "Xbox Live",
+        "Store Currency Cards"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51XfVpTN1kL.jpg",
+        "https://m.media-amazon.com/images/I/61MpLwdhzVL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51v3rQ-G3tL.jpg",
+        "https://m.media-amazon.com/images/I/61cXORwUyJL._SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/51smvaLl6IL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BK9Y5FYG/",
+    "timestamp": "2026-03-29T13:10:02.477476",
+    "extracted_fields": {
+      "asin": "B0BK9Y5FYG",
+      "title": "PlayStation DualSense Edge Stick Module",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.7",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/310HBWpwRNL.jpg",
+        "https://m.media-amazon.com/images/I/51LSFgVAP+L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51JWa-r-c2L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31aapQ5g+TL.jpg",
+        "https://m.media-amazon.com/images/I/61b0pgDhb0L._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0G4MNL18Q/",
+    "timestamp": "2026-03-29T13:10:12.862411",
+    "extracted_fields": {
+      "asin": "B0G4MNL18Q",
+      "title": "Bundle of PlayStation®5 console (slim) + $100 PlayStation Store Gift Card [Digital Code]",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.6",
+      "reviews_count": "12646",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Consoles"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31fTKdQoZ7L.jpg",
+        "https://m.media-amazon.com/images/I/71Ix1N9JuWL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/21pybROD6BL.jpg",
+        "https://m.media-amazon.com/images/I/31MVq5SyghL.jpg",
+        "https://m.media-amazon.com/images/I/51tSjJJl82L._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CL5KNB9M/",
+    "timestamp": "2026-03-29T13:10:18.829913",
+    "extracted_fields": {
+      "asin": "B0CL5KNB9M",
+      "title": "PlayStation®5 Digital Edition (slim)",
+      "brand": "PlayStation",
+      "seller_id": "A2L77EE7U53NWQ",
+      "seller_name": "Amazon Resale",
+      "rating": "4.8",
+      "reviews_count": "12646",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Consoles"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31fTKdQoZ7L.jpg",
+        "https://m.media-amazon.com/images/I/41Gr-cDOI5L.jpg",
+        "https://m.media-amazon.com/images/I/21pybROD6BL.jpg",
+        "https://m.media-amazon.com/images/I/21ExrZmMr4L.jpg",
+        "https://m.media-amazon.com/images/I/51Rn4HSa6BL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FRSZT2H5/",
+    "timestamp": "2026-03-29T13:10:28.416645",
+    "extracted_fields": {
+      "asin": "B0FRSZT2H5",
+      "title": "PlayStation®5 Digital Edition 825GB – Fortnite Flowering Chaos Bundle",
+      "brand": "PlayStation",
+      "rating": "4.7",
+      "reviews_count": "12646",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Consoles"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31fTKdQoZ7L.jpg",
+        "https://m.media-amazon.com/images/I/21pybROD6BL.jpg",
+        "https://m.media-amazon.com/images/I/51Rn4HSa6BL.jpg",
+        "https://m.media-amazon.com/images/I/81UyVrpHAxL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/516yiK6U+FL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FRSYZGBM/",
+    "timestamp": "2026-03-29T13:10:34.992684",
+    "extracted_fields": {
+      "asin": "B0FRSYZGBM",
+      "title": "PlayStation 5 Console 1TB - Fortnite Flowering Chaos Bundle",
+      "brand": "PlayStation",
+      "rating": "4.6",
+      "reviews_count": "81460",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Consoles"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31fTKdQoZ7L.jpg",
+        "https://m.media-amazon.com/images/I/21pybROD6BL.jpg",
+        "https://m.media-amazon.com/images/I/51Rn4HSa6BL.jpg",
+        "https://m.media-amazon.com/images/I/81UyVrpHAxL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/516yiK6U+FL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CL61F39H/",
+    "timestamp": "2026-03-29T13:10:42.254093",
+    "extracted_fields": {
+      "asin": "B0CL61F39H",
+      "title": "PlayStation 5 Disc Edition Console (slim)",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.3",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Consoles"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31fTKdQoZ7L.jpg",
+        "https://m.media-amazon.com/images/I/41Gr-cDOI5L.jpg",
+        "https://m.media-amazon.com/images/I/21pybROD6BL.jpg",
+        "https://m.media-amazon.com/images/I/51a0eRaE8BL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51Rn4HSa6BL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DGY63Z2H/",
+    "timestamp": "2026-03-29T13:11:34.834727",
+    "extracted_fields": {
+      "asin": "B0DGY63Z2H",
+      "title": "PlayStation 5 Pro Console",
+      "brand": "PlayStation",
+      "seller_id": "A2L77EE7U53NWQ",
+      "seller_name": "Amazon Resale",
+      "rating": "4.6",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Games"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31fTKdQoZ7L.jpg",
+        "https://m.media-amazon.com/images/I/21pybROD6BL.jpg",
+        "https://m.media-amazon.com/images/I/21T43qOtDmL.jpg",
+        "https://m.media-amazon.com/images/I/21FErzfHTiL.jpg",
+        "https://m.media-amazon.com/images/I/21BH2-UbRlL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FRGTYSL5/",
+    "timestamp": "2026-03-29T13:11:45.350472",
+    "extracted_fields": {
+      "asin": "B0FRGTYSL5",
+      "title": "PlayStation®5 console – 1TB",
+      "brand": "PlayStation",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.3",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Consoles"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31fTKdQoZ7L.jpg",
+        "https://m.media-amazon.com/images/I/41Gr-cDOI5L.jpg",
+        "https://m.media-amazon.com/images/I/21pybROD6BL.jpg",
+        "https://m.media-amazon.com/images/I/31nMMbUi2+L.jpg",
+        "https://m.media-amazon.com/images/I/51Rn4HSa6BL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07PBD7GTR/",
+    "timestamp": "2026-03-29T13:12:07.123071",
+    "extracted_fields": {
+      "asin": "B07PBD7GTR",
+      "title": "ASURION 2 Year Portable Electronic Accident Protection Plan ($450 - $499.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51Xr76m2WLL._AC_SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/51eJ7QftV8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41msggSuaoL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71adcKLAXsL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41HSmNoJnCL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07P6YXLTT/",
+    "timestamp": "2026-03-29T13:12:12.934433",
+    "extracted_fields": {
+      "asin": "B07P6YXLTT",
+      "title": "ASURION 3 Year Portable Electronic Accident Protection Plan ($450 - $499.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51eJ7QftV8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71tBpBjvfqL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51Yt3TQl5UL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41J36J+-6YL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41xG8Yh0rlL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FS8NZ9SY/",
+    "timestamp": "2026-03-29T13:12:18.869496",
+    "extracted_fields": {
+      "asin": "B0FS8NZ9SY",
+      "title": "Mario Tennis Fever Standard - Nintendo Switch 2 [Digital Code]",
+      "brand": "Nintendo",
+      "seller_id": "A3ODHND3J0WMC8",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Games"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/81EhLvd5BKL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/81jAF2bV7+L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51KIk9bB4aL.jpg",
+        "https://m.media-amazon.com/images/I/91O7n-lpLzL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/81Rijajf2UL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0D71SHR5B/",
+    "timestamp": "2026-03-29T13:12:26.554200",
+    "extracted_fields": {
+      "asin": "B0D71SHR5B",
+      "title": "DRAGON QUEST III HD-2D Remake (NSW)",
+      "brand": "Square Enix",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.8",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch",
+        "Games"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41EFCa4GbiL.jpg",
+        "https://m.media-amazon.com/images/I/71NMQx6NjML._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51yWCeItcJL.jpg",
+        "https://m.media-amazon.com/images/I/51+Pof3xzdL.jpg",
+        "https://m.media-amazon.com/images/I/81UN3BKXZXL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B092LJJYDQ/",
+    "timestamp": "2026-03-29T13:12:36.743524",
+    "extracted_fields": {
+      "asin": "B092LJJYDQ",
+      "title": "Playstation 5 DualSense Wireless Controller - White (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A26IZ3J41IPJFQ",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/514w6a2r0BL._SL1170_.jpg",
+        "https://m.media-amazon.com/images/I/61WMs0+3w0S._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51fC1YAeomL._SL1170_.jpg",
+        "https://m.media-amazon.com/images/I/31wgGK20igS.jpg",
+        "https://m.media-amazon.com/images/I/31RxkKG790L.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CD1JTBSC/",
+    "timestamp": "2026-03-29T13:12:52.417529",
+    "extracted_fields": {
+      "asin": "B0CD1JTBSC",
+      "title": "Meta Quest 3 512GB | VR Headset — Thirty Percent Sharper Resolution — 2X Graphical Processing Power — Virtual Reality Without Wires — Access to 40+ Games with a 3-Month Trial of Meta Horizon+ Included",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.2",
+      "reviews_count": "192020",
+      "breadcrumbs": [
+        "Video Games",
+        "Virtual Reality",
+        "Standalone Hardware",
+        "Headsets"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31IFvplM7VL.jpg",
+        "https://m.media-amazon.com/images/I/51jEjNs3lUL.jpg",
+        "https://m.media-amazon.com/images/I/51XE3Yl9xsL.jpg",
+        "https://m.media-amazon.com/images/I/41-JZUidfnL.jpg",
+        "https://m.media-amazon.com/images/I/41UnAxAuXxL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B097YYGXY5/",
+    "timestamp": "2026-03-29T13:13:02.191109",
+    "extracted_fields": {
+      "asin": "B097YYGXY5",
+      "title": "PlayStation DualSense Wireless Controller Midnight Black (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A1ASNRAEDIC2KH",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31l006CV0IL.jpg",
+        "https://m.media-amazon.com/images/I/31oc0gzpkyL.jpg",
+        "https://m.media-amazon.com/images/I/6117SsHEKIL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31x3hwlNsiL.jpg",
+        "https://m.media-amazon.com/images/I/61E5LYMmtkL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F79Z9V31/",
+    "timestamp": "2026-03-29T13:13:34.594679",
+    "extracted_fields": {
+      "asin": "B0F79Z9V31",
+      "title": "Star Wars Outlaws - Gold Edition, Nintendo Switch 2",
+      "brand": "Ubisoft",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.6",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch",
+        "Games"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/71FKF4Ix9bL._AC_SL1080_.jpg",
+        "https://m.media-amazon.com/images/I/81F+7dvT33L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51bJvzjj9LL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61hEj1k-DyL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/81-J9D0rG0L._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0D4RJGFDT/",
+    "timestamp": "2026-03-29T13:14:39.179772",
+    "extracted_fields": {
+      "asin": "B0D4RJGFDT",
+      "title": "METAL GEAR SOLID Δ: SNAKE EATER TACTICAL ED – PS5",
+      "brand": "Konami",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.7",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Games"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/81tPBMiyCiL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61Ht-AY+YxL._SL1232_.jpg",
+        "https://m.media-amazon.com/images/I/515KhVivSbL.jpg",
+        "https://m.media-amazon.com/images/I/51SRthu6gmL.jpg",
+        "https://m.media-amazon.com/images/I/41BaGmccRLL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F663CWT8/",
+    "timestamp": "2026-03-29T13:15:53.399673",
+    "extracted_fields": {
+      "asin": "B0F663CWT8",
+      "title": "Sonic X Shadow Generations - Nintendo Switch 2",
+      "brand": "SEGA",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.7",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Games"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41lrCJ9DBwL.jpg",
+        "https://m.media-amazon.com/images/I/81IcPQtullL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/517CostW0GL.jpg",
+        "https://m.media-amazon.com/images/I/51UY1JwYHpL.jpg",
+        "https://m.media-amazon.com/images/I/71AQOiSv8xL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0895MV7C7/",
+    "timestamp": "2026-03-29T13:16:04.978277",
+    "extracted_fields": {
+      "asin": "B0895MV7C7",
+      "title": "CronusZen for Nintendo, PlayStation, Xbox, Switch (Electronic Games)",
+      "seller_id": "A241IAO8OWIZ0F",
+      "rating": "4.5",
+      "reviews_count": "81460",
+      "breadcrumbs": [
+        "Video Games",
+        "PlayStation 5",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/417NOsvO3JL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61Cxht6MtbL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/61VUa6N-9jL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/41F2iqjt1VL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51hgUp1JEEL._AC_SL1000_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BS9Y9L2Y/",
+    "timestamp": "2026-03-29T13:16:26.789679",
+    "extracted_fields": {
+      "asin": "B0BS9Y9L2Y",
+      "title": "Nintendo Switch with Neon Blue and Red Joy-Con (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "AYGGBLY03ZTJZ",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch",
+        "Consoles"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41vDn0GyPVL.jpg",
+        "https://m.media-amazon.com/images/I/41oYTQ4xhpL.jpg",
+        "https://m.media-amazon.com/images/I/51YXZgm0DbL._SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/41BK-AwtV9L.jpg",
+        "https://m.media-amazon.com/images/I/51fBMSbTG4L._SL1240_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B01NAWKYZ0/",
+    "timestamp": "2026-03-29T13:16:49.749176",
+    "extracted_fields": {
+      "asin": "B01NAWKYZ0",
+      "title": "Nintendo Switch Pro Controller",
+      "brand": "Nintendo",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch",
+        "Accessories",
+        "Controllers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/71UcSIWT50L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71F5nnoo8gL._SL1300_.jpg",
+        "https://m.media-amazon.com/images/I/411ExhriseL.jpg",
+        "https://m.media-amazon.com/images/I/51++xMbbUIL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41s5xaTd2aL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B088QTFM46/",
+    "timestamp": "2026-03-29T13:17:05.023563",
+    "extracted_fields": {
+      "asin": "B088QTFM46",
+      "title": "Cronus Zen Controller Emulator for Xbox, PlayStation, Nintendo and PC (CM00053)",
+      "brand": "Collective Minds",
+      "seller_id": "A1KWJVS57NX03I",
+      "rating": "4.3",
+      "breadcrumbs": [
+        "Video Games",
+        "PC",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61YdfCPfzQL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41LXwT6N+YL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51YdRC+VYOL._AC_SL1047_.jpg",
+        "https://m.media-amazon.com/images/I/419fIvEGt3L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61XXyElQiEL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07Q38RTL4/",
+    "timestamp": "2026-03-29T13:17:21.674584",
+    "extracted_fields": {
+      "asin": "B07Q38RTL4",
+      "title": "ASURION 3 Year Portable Electronic Accident Protection Plan ($80 - $89.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.6",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51eJ7QftV8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71tBpBjvfqL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51Yt3TQl5UL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41J36J+-6YL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41xG8Yh0rlL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07Q58KSRR/",
+    "timestamp": "2026-03-29T13:17:27.994303",
+    "extracted_fields": {
+      "asin": "B07Q58KSRR",
+      "title": "ASURION 2 Year Portable Electronic Accident Protection Plan ($80 - $89.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51Xr76m2WLL._AC_SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/51eJ7QftV8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41msggSuaoL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71adcKLAXsL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41HSmNoJnCL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CQRQBNHL/",
+    "timestamp": "2026-03-29T13:17:34.961599",
+    "extracted_fields": {
+      "asin": "B0CQRQBNHL",
+      "title": "PlayStation DualSense Wireless Controller - Cobalt Blue (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "AJCMQ6GSX1EB5",
+      "rating": "4.4",
+      "images": [
+        "https://m.media-amazon.com/images/I/31l006CV0IL.jpg",
+        "https://m.media-amazon.com/images/I/31j0hxQyh2L.jpg",
+        "https://m.media-amazon.com/images/I/61E5LYMmtkL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61Wcje5y6lL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61HG0eYX78L._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FDMVPVW9/",
+    "timestamp": "2026-03-29T13:17:44.741379",
+    "extracted_fields": {
+      "asin": "B0FDMVPVW9",
+      "title": "Mario Kart World Standard - Nintendo Switch 2 [Digital Code]",
+      "brand": "Nintendo",
+      "seller_id": "A3ODHND3J0WMC8",
+      "rating": "4.6",
+      "reviews_count": "81460",
+      "breadcrumbs": [
+        "Video Games",
+        "Nintendo Switch 2",
+        "Games"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/81hvOKNUKLL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31f6rPJ5KaL.jpg",
+        "https://m.media-amazon.com/images/I/71zZJ+gzpOL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51zaiyfzDeL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07P989QTJ/",
+    "timestamp": "2026-03-29T13:17:52.115422",
+    "extracted_fields": {
+      "asin": "B07P989QTJ",
+      "title": "Official Luna Wireless Controller",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.3",
+      "images": [
+        "https://m.media-amazon.com/images/I/51MvXVeUNdL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/41agJVWBMKL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41cPvOQBYDL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/619arZmpJwL._AC_SL1080_.jpg",
+        "https://m.media-amazon.com/images/I/71BdXfnS5DL._AC_SL1080_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FM4D2HJQ/",
+    "timestamp": "2026-03-29T13:17:59.771393",
+    "extracted_fields": {
+      "asin": "B0FM4D2HJQ",
+      "title": "Meta Quest 3S 128GB, one Low Monthly Price, 24 Months of Games and Extended Protection, Ultimate Virtual Reality Experience",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.8",
+      "breadcrumbs": [
+        "Video Games",
+        "Virtual Reality",
+        "Standalone Hardware",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/81LHXEmiD8L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31syzfyPv3L.jpg",
+        "https://m.media-amazon.com/images/I/81n6IvGrQLL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51mENNH1TkL.jpg",
+        "https://m.media-amazon.com/images/I/71wZ17uCcdL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GN3YJPJK/",
+    "timestamp": "2026-03-29T13:18:07.184059",
+    "extracted_fields": {
+      "asin": "B0GN3YJPJK",
+      "title": "Meta Quest 3S 128GB | VR Headset — Thirty-Three Percent More Memory — 2X Graphical Processing Power — Access to 200+ Games with a Trial of Xbox Game Pass Included",
+      "seller_id": "ATVPDKIKX0DER",
+      "breadcrumbs": [
+        "Video Games",
+        "Virtual Reality",
+        "Standalone Hardware",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/81LHXEmiD8L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31syzfyPv3L.jpg",
+        "https://m.media-amazon.com/images/I/71wZ17uCcdL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41EQX26JbaL.jpg",
+        "https://m.media-amazon.com/images/I/81bSZHomoiL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0G4SCX27Q/",
+    "timestamp": "2026-03-29T13:18:14.517026",
+    "extracted_fields": {
+      "asin": "B0G4SCX27Q",
+      "title": "Meta Quest 3S 256GB | VR Headset — Thirty-Three Percent More Memory — 2X Graphical Processing Power — Virtual Reality Without Wires — Access to 40+ Games with a 3-Month Trial of Meta Horizon+ Included",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Video Games",
+        "Virtual Reality",
+        "Standalone Hardware",
+        "Headsets"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/81LHXEmiD8L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31syzfyPv3L.jpg",
+        "https://m.media-amazon.com/images/I/81n6IvGrQLL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51mENNH1TkL.jpg",
+        "https://m.media-amazon.com/images/I/71wZ17uCcdL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07PBD3VLH/",
+    "timestamp": "2026-03-29T13:18:37.197656",
+    "extracted_fields": {
+      "asin": "B07PBD3VLH",
+      "title": "ASURION 2 Year Electronics Protection Plan ($250 - $299.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.3",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51Xr76m2WLL._AC_SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/41wn3Gi7-UL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41msggSuaoL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/81bHY2e5EmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51wV4JMlFWL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0GGDJ4L4R/",
+    "timestamp": "2026-03-29T13:18:44.694807",
+    "extracted_fields": {
+      "asin": "B0GGDJ4L4R",
+      "title": "Meta Quest 3S 256GB, one Low Monthly Price, 24 Months of Games and Extended Protection, Ultimate Virtual Reality Experience",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.5",
+      "reviews_count": "81460",
+      "breadcrumbs": [
+        "Video Games",
+        "Virtual Reality",
+        "Standalone Hardware",
+        "Headsets"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/81LHXEmiD8L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31syzfyPv3L.jpg",
+        "https://m.media-amazon.com/images/I/41ZFkAk7T-L.jpg",
+        "https://m.media-amazon.com/images/I/71wZ17uCcdL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/813PYkmFt2L._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DDJZW3C9/",
+    "timestamp": "2026-03-29T13:18:52.435461",
+    "extracted_fields": {
+      "asin": "B0DDJZW3C9",
+      "title": "Meta Quest 3S 256GB | VR Headset — Thirty-Three Percent More Memory — 2X Graphical Processing Power — Virtual Reality Without Wires — Get Batman: Arkham Shadow Included Plus Access to 40+ Games",
+      "seller_id": "AGLXT2DXUD6Y7",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Video Games",
+        "Virtual Reality",
+        "Standalone Hardware",
+        "Headsets"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41HRSLoeY6L.jpg",
+        "https://m.media-amazon.com/images/I/81LHXEmiD8L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31syzfyPv3L.jpg",
+        "https://m.media-amazon.com/images/I/4147Ahc8fhL.jpg",
+        "https://m.media-amazon.com/images/I/71wZ17uCcdL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07PC1TGQJ/",
+    "timestamp": "2026-03-29T13:19:43.096669",
+    "extracted_fields": {
+      "asin": "B07PC1TGQJ",
+      "title": "ASURION 3 Year Electronics Protection Plan ($250 - $299.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41wn3Gi7-UL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/81bHY2e5EmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71apgxaYy-L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51wV4JMlFWL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/718tYoN-8PL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0B844T634/",
+    "timestamp": "2026-03-29T13:19:50.985476",
+    "extracted_fields": {
+      "asin": "B0B844T634",
+      "title": "Apple AirPods Pro Wireless Earbuds with MagSafe Charging Case (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A1W3JAPFP88EHS",
+      "rating": "4.6",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/515KsfvTi+L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71VCPNMIG3L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31oJfD3lJJL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31k6K-+NJ2L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41hofkZHlvL._AC_SL1000_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BVSXY216/",
+    "timestamp": "2026-03-29T13:20:02.469001",
+    "extracted_fields": {
+      "asin": "B0BVSXY216",
+      "title": "Apple AirPods with Lightning Charging Case (3rd Generation) White (Renewed Premium)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A35LLZTIT5S01N",
+      "rating": "4.4",
+      "reviews_count": "418454",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61GDJtxN3NL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31FcVdwmisL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31Mu-5mfaUL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/21LXvylfkgL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61fTopgP4bL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09M94KXPN/",
+    "timestamp": "2026-03-29T13:20:13.796657",
+    "extracted_fields": {
+      "asin": "B09M94KXPN",
+      "title": "Apple AirPods (3rd Generation) (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A1W3JAPFP88EHS",
+      "rating": "4.6",
+      "reviews_count": "88555",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/21wTxTjbRqL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51fRbfX1LPL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31ZfK4OvqVL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31e-ObPjqaL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71z8RunvWTL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0F487G33H/",
+    "timestamp": "2026-03-29T13:20:24.432459",
+    "extracted_fields": {
+      "asin": "B0F487G33H",
+      "title": "Wireless Charging Case Compatible with AirPods 4, Replacement Case for AirPods 4 with Bluetooth Pairing Sync Button, Earbuds Not Included (USB-C Port)",
+      "seller_id": "A3QYC03PJRQT2X",
+      "rating": "3.0",
+      "reviews_count": "111",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Cases"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31jMiCtahZL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51eUDc7xoWL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61heEeX5aHL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71yNxwxza6L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41lNxZnp7FL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CG6RK838/",
+    "timestamp": "2026-03-29T13:20:37.760620",
+    "extracted_fields": {
+      "asin": "B0CG6RK838",
+      "title": "ASURION 2 Year Headphones Protection Plan ($90 - $99.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.6",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51Xr76m2WLL._AC_SL1001_.jpg",
+        "https://m.media-amazon.com/images/I/512p+nrp6lL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61q0JfsCScL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/41msggSuaoL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61dvN0VwR9L._AC_SL1000_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BJQWYLYN/",
+    "timestamp": "2026-03-29T13:20:45.378398",
+    "extracted_fields": {
+      "asin": "B0BJQWYLYN",
+      "title": "Apple AirPods Pro (2nd Generation) (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A3B0PMTA3KENQS",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51emillNpWL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31PbPujVDrL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51s3yLTjWSL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61sRKTAfrhL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/11HqPOkX7kL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FF9PDW2P/",
+    "timestamp": "2026-03-29T13:21:01.372434",
+    "extracted_fields": {
+      "asin": "B0FF9PDW2P",
+      "title": "20W USB C Fast Wall Charger for Airpods Pro 3rd/2nd,AirPods 4/Max 2 (2026),iPhone 17/Air/iPhone 17 Pro Max/iPhone 17 Pro/17e/i-Phone 16 Plus/16e/15,iPad Pro/Air/Mini 6FT USB C to C Charging Cord Cable",
+      "brand": "EcoPestuGo",
+      "seller_id": "A1DSFXFIN28PLD",
+      "rating": "4.6",
+      "reviews_count": "1587",
+      "breadcrumbs": [
+        "Electronics",
+        "Computers &amp; Accessories",
+        "Tablet Accessories",
+        "Chargers &amp; Adapters"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/7107UtMzFcL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41s2UUZfTdL.jpg",
+        "https://m.media-amazon.com/images/I/41vhT2AqcxL.jpg",
+        "https://m.media-amazon.com/images/I/61QOBbFdF0L._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/710SmUZtnwL._SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DJMCTZTS/",
+    "timestamp": "2026-03-29T13:21:15.111116",
+    "extracted_fields": {
+      "asin": "B0DJMCTZTS",
+      "title": "Apple AirPods 4 with Active Noise Cancellation (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "ATVPDKIKX0DER",
+      "rating": "4.4",
+      "reviews_count": "24755",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/410S21l+1RL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0C1BTXM9W/",
+    "timestamp": "2026-03-29T13:21:31.710382",
+    "extracted_fields": {
+      "asin": "B0C1BTXM9W",
+      "title": "Wireless Earbuds, Bluetooth 5.4 Ear Buds LED Power Display Headphones Bass Stereo, Bluetooth Earbuds in-Ear Noise Cancelling Mic, 40H Playback Mini Case IP7 Waterproof Sports Earphones for Android iOS",
+      "brand": "Jxrev",
+      "seller_id": "A2IO1YOAKMWV4Q",
+      "rating": "4.3",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61rAIddNJWL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51Ul4mBNW-L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71tOlBYc1tL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61R16j7gmNL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/418lRTLP50L._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CG6RLK1Z/",
+    "timestamp": "2026-03-29T13:21:48.286207",
+    "extracted_fields": {
+      "asin": "B0CG6RLK1Z",
+      "title": "ASURION 3 Year Headphones Protection Plan ($90 - $99.99)",
+      "brand": "ASURION",
+      "seller_id": "AF3DJOY0ZHFVY",
+      "rating": "4.8",
+      "breadcrumbs": [
+        "Electronics",
+        "Electronic Protection Plans"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/512p+nrp6lL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61q0JfsCScL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/61dvN0VwR9L._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/41SEL0k539L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71tBpBjvfqL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0D987BQ9N/",
+    "timestamp": "2026-03-29T13:21:54.256163",
+    "extracted_fields": {
+      "asin": "B0D987BQ9N",
+      "title": "3FT 20W Fast Charger Adapter for AirPods 4 Gen 4 Generation,AirPods Pro 3 2025/Pro 2 2nd, Air Pods Max 2024, iPhone 17 16e 16 15,iPad 10th, USB Type C Woven Cable Charging Heads,Samsung and More",
+      "seller_id": "A383F64SMLS6ZC",
+      "rating": "4.5",
+      "reviews_count": "11566",
+      "breadcrumbs": [
+        "Cell Phones &amp; Accessories",
+        "Accessories",
+        "Chargers &amp; Power Adapters",
+        "Wall Chargers"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31V0s4DjHrL.jpg",
+        "https://m.media-amazon.com/images/I/61OfnBg2MmL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71hTirg9QGL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/310E74KD8tL.jpg",
+        "https://m.media-amazon.com/images/I/41COBg2EpUL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BMZKS7DX/",
+    "timestamp": "2026-03-29T13:22:08.558416",
+    "extracted_fields": {
+      "asin": "B0BMZKS7DX",
+      "title": "Apple AirPods (3rd Generation) (Renewed Premium)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A35LLZTIT5S01N",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61xzZSjY3tL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31aU1DKPA-L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/21ZFv4w7DLL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/216UvmchzdL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/81pwmDDMGzL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09KZ4FFDP/",
+    "timestamp": "2026-03-29T13:22:24.661900",
+    "extracted_fields": {
+      "asin": "B09KZ4FFDP",
+      "title": "R-fun Compatible with AirPods 3 Case Cover, Silicone Protective Accessories Skin with Keychain Compatible with Apple AirPod 3rd Generation 2021 for Women Men Girls Boys,Front LED Visible,Black",
+      "brand": "R-fun",
+      "seller_id": "A3BKPH93T4QQ6I",
+      "rating": "4.5",
+      "reviews_count": "2640",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Cases"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/417EKRWF8tL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71MaGVoJ6LL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71+Xg-7rxYL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41wolptaV5L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/418SZHmIYSL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07SKLLYTW/",
+    "timestamp": "2026-03-29T13:22:37.724092",
+    "extracted_fields": {
+      "asin": "B07SKLLYTW",
+      "title": "Apple AirPods 2 with Charging Case - White (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A1W3JAPFP88EHS",
+      "rating": "4.6",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/21iAdujfbfL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41HDTL3OUHL._AC_SL1002_.jpg",
+        "https://m.media-amazon.com/images/I/41XjE57VLvL._AC_SL1159_.jpg",
+        "https://m.media-amazon.com/images/I/21ymGZXxJRL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/513wbmARDiL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DXDWQ9PJ/",
+    "timestamp": "2026-03-29T13:22:48.235471",
+    "extracted_fields": {
+      "asin": "B0DXDWQ9PJ",
+      "title": "iMangoo for Apple MFi-Certified Headphones for Lightning Wired Earbuds Magnetic Ear Buds with HiFi Bass,3 Ear Tips Mic Corded Earphones for Gym, Commuting for iPhone 14 Plus 13 12 11 Pro Max White",
+      "brand": "iMangoo",
+      "seller_id": "A14DAN0LJBA5LF",
+      "rating": "4.4",
+      "reviews_count": "14434",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41Dh4ekb2XL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51WlQwte7XL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71urLuDHWdL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71nRCLsW4yL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/711Ug90DRDL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07H6QCGGZ/",
+    "timestamp": "2026-03-29T13:23:01.540925",
+    "extracted_fields": {
+      "asin": "B07H6QCGGZ",
+      "title": "Apple Airpods In-Ear Bluetooth Wireless Headset (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "AGKP6W2OC0QQP",
+      "rating": "4.6",
+      "reviews_count": "45343",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31y1KGZ46eL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51zjb8XYdNL._AC_SL1002_.jpg",
+        "https://m.media-amazon.com/images/I/31343uZKFQL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61RDBiGx7OL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31PLfHLUanL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07731Y1CC/",
+    "timestamp": "2026-03-29T13:23:41.388095",
+    "extracted_fields": {
+      "asin": "B07731Y1CC",
+      "title": "Apple Airpods Wireless Bluetooth In-Ear Headset w/ Charging Case MMEF2AM/A (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A2QMIFVXUQVCSH",
+      "rating": "4.2",
+      "reviews_count": "2887",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31y1KGZ46eL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51zjb8XYdNL._AC_SL1002_.jpg",
+        "https://m.media-amazon.com/images/I/31343uZKFQL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61RDBiGx7OL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31PLfHLUanL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09NQNT4YT/",
+    "timestamp": "2026-03-29T13:23:58.207225",
+    "extracted_fields": {
+      "asin": "B09NQNT4YT",
+      "title": "Apple Watch Series 7 (GPS, 45mm) Green Aluminum Case with Clover Sport Band, Regular (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A1KWJVS57NX03I",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/515sNC7slRL._AC_SL1299_.jpg",
+        "https://m.media-amazon.com/images/I/61C2qwopuLL._AC_SL1182_.jpg",
+        "https://m.media-amazon.com/images/I/31d78nFFj5L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31eLrIk7cYL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51lV1SiVkGL._AC_SL1093_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09R3VRG1F/",
+    "timestamp": "2026-03-29T13:24:31.312001",
+    "extracted_fields": {
+      "asin": "B09R3VRG1F",
+      "title": "Apple Watch Series 7 (GPS + Cellular, 45 MM) Starlight Aluminum Case with Starlight Sport Band (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A1KWJVS57NX03I",
+      "rating": "4.3",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41OgSf2paML._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51eEbS39RRL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/518jzgl1kSL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/4186dshBdoL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51tP0Pg0YYL._AC_SL1000_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09Q6J8S2K/",
+    "timestamp": "2026-03-29T13:24:41.784967",
+    "extracted_fields": {
+      "asin": "B09Q6J8S2K",
+      "title": "Apple Watch Series 7 (GPS + Cellular, 45mm) Blue Aluminum Case with Abyss Blue Sport Band, Regular (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A3SBLQ9AF6CQVD",
+      "rating": "4.3",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31Sas4SD-aL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71Gu+4d-thL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/51l0fGq-nhL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/41ejEPGEfLL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/5147sg8H9PL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B08L1FH8TR/",
+    "timestamp": "2026-03-29T13:24:58.041367",
+    "extracted_fields": {
+      "asin": "B08L1FH8TR",
+      "title": "Apple Watch SE (GPS + Cellular, 40mm) - Space Gray Aluminum Case with Black Sport Band (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A3J9LL0SKEEIO0",
+      "rating": "4.5",
+      "reviews_count": "124",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61w8jTRgFkL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/41laNiXjCXL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51vGsO28t+L._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/71Lekm+z82L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/618Qjqls8NL._AC_SL1080_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BRQVSR4R/",
+    "timestamp": "2026-03-29T13:25:08.575014",
+    "extracted_fields": {
+      "asin": "B0BRQVSR4R",
+      "title": "Apple Watch Series 8 [GPS + Cellular, 41mm] - Midnight Aluminum Case with Midnight Sport Band, S/M (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A14M1L40RG3I1J",
+      "rating": "4.3",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31DhCSzGATL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/81X27o89hjL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71WVXWx6LlL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71FeKU41G1L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31GcXnZbHOL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B08L5HKWFX/",
+    "timestamp": "2026-03-29T13:25:24.681183",
+    "extracted_fields": {
+      "asin": "B08L5HKWFX",
+      "title": "Apple Watch Series 6 (GPS + Cellular, 44mm) - Space Gray Aluminum Case with Black Sport Band (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A2I7HERVLL3MI9",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/510k77G047L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51rQ99P6djL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/51N0hSJADwL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/41K8OREnh7L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41sqXazLCOL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09NWDXS13/",
+    "timestamp": "2026-03-29T13:25:40.871511",
+    "extracted_fields": {
+      "asin": "B09NWDXS13",
+      "title": "Apple Watch Series 7 (GPS, 45mm) Midnight Aluminum Case with Midnight Sport Band (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "AG6ODI3SOQ7F5",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/5131JkziIpL._AC_SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/417G-3u3aVL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31SMSzVTdlL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41UBV1LKmpL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61SJZzxSSAL._AC_SL1200_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BNFGKSNF/",
+    "timestamp": "2026-03-29T13:26:04.395354",
+    "extracted_fields": {
+      "asin": "B0BNFGKSNF",
+      "title": "Apple Watch Series 8 [GPS + Cellular, 45mm] - Midnight Aluminum Case with Midnight Sport Band, M/L (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "AEOCSMZZPFZGU",
+      "rating": "4.3",
+      "breadcrumbs": [
+        "Electronics",
+        "Wearable Technology",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41nf9GWsl1L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61UJHMYxJ0L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71jOw9iquHL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51h59qO4HvL._AC_SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/41zFiXyiwoL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09NWGRZ31/",
+    "timestamp": "2026-03-29T13:26:20.044772",
+    "extracted_fields": {
+      "asin": "B09NWGRZ31",
+      "title": "Apple Watch Series 7 (GPS, 45mm) Blue Aluminum Case with Abyss Blue Sport Band, Regular (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A1KWJVS57NX03I",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/71kI4Mf2KHL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41enZvaYkIL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71e3oo0Qk3L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71Ldu2O9C4L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41cyXez-AwL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CP4CG1ZB/",
+    "timestamp": "2026-03-29T13:26:43.284142",
+    "extracted_fields": {
+      "asin": "B0CP4CG1ZB",
+      "title": "Apple AirPods Pro (2nd generation) with MagSafe Charging Case (USB-C) (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A3V3S9H51OOTQX",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51emillNpWL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31PbPujVDrL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51aHwMRyg7L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/5121OBX4JIL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61sRKTAfrhL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B08KRN16GG/",
+    "timestamp": "2026-03-29T13:27:00.128679",
+    "extracted_fields": {
+      "asin": "B08KRN16GG",
+      "title": "Apple Watch SE (GPS, 40mm) - Space Gray Aluminum Case with Black Sport Band (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A59O6ZC9J4H5S",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41h93VCsBgL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71d0uWd1rsL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61zCA4V3hRL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/618HSW6un3L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41ot3QIv-vL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09V4WMKW7/",
+    "timestamp": "2026-03-29T13:27:20.292211",
+    "extracted_fields": {
+      "asin": "B09V4WMKW7",
+      "title": "Logitech G303 Shroud Edition Wireless Gaming Mouse - Lightspeed Wireless - Hero 25K - 25,600 DPI - 75 Grams - 5-Buttons – PC - Black (Renewed)",
+      "seller_id": "A3B0PMTA3KENQS",
+      "rating": "4.2",
+      "reviews_count": "1190",
+      "breadcrumbs": [
+        "Video Games",
+        "PC",
+        "Accessories",
+        "Gaming Mice"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31of9gtYfdL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51WZdXGlTFL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31dX-UF8C1L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/417lDhiV0hL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41s2CqtzbKL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07JQMF99Y/",
+    "timestamp": "2026-03-29T13:27:27.147280",
+    "extracted_fields": {
+      "asin": "B07JQMF99Y",
+      "title": "ASTRO Gaming A10 Gaming Headset - Black/Red - PC (Renewed)",
+      "seller_id": "A3B0PMTA3KENQS",
+      "rating": "4.3",
+      "breadcrumbs": [
+        "Video Games",
+        "PC",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/71gJQe5QKOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31TETF8ZtcL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31RAG-L+OUL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/81gkx8jkjcL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41s4hmhMufL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07BR7MBQG/",
+    "timestamp": "2026-03-29T13:27:36.910080",
+    "extracted_fields": {
+      "asin": "B07BR7MBQG",
+      "title": "ASTRO Gaming A10 Gaming Headset - Green/Black - Xbox One (Renewed)",
+      "seller_id": "A3B0PMTA3KENQS",
+      "rating": "4.3",
+      "breadcrumbs": [
+        "Video Games",
+        "Mac",
+        "Accessories"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/71gJQe5QKOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41cYh0IaAAL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31TETF8ZtcL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31RAG-L+OUL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41s4hmhMufL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B087Z5FG57/",
+    "timestamp": "2026-03-29T13:27:48.512977",
+    "extracted_fields": {
+      "asin": "B087Z5FG57",
+      "title": "Astro Gaming A10 Wired, 3.5 mm Audio Jack, for Xbox Series X|S, Xbox One, PS5, PS4, PC, Mac- White/Blue - (Renewed)",
+      "seller_id": "A2AGRL1XPMLU2W",
+      "rating": "4.2",
+      "reviews_count": "27033",
+      "images": [
+        "https://m.media-amazon.com/images/I/71gJQe5QKOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31TETF8ZtcL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31RAG-L+OUL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71h+e7HlgvL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41s4hmhMufL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BX7KZSZW/",
+    "timestamp": "2026-03-29T13:28:04.705272",
+    "extracted_fields": {
+      "asin": "B0BX7KZSZW",
+      "title": "Apple Watch SE (2nd Gen) (GPS, 44mm) - Midnight Aluminum Case with Midnight Sport Band, M/L (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "AESX3141EPI7X",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/71XBcl6bNjL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/611CGRu8hBL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/410EdYNli4L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41MoZArctDL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31SVp4zggpL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BX7K3RN7/",
+    "timestamp": "2026-03-29T13:28:15.537413",
+    "extracted_fields": {
+      "asin": "B0BX7K3RN7",
+      "title": "Apple Watch SE (2nd Gen) (GPS + Cellular, 40mm) - Midnight Aluminum Case with Midnight Sport Band, M/L (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A230ZFNKXE1WUD",
+      "rating": "4.5",
+      "reviews_count": "1660",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41HjCZIcs8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51eCHChOrML._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/31Sa2hMRlML._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41X3wfzLFfL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61UZkAi7KRL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09V4DP8NH/",
+    "timestamp": "2026-03-29T13:28:32.386143",
+    "extracted_fields": {
+      "asin": "B09V4DP8NH",
+      "title": "ASTRO Gaming A50 Wireless Headset with Base Station Gen 4, USB Radio Frequency, Unidirectional Microphone Headphones, Compatible with PS4, PS5, PC Windows, Mac, Black (Renewed)",
+      "seller_id": "A3B0PMTA3KENQS",
+      "rating": "4.2",
+      "reviews_count": "1236",
+      "breadcrumbs": [
+        "Video Games",
+        "PC",
+        "Accessories",
+        "Headsets"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31q1x2SNzGL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41YWa+OucQL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61YqPh0BzVL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51c0jRIzqCL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41-rutTZ3FL._AC_SL1392_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0D8JYJLFQ/",
+    "timestamp": "2026-03-29T13:28:44.245162",
+    "extracted_fields": {
+      "asin": "B0D8JYJLFQ",
+      "title": "Astro A10 Gaming Headset Gen 2 Wired - Over-Ear Headphones with flip-to-Mute Microphone, 32 mm Drivers, for Xbox Series X|S, One, Playstation 5/4, Nintendo Switch, PC, Mac -Lilac (Renewed)",
+      "seller_id": "A2CRS11RF94RX8",
+      "rating": "4.3",
+      "reviews_count": "158",
+      "breadcrumbs": [
+        "Video Games",
+        "PC",
+        "Accessories",
+        "Headsets"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31H277uRp-L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41LmYYl+JKL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61eKcKcLVeL._AC_SL1190_.jpg",
+        "https://m.media-amazon.com/images/I/71LUIW4ImqL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41nQybdpiXL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B087LXWPV2/",
+    "timestamp": "2026-03-29T13:28:55.349784",
+    "extracted_fields": {
+      "asin": "B087LXWPV2",
+      "title": "ASTRO Gaming A50 Wireless + Base Station for Xbox One &amp; PC - Black/Gold (Renewed)",
+      "seller_id": "A3B0PMTA3KENQS",
+      "rating": "4.4",
+      "images": [
+        "https://m.media-amazon.com/images/I/61g1dNzKzJL._SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41LAeTDkVhL.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09T2CWZ5L/",
+    "timestamp": "2026-03-29T13:29:05.878046",
+    "extracted_fields": {
+      "asin": "B09T2CWZ5L",
+      "title": "Logitech G535 Lightspeed Wireless Gaming Headset - Lightweight on-Ear Headphones, flip to Mute mic, Stereo, Compatible with PC, PS4, PS5, USB Rechargeable - Black (Renewed)",
+      "seller_id": "A3B0PMTA3KENQS",
+      "rating": "4.6",
+      "reviews_count": "1236",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Over-Ear Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/71w962mY9CL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/81JhjAX7T3L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71XcCwQM9TL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/81w-iwz0I+L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/418zI3Ukh5L._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DLY219Q7/",
+    "timestamp": "2026-03-29T13:29:23.132499",
+    "extracted_fields": {
+      "asin": "B0DLY219Q7",
+      "title": "Apple AirPods 4 Wireless Earbuds, Bluetooth Headphones, with Active Noise Cancellation (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A1KWJVS57NX03I",
+      "rating": "4.4",
+      "reviews_count": "24755",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31ezHVJZgYL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/11-K-FyoIbL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41JfdFBHleL._AC_SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/31rCeihfB1L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/211tmEvNNVL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0D1YNVD88/",
+    "timestamp": "2026-03-29T13:29:34.157868",
+    "extracted_fields": {
+      "asin": "B0D1YNVD88",
+      "title": "Samsung Galaxy Watch 7 40mm Bluetooth AI Smartwatch w/Energy Score, Wellness Tips, Heart Rate Tracking, Sleep Monitor, Fitness Tracker, 2024, Cream [US Version, 1Yr Manufacturer Warranty]",
+      "brand": "Samsung",
+      "seller_id": "A34XSYLZECTRUU",
+      "rating": "1.0",
+      "breadcrumbs": [
+        "Electronics",
+        "Wearable Technology",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61kxT3whdCL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41hxsdN0AOL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71IPSVDywvL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/713WxHwVu7L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41ii2IFw2NL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CTD9B3HB/",
+    "timestamp": "2026-03-29T13:29:56.841308",
+    "extracted_fields": {
+      "asin": "B0CTD9B3HB",
+      "title": "Apple Watch Series 9 (GPS + Cellular 45mm) Midnight Aluminum Case with Midnight Sport Band M/L (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "AMUAVBXOJDLQN",
+      "rating": "4.0",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61CAGkZSggL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41FQeR0Iu3L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41PGh+47wjL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41f6UJK9MdL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/81HHKridV4L._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B08LDX86LL/",
+    "timestamp": "2026-03-29T13:30:07.259372",
+    "extracted_fields": {
+      "asin": "B08LDX86LL",
+      "title": "Apple Watch SE (GPS + Cellular, 44mm) - Space Gray Aluminum Case with Black Sport Band (Renewed)",
+      "seller_id": "A1NI0M2K3LNEWY",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61w8jTRgFkL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/41laNiXjCXL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51vGsO28t+L._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/71Lekm+z82L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41f-zYD4hNL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DJMFS75S/",
+    "timestamp": "2026-03-29T13:30:17.453547",
+    "extracted_fields": {
+      "asin": "B0DJMFS75S",
+      "title": "Apple Airpods 4 (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A59O6ZC9J4H5S",
+      "rating": "4.6",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31FsoAcoVNL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41O7BCH+6pL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41JfdFBHleL._AC_SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/41hEWnfZv-L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/211tmEvNNVL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0CLMCRJ3S/",
+    "timestamp": "2026-03-29T13:30:40.458046",
+    "extracted_fields": {
+      "asin": "B0CLMCRJ3S",
+      "title": "Apple Watch Series 9 [GPS 45mm] Midnight Aluminum Case with Midnight Sport Band M/L (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A3J9LL0SKEEIO0",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61lgDE5tdSL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41s5QbbHpzL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71UJyR6p8tL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31XI3vOUQmL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71sL5i7LVeL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BNFHYVFT/",
+    "timestamp": "2026-03-29T13:31:02.427626",
+    "extracted_fields": {
+      "asin": "B0BNFHYVFT",
+      "title": "Apple Watch SE (2nd Gen) (GPS + Cellular, 40mm) - Starlight Aluminum Case with Starlight Sport Band, S/M (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A3J9LL0SKEEIO0",
+      "rating": "4.4",
+      "reviews_count": "1660",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31OlDBrLoML._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51Bm6aQ1ZNL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/61ZuWgiDZGL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/510hDPQ-LVL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/41bFrqNjb-L._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B08KDBXX1S/",
+    "timestamp": "2026-03-29T13:31:13.476251",
+    "extracted_fields": {
+      "asin": "B08KDBXX1S",
+      "title": "Apple Watch SE (GPS, 44mm) - Space Gray Aluminum Case with Black Sport Band (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A3J9LL0SKEEIO0",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61w8jTRgFkL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/41laNiXjCXL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51vGsO28t+L._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/71Lekm+z82L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41f-zYD4hNL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BNFH112C/",
+    "timestamp": "2026-03-29T13:31:23.576507",
+    "extracted_fields": {
+      "asin": "B0BNFH112C",
+      "title": "Apple Watch SE (2nd Gen) (GPS + Cellular, 44mm) - Midnight Aluminum Case with Midnight Sport Band, M/L (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "AESX3141EPI7X",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41HjCZIcs8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51eCHChOrML._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/31Sa2hMRlML._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41X3wfzLFfL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61UZkAi7KRL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BWPK91TB/",
+    "timestamp": "2026-03-29T13:31:33.572370",
+    "extracted_fields": {
+      "asin": "B0BWPK91TB",
+      "title": "Apple Watch SE 2nd Gen (GPS, 40mm) - Starlight Case with Starlight Sport Band S/M (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A3J9LL0SKEEIO0",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61cw88QI2pL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71XBcl6bNjL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51IFJ9pfqvL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71DUz6qs8yL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/318Y2GHC3YL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BX7LC9FG/",
+    "timestamp": "2026-03-29T13:31:44.824624",
+    "extracted_fields": {
+      "asin": "B0BX7LC9FG",
+      "title": "Apple Watch SE (2nd Gen) (GPS + Cellular, 40mm) - Midnight Aluminum Case with Midnight Sport Band, S/M (Renewed)",
+      "seller_id": "AESX3141EPI7X",
+      "rating": "4.4",
+      "reviews_count": "125",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41HjCZIcs8L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51eCHChOrML._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/31Sa2hMRlML._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41X3wfzLFfL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61UZkAi7KRL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DJMD224M/",
+    "timestamp": "2026-03-29T13:32:17.956632",
+    "extracted_fields": {
+      "asin": "B0DJMD224M",
+      "title": "Apple AirPods Max - Midnight (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A2FVTTLL8Z0R9X",
+      "rating": "5.0",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Over-Ear Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51lQsqZTOGL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41EPIMvccQL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/510ihbvZ4PL._AC_SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/31svXiA3sPL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51IZIRMq22L._AC_SL1200_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BX7HHLFW/",
+    "timestamp": "2026-03-29T13:32:35.686426",
+    "extracted_fields": {
+      "asin": "B0BX7HHLFW",
+      "title": "Apple Watch SE (2nd Gen) (GPS, 40mm) - Midnight Aluminum Case with Midnight Sport Band, M/L (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A59O6ZC9J4H5S",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/71XBcl6bNjL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51IFJ9pfqvL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71DUz6qs8yL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31SVp4zggpL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51eCHChOrML._AC_SL1000_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DLQZJCHD/",
+    "timestamp": "2026-03-29T13:32:53.017462",
+    "extracted_fields": {
+      "asin": "B0DLQZJCHD",
+      "title": "Apple Watch Ultra 2 (GPS + Cellular, 49MM) - Black Titanium Case with Black Ocean Band (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A126CCES06OK91",
+      "rating": "5.0",
+      "breadcrumbs": [
+        "Electronics",
+        "Wearable Technology",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41rIKBriBjL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41bUp25ohiL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31gXUq3Tb9L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51ZzzrDhW-L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51Y+H8tx1BL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B07P9TJGRX/",
+    "timestamp": "2026-03-29T13:33:09.768103",
+    "extracted_fields": {
+      "asin": "B07P9TJGRX",
+      "title": "Apple Pencil for iPad (2nd generation) Bluetooth -White (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A2C32DJIW9ZJUY",
+      "rating": "4.4",
+      "reviews_count": "6944",
+      "breadcrumbs": [
+        "Cell Phones &amp; Accessories",
+        "Accessories",
+        "Stylus Pens"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/11JD3-OEA8S._AC_.jpg",
+        "https://m.media-amazon.com/images/I/21xMEqln4CS._AC_SL1000_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DJMFRGHB/",
+    "timestamp": "2026-03-29T13:33:19.937188",
+    "extracted_fields": {
+      "asin": "B0DJMFRGHB",
+      "title": "Apple AirPods Max - Blue (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A1VWEV1O4LD8P2",
+      "rating": "5.0",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51nBnljZmpL._AC_SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/510ihbvZ4PL._AC_SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/21TdN9oGLFL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31svXiA3sPL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51IZIRMq22L._AC_SL1200_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DJMDTBTW/",
+    "timestamp": "2026-03-29T13:33:37.023114",
+    "extracted_fields": {
+      "asin": "B0DJMDTBTW",
+      "title": "Apple AirPods Max - Starlight (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A1VWEV1O4LD8P2",
+      "rating": "5.0",
+      "reviews_count": "473",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31l0R7AMdcL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/510ihbvZ4PL._AC_SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/31niUJlE4+L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51oLPu-7EML._AC_SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/31svXiA3sPL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0FNZZWVDD/",
+    "timestamp": "2026-03-29T13:33:54.529573",
+    "extracted_fields": {
+      "asin": "B0FNZZWVDD",
+      "title": "Apple Pencil for iPad (1st Generation) Bluetooth and Lightning connector -White (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A2C32DJIW9ZJUY",
+      "rating": "4.4",
+      "reviews_count": "1867",
+      "breadcrumbs": [
+        "Cell Phones &amp; Accessories",
+        "Accessories",
+        "Stylus Pens"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31y+mN3eCFL._AC_SL1144_.jpg",
+        "https://m.media-amazon.com/images/I/11BvTeBF8cL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61sFgdIEoZL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51j4l7+DtsL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31gfPmv1sSL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DJMGLHXX/",
+    "timestamp": "2026-03-29T13:34:05.059838",
+    "extracted_fields": {
+      "asin": "B0DJMGLHXX",
+      "title": "Apple AirPods Max - Purple (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A35M6MZ1KA9B0G",
+      "rating": "5.0",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61OOYAvPEiL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/510ihbvZ4PL._AC_SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/41gmu+8YvQL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31svXiA3sPL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51IZIRMq22L._AC_SL1200_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B079MFYL6X/",
+    "timestamp": "2026-03-29T13:34:22.164873",
+    "extracted_fields": {
+      "asin": "B079MFYL6X",
+      "title": "Bose QuietComfort 35 (Series II) Wireless Headphones, Noise Cancelling - Silver (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A2E5HNIGT5ZPKQ",
+      "rating": "4.4",
+      "reviews_count": "2142",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Over-Ear Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/91FO-kGr5eL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/5110V0afaLL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41yt1zSotJL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71o53boVN6L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/21hyQojlDFL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0DJMFBVBQ/",
+    "timestamp": "2026-03-29T13:34:38.308472",
+    "extracted_fields": {
+      "asin": "B0DJMFBVBQ",
+      "title": "Apple AirPods Max - Orange (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A1VWEV1O4LD8P2",
+      "rating": "5.0",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Earbud Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51qx-BL6DfL._AC_SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/510ihbvZ4PL._AC_SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/316nnDObcDL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51IZIRMq22L._AC_SL1200_.jpg",
+        "https://m.media-amazon.com/images/I/31svXiA3sPL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B079NM341X/",
+    "timestamp": "2026-03-29T13:34:48.530717",
+    "extracted_fields": {
+      "asin": "B079NM341X",
+      "title": "Bose QuietComfort 35 (Series II) Wireless Headphones, Noise Cancelling - Black (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A2FVTTLL8Z0R9X",
+      "rating": "4.4",
+      "reviews_count": "93609",
+      "breadcrumbs": [
+        "Electronics",
+        "Headphones, Earbuds &amp; Accessories",
+        "Headphones &amp; Earbuds",
+        "Over-Ear Headphones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/51PlWxKh7jL._AC_SL1440_.jpg",
+        "https://m.media-amazon.com/images/I/31ItiTu-DVL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61PNZAMWfhL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41b5ndwNYML._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61MTf9+DPRL._AC_SL1155_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B08KWJW3DV/",
+    "timestamp": "2026-03-29T13:34:58.702729",
+    "extracted_fields": {
+      "asin": "B08KWJW3DV",
+      "title": "Apple iPad 2020 (10.2-inch, Wi-Fi, 32GB) - Space Gray (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "ABVC263QFMN4G",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Electronics",
+        "Computers &amp; Accessories",
+        "Computers &amp; Tablets",
+        "Tablets"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/91G2xtTeZ+L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71Aylhv6YAL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71yu-Aoe95L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31wojew+fNL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31PQojVsUYL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0D7X3MBZY/",
+    "timestamp": "2026-03-29T13:36:04.786998",
+    "extracted_fields": {
+      "asin": "B0D7X3MBZY",
+      "title": "Samsung Galaxy Watch 6 40mm GPS + Cellular Smartwatch w/Fitness Tracker, Personalized HR Zones, Advanced Sleep Coaching, Heart Monitor, BIA Sensor, US Version, Gold (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "AWZ5ROU8H8A6M",
+      "rating": "4.5",
+      "reviews_count": "1803",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61dQr5dN0XL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61HaLHlvtBL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61KO-GVfDtL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41oN6pCdxvL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51zlnON91ML._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BN9426PP/",
+    "timestamp": "2026-03-29T13:36:22.329464",
+    "extracted_fields": {
+      "asin": "B0BN9426PP",
+      "title": "Apple iPhone 14 Plus, 128GB, Midnight - Unlocked (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A3J9LL0SKEEIO0",
+      "rating": "3.6",
+      "breadcrumbs": [
+        "Cell Phones &amp; Accessories",
+        "Cell Phones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/61sxSwigDKL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/61iTx40PArL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41zrxikXl9L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61hp2RtGDZL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/51twnyEBC8L._AC_SL1151_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B08KTW1YD3/",
+    "timestamp": "2026-03-29T13:36:44.664866",
+    "extracted_fields": {
+      "asin": "B08KTW1YD3",
+      "title": "Apple Watch Series 6 (GPS, 44mm) - Blue Aluminum Case with Deep Navy Sport Band (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A3J9LL0SKEEIO0",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/811T1w-hHYL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41UjK2vRexL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/71Sz7jpIHaL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/71KjwunN+-L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31fkjzUFzuL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BX7GNMQM/",
+    "timestamp": "2026-03-29T13:36:55.909517",
+    "extracted_fields": {
+      "asin": "B0BX7GNMQM",
+      "title": "Apple Watch SE (2nd Gen) (GPS, 44mm) - Silver Aluminum Case with White Sport Band, S/M (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A1KWJVS57NX03I",
+      "rating": "4.4",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/71XYkK35z7L._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/31MVfQJDxvL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61nlItf1OmL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41691Y7lOyL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61AHxA4cxnL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0B2J4TV97/",
+    "timestamp": "2026-03-29T13:37:06.001386",
+    "extracted_fields": {
+      "asin": "B0B2J4TV97",
+      "title": "SAMSUNG Galaxy Watch 5 Pro 45mm LTE Smartwatch w/ Body, Health, Fitness and Sleep Tracker, Improved Battery, Sapphire Crystal Glass, Titanium Frame, GPS Route Tracking, US Version, Gray",
+      "brand": "Samsung",
+      "seller_id": "A34XSYLZECTRUU",
+      "rating": "1.0",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41kLMTUCa6L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/616Kv3+DvdL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41EaU0H8P6L._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61KUBqvatOL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/41q1pUAa7KL._AC_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B0BX7JBPZM/",
+    "timestamp": "2026-03-29T13:37:15.907197",
+    "extracted_fields": {
+      "asin": "B0BX7JBPZM",
+      "title": "Apple Watch SE (2nd Gen) (GPS, 44mm) - Silver Aluminum Case with White Sport Band, M/L (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A3J9LL0SKEEIO0",
+      "rating": "4.3",
+      "breadcrumbs": [
+        "Clothing, Shoes &amp; Jewelry",
+        "Men",
+        "Watches",
+        "Smartwatches"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/71XBcl6bNjL._AC_SL1500_.jpg",
+        "https://m.media-amazon.com/images/I/310P4Sg1GbL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/31SVp4zggpL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/51eCHChOrML._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/61SMVpF8w9L._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09HK12K5M/",
+    "timestamp": "2026-03-29T13:37:27.791448",
+    "extracted_fields": {
+      "asin": "B09HK12K5M",
+      "title": "Apple iPad 2021 (10.2-inch, Wi-Fi, 64GB) - Space Gray (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "ABVC263QFMN4G",
+      "rating": "4.5",
+      "breadcrumbs": [
+        "Electronics",
+        "Computers &amp; Accessories",
+        "Computers &amp; Tablets",
+        "Tablets"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/31cuKz3TKzL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/514E3YPi9UL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/31HyMbFG9eL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/312zXdIL7mL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61tKLo7VjQL._AC_SL1500_.jpg"
+      ]
+    }
+  },
+  {
+    "url": "https://www.amazon.com/dp/B09V5LDZQ4/",
+    "timestamp": "2026-03-29T13:38:07.083908",
+    "extracted_fields": {
+      "asin": "B09V5LDZQ4",
+      "title": "Samsung Galaxy S22 Smartphone, Factory Unlocked Android Cell Phone, 128GB, 8K Camera &amp; Video, Brightest Display, Long Battery Life, Fast 4nm Processor, US Version, Phantom Black (Renewed)",
+      "brand": "Amazon Renewed",
+      "seller_id": "A3J9LL0SKEEIO0",
+      "rating": "3.6",
+      "breadcrumbs": [
+        "Cell Phones &amp; Accessories",
+        "Cell Phones"
+      ],
+      "images": [
+        "https://m.media-amazon.com/images/I/41KLN9w3jtL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/41im0iO7kqL._AC_.jpg",
+        "https://m.media-amazon.com/images/I/61EWBTsegKL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/61-S80hNvvL._AC_SL1000_.jpg",
+        "https://m.media-amazon.com/images/I/41j8Sxdd20L._AC_SL1000_.jpg"
+      ]
+    }
+  }
+]

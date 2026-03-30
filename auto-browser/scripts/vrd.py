@@ -1,0 +1,1175 @@
+#!/usr/bin/env python3
+"""VRD – Virtual Remote Desktop  单文件 CLI + HTTP 控制面。
+
+用法：
+    python3 vrd.py check                     检查 / 安装依赖
+    python3 vrd.py start                     启动全栈（自动 check）
+    python3 vrd.py stop                      停止并备份 profile
+    python3 vrd.py status                    查看状态
+    python3 vrd.py serve [--port 6090]       HTTP 控制面（由 start 自动拉起）
+    python3 vrd.py switch <mode>             直接切换设备模式
+    python3 vrd.py screenshot [label]        截图
+    python3 vrd.py clipboard get|set <text>  剪贴板
+
+所有配置优先读 env → state.json → 内置默认值。
+"""
+
+from __future__ import annotations
+
+import glob as _glob
+import json
+import os
+import re
+import secrets
+import shutil
+import signal
+import subprocess
+import sys
+import threading
+import time
+import uuid
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+from pathlib import Path
+from urllib.parse import parse_qs, urlparse
+
+try:
+    from playwright.sync_api import sync_playwright
+except ModuleNotFoundError:  # pragma: no cover
+    sync_playwright = None
+
+# ════════════════════════════════════════════════════════════════════════
+#  常量 & 路径
+# ════════════════════════════════════════════════════════════════════════
+SCRIPT_DIR = Path(__file__).resolve().parent
+WORKDIR    = Path(os.environ.get("WORKDIR", Path.home() / ".openclaw/vrd-data"))
+PIDFILE    = WORKDIR / "state.json"
+LOGDIR     = WORKDIR / "logs"
+SSHOT_DIR  = WORKDIR / "screenshots"
+
+# ── 设备预设 ──
+_UA = {
+    "mobile":         "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+    "iphone-safari":  "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+    "tablet":         "Mozilla/5.0 (iPad; CPU OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1",
+    "wechat-h5":      "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.38 NetType/WIFI Language/zh_CN",
+    "android-chrome":  "Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36",
+}
+PRESETS: dict[str, dict] = {
+    "desktop":        {"vp": "1280x720", "dpr": 1, "ua": "",                   "fw": 0,  "fh": 0,   "touch": False, "label": "桌面 1280×720"},
+    "mobile":         {"vp": "393x852",  "dpr": 3, "ua": _UA["mobile"],        "fw": 24, "fh": 112, "touch": True,  "label": "iPhone 15  393×852 @3x"},
+    "iphone-safari":  {"vp": "390x844",  "dpr": 3, "ua": _UA["iphone-safari"], "fw": 24, "fh": 112, "touch": True,  "label": "iPhone 14  390×844 @3x"},
+    "tablet":         {"vp": "768x1024", "dpr": 2, "ua": _UA["tablet"],        "fw": 24, "fh": 112, "touch": True,  "label": "iPad  768×1024 @2x"},
+    "wechat-h5":      {"vp": "375x667",  "dpr": 2, "ua": _UA["wechat-h5"],     "fw": 24, "fh": 112, "touch": True,  "label": "微信 H5  375×667 @2x"},
+    "android-chrome": {"vp": "360x800",  "dpr": 3, "ua": _UA["android-chrome"],"fw": 24, "fh": 112, "touch": True,  "label": "Android  360×800 @3x"},
+}
+
+# ── HTTP 端内存状态 ──
+_lock   = threading.Lock()
+_guide  = {"text": "", "kind": "info", "ts": 0.0}
+_gate   = {"id": "", "prompt": "", "approved": None, "ts": 0.0, "timeout": 300}
+_cont   = {"ts": 0.0}
+_record: dict = {"active": False, "dir": "", "frames": []}
+_rec_timer: threading.Timer | None = None
+
+# ════════════════════════════════════════════════════════════════════════
+#  工具函数
+# ════════════════════════════════════════════════════════════════════════
+def _wh(geom: str) -> tuple[int, int]:
+    w, h = str(geom).split("x", 1); return int(w), int(h)
+
+def _scale(geom: str, f: int) -> str:
+    w, h = _wh(geom); s = max(1, f); return f"{w*s}x{h*s}"
+
+def _pad(geom: str, pw: int, ph: int) -> str:
+    w, h = _wh(geom); return f"{w+max(0,pw)}x{h+max(0,ph)}"
+
+def _env(name: str, default: str = "") -> str:
+    return os.environ.get(name, default)
+
+def _alive(pid) -> bool:
+    try:
+        p = int(pid)
+        os.kill(p, 0)
+        status_path = f"/proc/{p}/status"
+        if os.path.isfile(status_path):
+            with open(status_path) as f:
+                for line in f:
+                    if line.startswith("State:"):
+                        return "Z" not in line
+        return True
+    except Exception:
+        return False
+
+def _kill(pid) -> None:
+    if not pid: return
+    try:
+        p = int(pid); os.kill(p, signal.SIGTERM); time.sleep(0.3)
+        try: os.kill(p, signal.SIGKILL)
+        except ProcessLookupError: pass
+    except Exception: pass
+
+def _sh(cmd: str, **kw) -> subprocess.CompletedProcess:
+    return subprocess.run(cmd, shell=True, capture_output=True, text=True, **kw)
+
+def _run(cmd: list, **kw) -> subprocess.CompletedProcess:
+    return subprocess.run(cmd, capture_output=True, text=True, **kw)
+
+def _cmd_ok(name: str) -> bool:
+    return shutil.which(name) is not None
+
+def _need(name: str) -> None:
+    if not _cmd_ok(name):
+        _die(f"缺少依赖: {name}")
+
+def _die(msg: str) -> None:
+    print(f"[ERR] {msg}", file=sys.stderr); sys.exit(1)
+
+def _info(msg: str)  -> None: print(f"[INFO] {msg}")
+def _warn(msg: str)  -> None: print(f"[WARN] {msg}")
+
+def _pkill(pattern: str) -> None:
+    subprocess.run(["pkill", "-f", pattern], capture_output=True)
+
+# ════════════════════════════════════════════════════════════════════════
+#  State 文件
+# ════════════════════════════════════════════════════════════════════════
+def _load() -> dict:
+    if PIDFILE.exists():
+        return json.loads(PIDFILE.read_text("utf-8"))
+    return {}
+
+def _save(data: dict) -> None:
+    PIDFILE.parent.mkdir(parents=True, exist_ok=True)
+    PIDFILE.write_text(json.dumps(data, ensure_ascii=False, indent=2, sort_keys=True) + "\n", "utf-8")
+    PIDFILE.chmod(0o600)
+
+
+def export_session(platform: str, output_path: str) -> dict:
+    env = _load()
+    cdp_port = str(env.get("CDP_PORT", "")).strip()
+    if not cdp_port:
+        raise RuntimeError("CDP 端口不存在，请先启动 VRD")
+    if sync_playwright is None:
+        raise RuntimeError("playwright 未安装，无法导出会话")
+
+    endpoint = f"http://127.0.0.1:{cdp_port}"
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.connect_over_cdp(endpoint)
+        try:
+            if browser.contexts:
+                context = browser.contexts[0]
+            else:
+                context = browser.new_context()
+            storage_state = context.storage_state()
+        finally:
+            close_browser = getattr(browser, "close", None)
+            if callable(close_browser):
+                close_browser()
+
+    payload = {
+        "platform": platform,
+        "source": "auto-browser",
+        "storage_state": storage_state,
+    }
+    target = Path(output_path)
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    return {"ok": True, "platform": platform, "path": str(target), "endpoint": endpoint}
+
+# ════════════════════════════════════════════════════════════════════════
+#  包管理 & 特权执行
+# ════════════════════════════════════════════════════════════════════════
+def _detect_pm() -> str:
+    for pm in ("apt-get", "dnf", "yum"):
+        if _cmd_ok(pm): return pm.replace("-get", "")
+    return ""
+
+def _privileged(cmd: list) -> int:
+    if os.getuid() == 0:
+        return subprocess.call(cmd)
+    if _cmd_ok("sudo"):
+        return subprocess.call(["sudo"] + cmd)
+    return 1
+
+def _install_pkg(cmd_name: str, *pkg_candidates: str) -> bool:
+    if _cmd_ok(cmd_name): return True
+    pm = _detect_pm()
+    if not pm:
+        _warn(f"无法安装 {cmd_name}，无包管理器")
+        return False
+    _info(f"安装 {cmd_name}...")
+    for pkg in pkg_candidates:
+        if pm == "apt":
+            _privileged(["apt-get", "update", "-qq"])
+            ret = _privileged(["apt-get", "install", "-y", pkg])
+        else:
+            ret = _privileged([pm, "install", "-y", pkg])
+        if ret == 0 and _cmd_ok(cmd_name):
+            _info(f"{cmd_name} 就绪"); return True
+    _warn(f"安装 {cmd_name} 失败，可能回退到整屏模式")
+    return False
+
+def _install_cloudflared() -> bool:
+    if _cmd_ok("cloudflared"): return True
+    pm = _detect_pm()
+    if not pm:
+        _warn("无法安装 cloudflared"); return False
+    _info("安装 cloudflared...")
+    if pm == "apt":
+        script = (
+            "set -e; apt-get update -qq; "
+            "apt-get install -y ca-certificates curl gnupg >/dev/null; "
+            "mkdir -p /usr/share/keyrings; "
+            "curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg "
+            "| gpg --dearmor -o /usr/share/keyrings/cloudflare-main.gpg; "
+            "echo 'deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] "
+            "https://pkg.cloudflare.com/cloudflared any main' "
+            "> /etc/apt/sources.list.d/cloudflared.list; "
+            "apt-get update -qq; apt-get install -y cloudflared"
+        )
+        _privileged(["bash", "-lc", script])
+    else:
+        repo = (
+            "[cloudflared-stable]\nname=cloudflared-stable\n"
+            "baseurl=https://pkg.cloudflare.com/cloudflared/rpm\n"
+            "enabled=1\ngpgcheck=1\n"
+            "gpgkey=https://pkg.cloudflare.com/cloudflare-main.gpg\n"
+        )
+        repo_path = "/etc/yum.repos.d/cloudflared.repo"
+        _privileged(["bash", "-c", f"cat > {repo_path} <<'R'\n{repo}R"])
+        _privileged([pm, "install", "-y", "cloudflared"])
+    return _cmd_ok("cloudflared")
+
+# ════════════════════════════════════════════════════════════════════════
+#  Chrome 发现 & Profile
+# ════════════════════════════════════════════════════════════════════════
+def _resolve_system_chrome() -> str:
+    for name in ("google-chrome-stable", "google-chrome", "chromium-browser", "chromium"):
+        p = shutil.which(name)
+        if p: return p
+    return ""
+
+def _resolve_pinned_chrome(pin_dir: str = "chromium-1208") -> str:
+    root = Path(os.environ.get("PLAYWRIGHT_BROWSERS_PATH", Path.home() / ".cache/ms-playwright"))
+    for suffix in ("chrome-linux64/chrome", "chrome-linux/chrome"):
+        c = root / pin_dir / suffix
+        if c.is_file() and os.access(c, os.X_OK): return str(c)
+    return ""
+
+def _pick_chrome(strategy: str = "system-first", pin_dir: str = "chromium-1208") -> str:
+    explicit = os.environ.get("CHROME_BIN", "")
+    if explicit and os.access(explicit, os.X_OK): return explicit
+    sys_bin = _resolve_system_chrome()
+    pin_bin = _resolve_pinned_chrome(pin_dir)
+    if strategy == "pinned-first":
+        return pin_bin or sys_bin or ""
+    return sys_bin or pin_bin or ""
+
+def _profile_has_login(d: str) -> bool:
+    dp = Path(d) / "Default"
+    if not dp.is_dir(): return False
+    return (
+        ((dp / "Cookies").is_file() and (dp / "Cookies").stat().st_size > 0)
+        or ((dp / "Login Data").is_file() and (dp / "Login Data").stat().st_size > 0)
+        or (dp / "Local Storage").is_dir()
+    )
+
+def _prepare_profile(profile: str, workdir: str) -> None:
+    _info("准备 Chrome profile...")
+    _pkill(f"--user-data-dir={profile}")
+    time.sleep(1)
+    subprocess.run(["pkill", "-9", "-f", f"--user-data-dir={profile}"], capture_output=True)
+    time.sleep(0.5)
+    pp = Path(profile)
+    if pp.exists():
+        for sl in pp.glob("Singleton*"):
+            sl.unlink(missing_ok=True)
+        for tmp in Path("/tmp").glob(".org.chromium.Chromium.*"):
+            shutil.rmtree(tmp, ignore_errors=True)
+    if _profile_has_login(profile):
+        _info(f"复用已有 profile: {profile}"); return
+    _warn(f"profile 无登录数据: {profile}")
+    wd = Path(workdir)
+    backups = sorted(wd.glob("chrome-profile-backup-*"), key=lambda p: p.name, reverse=True)
+    for bk in backups:
+        if _profile_has_login(str(bk)):
+            _info(f"从备份恢复: {bk}")
+            if pp.exists():
+                pp.rename(wd / f"chrome-profile-empty-{int(time.time())}")
+            shutil.copytree(str(bk), profile)
+            for sl in Path(profile).glob("Singleton*"):
+                sl.unlink(missing_ok=True)
+            return
+    _info("无可用备份，使用新 profile")
+    pp.mkdir(parents=True, exist_ok=True)
+
+def _backup_profile(profile: str, workdir: str, max_keep: int = 3) -> None:
+    pp = Path(profile) / "Default"
+    if not pp.is_dir(): return
+    dst = Path(workdir) / f"chrome-profile-backup-{int(time.time())}"
+    _info(f"备份 profile → {dst}")
+    try:
+        shutil.copytree(profile, str(dst))
+    except Exception:
+        _warn("备份失败（不阻塞）"); return
+    backups = sorted(Path(workdir).glob("chrome-profile-backup-*"), key=lambda p: p.name, reverse=True)
+    for old in backups[max_keep:]:
+        _info(f"清理旧备份: {old}")
+        shutil.rmtree(old, ignore_errors=True)
+
+def _graceful_stop_chrome(pid: str, profile: str) -> None:
+    if not pid or not _alive(pid): return
+    _info(f"停止 Chrome (PID={pid})...")
+    try: os.kill(int(pid), signal.SIGTERM)
+    except Exception: pass
+    for _ in range(5):
+        if not _alive(pid): break
+        time.sleep(1)
+    if _alive(pid):
+        _warn("Chrome 超时，强制终止")
+        try: os.kill(int(pid), signal.SIGKILL)
+        except Exception: pass
+        time.sleep(1)
+    if profile:
+        _pkill(f"--user-data-dir={profile}")
+        time.sleep(0.5)
+
+# ════════════════════════════════════════════════════════════════════════
+#  Display / x11vnc / Chrome 进程管理
+# ════════════════════════════════════════════════════════════════════════
+def _find_novnc_web() -> str:
+    for d in ("/tmp/noVNC", "/usr/share/novnc", "/usr/share/noVNC", "/opt/noVNC"):
+        if os.path.isfile(f"{d}/vnc.html"): return d
+    return ""
+
+def _wait_chrome_window(dn: str, pid: int, timeout: int = 15) -> str:
+    if not _cmd_ok("xdotool"): return ""
+    env = dict(os.environ, DISPLAY=f":{dn}")
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        r = _run(["xdotool", "search", "--onlyvisible", "--pid", str(pid)], env=env)
+        ids = [l.strip() for l in r.stdout.splitlines() if l.strip()]
+        if ids: return ids[0]
+        time.sleep(0.5)
+    return ""
+
+def _start_x11vnc(dn: str, rfb: str, log: str, wid: str = "") -> tuple[str, str]:
+    """启动 x11vnc，返回 (pid, export_mode)。"""
+    cmd = ["x11vnc", "-display", f":{dn}", "-forever", "-nopw", "-shared",
+           "-rfbport", rfb, "-bg", "-o", log]
+    mode = "display"
+    if wid:
+        cmd += ["-id", str(wid)]; mode = "browser-window"
+    subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    time.sleep(0.4)
+    r = _run(["pgrep", "-f", f"x11vnc.*:{dn}.*{rfb}"])
+    pid = r.stdout.strip().split("\n")[0] if r.stdout.strip() else ""
+    return pid, mode
+
+def _restart_display(env: dict, geom: str) -> None:
+    """重建 Xvfb（及可选 icewm），更新 env。"""
+    dn, depth = env.get("DISPLAY_NUM", "55"), env.get("DEPTH", "16")
+    for k in ("X11VNC_PID", "WM_PID", "XVFB_PID"):
+        _kill(env.get(k, ""))
+    for pat in (f"x11vnc.*:{dn}", f"Xvfb :{dn}", f"icewm.*:{dn}"):
+        _pkill(pat)
+    for p in (f"/tmp/.X{dn}-lock", f"/tmp/.X11-unix/X{dn}"):
+        try: os.unlink(p)
+        except FileNotFoundError: pass
+    xvfb = subprocess.Popen(
+        ["Xvfb", f":{dn}", "-screen", "0", f"{geom}x{depth}"],
+        stdout=open(LOGDIR / "xvfb.log", "a"), stderr=subprocess.STDOUT,
+    )
+    time.sleep(1.5)
+    if xvfb.poll() is not None:
+        raise RuntimeError("Xvfb 启动失败")
+    env.update({"XVFB_PID": str(xvfb.pid), "WM_PID": "",
+                "GEOM": geom, "CHROME_WINDOW_ID": "", "VNC_EXPORT_MODE": "display"})
+    if env.get("ENABLE_WM", "0") == "1":
+        fe = dict(os.environ, DISPLAY=f":{dn}")
+        fx = subprocess.Popen(["icewm"], stdout=open(LOGDIR / "icewm.log", "a"),
+                              stderr=subprocess.STDOUT, env=fe)
+        env["WM_PID"] = str(fx.pid)
+
+def _maximize_window(dn: str, pid: int, timeout: int = 10) -> None:
+    """等 Chrome 窗口出现后，用 xdotool 最大化。整屏模式下必须调用，否则会露出桌面背景。"""
+    if not _cmd_ok("xdotool"): return
+    env = dict(os.environ, DISPLAY=f":{dn}")
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        r = _run(["xdotool", "search", "--onlyvisible", "--pid", str(pid)], env=env)
+        ids = [l.strip() for l in r.stdout.splitlines() if l.strip()]
+        if ids:
+            for wid in ids:
+                subprocess.run(["xdotool", "windowactivate", "--sync", wid], env=env, capture_output=True)
+                subprocess.run(["xdotool", "windowsize", wid, "100%", "100%"], env=env, capture_output=True)
+                subprocess.run(["xdotool", "windowmove", wid, "0", "0"], env=env, capture_output=True)
+            return
+        time.sleep(0.5)
+
+def _restart_chrome(env: dict, cfg: dict) -> None:
+    """重启 Chrome 并启动 x11vnc，更新 env。"""
+    chrome = env.get("CHROME_BIN", "")
+    if not chrome:
+        env["CHROME_PID"] = ""
+        pid, mode = _start_x11vnc(env["DISPLAY_NUM"], env.get("RFB_PORT", "5955"), str(LOGDIR / "x11vnc.log"))
+        env.update({"X11VNC_PID": pid, "VNC_EXPORT_MODE": mode}); return
+    _kill(env.get("CHROME_PID", ""))
+    dn, cdp   = env.get("DISPLAY_NUM", "55"), env.get("CDP_PORT", "9222")
+    url       = env.get("AUTO_LAUNCH_URL", "")
+    profile   = env.get("CHROME_PROFILE_DIR", "")
+    w, h      = cfg["window_geom"].split("x")
+    only      = env.get("BROWSER_ONLY_VNC", "1") == "1"
+    args = [
+        chrome, "--disable-dev-shm-usage", "--disable-gpu", "--new-window",
+        "--window-position=0,0", f"--window-size={w},{h}",
+        "--force-device-scale-factor=1", "--hide-crash-restore-bubble", "--no-first-run",
+        f"--remote-debugging-port={cdp}", "--remote-debugging-address=0.0.0.0",
+        "--remote-allow-origins=*", f"--user-data-dir={profile}", "--profile-directory=Default",
+    ]
+    if os.getuid() == 0: args.append("--no-sandbox")
+    if cfg.get("mobile"):
+        args += [f"--user-agent={cfg['ua']}", f"--force-device-scale-factor={cfg['dpr']}"]
+    if cfg.get("touch"): args.append("--touch-events=enabled")
+    args.append(f"--app={url}" if url else "about:blank")
+    ce = dict(os.environ, DISPLAY=f":{dn}")
+    proc = subprocess.Popen(args, stdout=open(LOGDIR / "chrome.log", "a"),
+                            stderr=subprocess.STDOUT, env=ce)
+    env["CHROME_PID"] = str(proc.pid)
+    if only:
+        wid = _wait_chrome_window(dn, proc.pid)
+        pid, mode = _start_x11vnc(dn, env.get("RFB_PORT", "5955"), str(LOGDIR / "x11vnc.log"), wid)
+    else:
+        _maximize_window(dn, proc.pid)
+        wid = ""
+        pid, mode = _start_x11vnc(dn, env.get("RFB_PORT", "5955"), str(LOGDIR / "x11vnc.log"))
+    env.update({"X11VNC_PID": pid, "VNC_EXPORT_MODE": mode, "CHROME_WINDOW_ID": wid or ""})
+
+# ════════════════════════════════════════════════════════════════════════
+#  Cloudflare Tunnel
+# ════════════════════════════════════════════════════════════════════════
+def _start_tunnel(origin: str, log_file: str) -> tuple[str, str]:
+    """启动 cloudflared tunnel，返回 (pid, url)。"""
+    proc = subprocess.Popen(
+        ["cloudflared", "tunnel", "--url", origin, "--no-autoupdate"],
+        stdout=open(log_file, "w"), stderr=subprocess.STDOUT,
+        start_new_session=True,
+    )
+    time.sleep(1)
+    if not _alive(proc.pid): return "", ""
+    for i in range(25):
+        if os.path.isfile(log_file):
+            text = Path(log_file).read_text(errors="replace")
+            m = re.search(r"(https://[-a-zA-Z0-9.]+\.trycloudflare\.com)", text)
+            if m: return str(proc.pid), m.group(1)
+        if i > 0 and i % 5 == 0:
+            _info(f"等待 Cloudflare tunnel ({origin})... {i}s")
+        time.sleep(1)
+    _warn(f"Cloudflare tunnel 超时 ({origin})")
+    return str(proc.pid), ""
+
+# ════════════════════════════════════════════════════════════════════════
+#  设备模式配置
+# ════════════════════════════════════════════════════════════════════════
+def resolve_config(env: dict, mode: str) -> dict | None:
+    p = PRESETS.get(mode)
+    if p is None: return None
+    if mode == "desktop":
+        g = env.get("DESKTOP_GEOM", env.get("GEOM", "1280x720"))
+        return dict(mode=mode, mobile=False, display_geom=g, window_geom=g,
+                    viewer_geom=g, viewport_geom=g, dpr="1", ua="",
+                    touch=False, fw="0", fh="0", label=p["label"])
+    if mode == "mobile":
+        vp  = env.get("MOBILE_VIEWPORT_GEOM", p["vp"])
+        dpr = int(env.get("MOBILE_DPR", p["dpr"]))
+        fw  = int(env.get("MOBILE_FRAME_WIDTH_PAD",  p["fw"]))
+        fh  = int(env.get("MOBILE_FRAME_HEIGHT_PAD", p["fh"]))
+        win = env.get("MOBILE_WINDOW_GEOM", _pad(vp, fw, fh))
+        disp = env.get("MOBILE_GEOM", _scale(win, dpr))
+    else:
+        vp, dpr  = p["vp"], p["dpr"]
+        fw, fh   = p["fw"], p["fh"]
+        win      = _pad(vp, fw, fh)
+        disp     = _scale(win, dpr)
+    return dict(mode=mode, mobile=True, display_geom=disp, window_geom=win,
+                viewer_geom=vp, viewport_geom=vp, dpr=str(dpr),
+                ua=p["ua"], touch=p["touch"], fw=str(fw), fh=str(fh), label=p["label"])
+
+def switch_mode(mode: str) -> dict:
+    env = _load()
+    if not env: return {"status": "error", "error": "state file not found"}
+    cfg = resolve_config(env, mode)
+    if cfg is None:
+        return {"status": "error", "error": f"未知模式 '{mode}'，可选: {list(PRESETS)}"}
+    _restart_display(env, cfg["display_geom"])
+    env.update({"GEOM": cfg["display_geom"], "DISPLAY_GEOM": cfg["display_geom"],
+                "WINDOW_GEOM": cfg["window_geom"], "VIEWPORT_GEOM": cfg["viewport_geom"]})
+    _restart_chrome(env, cfg)
+    env["MODE"] = mode
+    _save(env)
+    return {"status": "ok", "mode": mode, "label": cfg["label"],
+            "geom": cfg["display_geom"], "display_geom": cfg["display_geom"],
+            "window_geom": cfg["window_geom"], "viewer_geom": cfg["viewer_geom"],
+            "viewport_geom": cfg["viewport_geom"], "dpr": cfg["dpr"],
+            "fw": cfg["fw"], "fh": cfg["fh"]}
+
+# ════════════════════════════════════════════════════════════════════════
+#  截图 / 录屏
+# ════════════════════════════════════════════════════════════════════════
+def take_screenshot(label: str = "") -> dict:
+    SSHOT_DIR.mkdir(parents=True, exist_ok=True)
+    env  = _load()
+    dn   = env.get("DISPLAY_NUM", "55")
+    ts   = int(time.time())
+    safe = re.sub(r"[^a-zA-Z0-9_-]", "_", label or "shot")
+    path = str(SSHOT_DIR / f"{ts}_{safe}.png")
+    for cmd in [
+        f"scrot -D :{dn} {path}",
+        f"DISPLAY=:{dn} import -window root {path}",
+    ]:
+        if _sh(cmd).returncode == 0 and os.path.isfile(path):
+            return {"ok": True, "path": path, "filename": os.path.basename(path), "ts": ts, "label": label}
+    return {"ok": False, "error": "需要 scrot 或 ImageMagick", "ts": ts}
+
+def _rec_tick(interval: int) -> None:
+    global _rec_timer
+    with _lock:
+        if not _record["active"]: return
+    info = take_screenshot("rec")
+    if info.get("ok"):
+        with _lock: _record["frames"].append(info["path"])
+    _rec_timer = threading.Timer(interval, _rec_tick, args=(interval,))
+    _rec_timer.daemon = True; _rec_timer.start()
+
+def start_recording(interval: int = 3) -> dict:
+    global _rec_timer
+    with _lock:
+        if _record["active"]: return {"ok": False, "error": "already recording"}
+        d = str(SSHOT_DIR / f"rec_{int(time.time())}")
+        os.makedirs(d, exist_ok=True)
+        _record.update({"active": True, "dir": d, "frames": []})
+    _rec_timer = threading.Timer(interval, _rec_tick, args=(interval,))
+    _rec_timer.daemon = True; _rec_timer.start()
+    return {"ok": True, "dir": d}
+
+def stop_recording() -> dict:
+    global _rec_timer
+    with _lock:
+        if not _record["active"]: return {"ok": False, "error": "not recording"}
+        _record["active"] = False
+        frames, d = list(_record["frames"]), _record["dir"]
+    if _rec_timer: _rec_timer.cancel(); _rec_timer = None
+    return {"ok": True, "frames": frames, "count": len(frames), "dir": d}
+
+# ════════════════════════════════════════════════════════════════════════
+#  剪贴板 / 文件
+# ════════════════════════════════════════════════════════════════════════
+def set_clipboard(text: str) -> dict:
+    env = _load(); dn = env.get("DISPLAY_NUM", "55")
+    de = dict(os.environ, DISPLAY=f":{dn}")
+    for tool, cmd in [
+        ("xclip", ["xclip", "-selection", "clipboard"]),
+        ("xsel",  ["xsel",  "--clipboard", "--input"]),
+    ]:
+        if not _cmd_ok(tool): continue
+        r = subprocess.run(cmd, input=text, capture_output=True, text=True, env=de)
+        if r.returncode == 0: return {"ok": True, "tool": tool}
+    return {"ok": False, "error": "需要 xclip 或 xsel"}
+
+def get_clipboard() -> dict:
+    env = _load(); dn = env.get("DISPLAY_NUM", "55")
+    de = dict(os.environ, DISPLAY=f":{dn}")
+    for tool, cmd in [
+        ("xclip", ["xclip", "-selection", "clipboard", "-o"]),
+        ("xsel",  ["xsel",  "--clipboard", "--output"]),
+    ]:
+        if not _cmd_ok(tool): continue
+        r = _run(cmd, env=de)
+        if r.returncode == 0: return {"ok": True, "text": r.stdout, "tool": tool}
+    return {"ok": False, "text": "", "error": "需要 xclip 或 xsel"}
+
+def list_files(cat: str = "downloads") -> list:
+    dirs = {
+        "downloads":   [str(Path.home() / "Downloads"), "/tmp"],
+        "screenshots": [str(SSHOT_DIR)],
+        "workspace":   [str(WORKDIR)],
+    }
+    files: list = []
+    for d in dirs.get(cat, dirs["downloads"]):
+        if not os.path.isdir(d): continue
+        try:
+            names = sorted(os.listdir(d), key=lambda n: -os.path.getmtime(os.path.join(d, n)))[:20]
+            for n in names:
+                fp = os.path.join(d, n)
+                if os.path.isfile(fp):
+                    st = os.stat(fp)
+                    files.append({"name": n, "path": fp, "size": st.st_size,
+                                  "mtime": int(st.st_mtime), "dir": d})
+        except PermissionError: pass
+    return files[:30]
+
+# ════════════════════════════════════════════════════════════════════════
+#  健康检查
+# ════════════════════════════════════════════════════════════════════════
+def check_health() -> dict:
+    env = _load()
+    if not env: return {"ok": False, "errors": ["no state file"], "recovered": []}
+    errors, recovered = [], []
+    dn = env.get("DISPLAY_NUM", "55")
+
+    for k, label in [("XVFB_PID", "Xvfb"), ("X11VNC_PID", "x11vnc"), ("CHROME_PID", "Chrome")]:
+        pid = env.get(k, "")
+        if pid and not _alive(pid): errors.append(f"{label} dead (pid={pid})")
+
+    # x11vnc 自动恢复
+    x_pid = env.get("X11VNC_PID", "")
+    if x_pid and not _alive(x_pid):
+        _pkill(f"x11vnc.*:{dn}")
+        pid, mode = _start_x11vnc(dn, env.get("RFB_PORT", "5955"),
+                                  str(LOGDIR / "x11vnc.log"), env.get("CHROME_WINDOW_ID", ""))
+        env.update({"X11VNC_PID": pid, "VNC_EXPORT_MODE": mode}); _save(env)
+        if pid: recovered.append("x11vnc restarted")
+
+    # Chrome 自动恢复
+    chrome_pid = env.get("CHROME_PID", "")
+    chrome_bin = env.get("CHROME_BIN", "")
+    if chrome_pid and not _alive(chrome_pid) and chrome_bin:
+        mode = env.get("MODE", "desktop")
+        cfg = resolve_config(env, mode)
+        if cfg:
+            _restart_chrome(env, cfg)
+            _save(env)
+            if env.get("CHROME_PID") and _alive(env["CHROME_PID"]):
+                recovered.append("chrome restarted")
+
+    has_unrecovered = any(
+        env.get(k, "") and not _alive(env.get(k, ""))
+        for k in ("XVFB_PID", "X11VNC_PID", "CHROME_PID")
+    )
+    return {"ok": not has_unrecovered, "errors": errors, "recovered": recovered, "ts": int(time.time())}
+
+# ════════════════════════════════════════════════════════════════════════
+#  CLI: check
+# ════════════════════════════════════════════════════════════════════════
+def _symlink_to_path(cmd_name: str) -> bool:
+    """把只在 login shell 里可见的命令 symlink 到 /usr/local/bin，消除 PATH 问题。"""
+    if _cmd_ok(cmd_name): return True
+    r = _sh(f"bash -lc 'which {cmd_name} 2>/dev/null'")
+    real = r.stdout.strip()
+    if not real or not os.path.isfile(real): return False
+    target = f"/usr/local/bin/{cmd_name}"
+    try:
+        Path(target).unlink(missing_ok=True)
+        os.symlink(real, target)
+    except PermissionError:
+        _privileged(["ln", "-sf", real, target])
+    return _cmd_ok(cmd_name)
+
+def cmd_check() -> None:
+    _info("检查 VRD 依赖...")
+    for c in ("python3", "Xvfb", "x11vnc", "websockify", "curl"):
+        _need(c)
+    if _env("ENABLE_WM", "1") == "1":
+        _install_pkg("icewm", "icewm")
+    _install_pkg("xdotool", "xdotool")
+    # node / npm 可能只在 nvm login shell 里可见
+    for cmd in ("node", "npm"):
+        if not _cmd_ok(cmd): _symlink_to_path(cmd)
+    if not _cmd_ok("agent-browser"):
+        _info("安装 agent-browser...")
+        subprocess.call(["bash", "-lc", "npm i -g agent-browser"])
+    # 安装后 symlink 到标准 PATH，后续不再需要 export PATH
+    _symlink_to_path("agent-browser")
+    if not _cmd_ok("agent-browser"):
+        _die("agent-browser 安装失败")
+    pin = _env("CHROME_PIN_DIR", "chromium-1208")
+    sys_c = _resolve_system_chrome()
+    if sys_c:
+        _info(f"系统 Chrome: {sys_c}")
+    else:
+        pin_c = _resolve_pinned_chrome(pin)
+        if not pin_c:
+            _info(f"安装 pinned Chrome ({pin})...")
+            subprocess.call(["agent-browser", "install"])
+            pin_c = _resolve_pinned_chrome(pin)
+        if not pin_c: _die("无可用 Chrome，请安装 google-chrome-stable 或执行 agent-browser install")
+        _info(f"pinned Chrome: {pin_c}")
+    _info("所有依赖就绪 ✓")
+
+# ════════════════════════════════════════════════════════════════════════
+#  CLI: start
+# ════════════════════════════════════════════════════════════════════════
+def cmd_start() -> None:
+    # ── 配置 ──
+    dn       = _env("DISPLAY_NUM",  "55")
+    geom     = _env("GEOM",         "1280x720")
+    depth    = _env("DEPTH",        "16")
+    bind     = _env("KASM_BIND",    "127.0.0.1")
+    vnc_port = _env("NOVNC_PORT",   "6080")
+    rfb_port = _env("RFB_PORT",     "5955")
+    cdp_port = _env("CDP_PORT",     "9222")
+    sw_port  = _env("MODE_SWITCH_PORT", "6090")
+    cf_on    = _env("ENABLE_CLOUDFLARE_TUNNEL", "1") == "1"
+    cf_req   = _env("REQUIRE_CLOUDFLARE_LINK",  "1") == "1"
+    auto_chr = _env("AUTO_LAUNCH_CHROME", "1") == "1"
+    auto_url = _env("AUTO_LAUNCH_URL", "")
+    profile  = _env("CHROME_PROFILE_DIR", str(WORKDIR / "chrome-profile"))
+    pin_dir  = _env("CHROME_PIN_DIR", "chromium-1208")
+    strategy = _env("CHROME_BROWSER_STRATEGY", "system-first")
+    enable_wm     = _env("ENABLE_WM", "1")
+    browser_only  = _env("BROWSER_ONLY_VNC", "0")
+    mvp_geom = _env("MOBILE_VIEWPORT_GEOM", "393x852")
+    m_dpr    = _env("MOBILE_DPR",    "3")
+    m_fw     = _env("MOBILE_FRAME_WIDTH_PAD",  "24")
+    m_fh     = _env("MOBILE_FRAME_HEIGHT_PAD", "112")
+    vw, vh   = _wh(mvp_geom)
+    mww      = int(_env("MOBILE_WINDOW_WIDTH",  str(vw + int(m_fw))))
+    mwh      = int(_env("MOBILE_WINDOW_HEIGHT", str(vh + int(m_fh))))
+    m_win    = _env("MOBILE_WINDOW_GEOM", f"{mww}x{mwh}")
+    m_geom   = _env("MOBILE_GEOM", f"{mww*int(m_dpr)}x{mwh*int(m_dpr)}")
+
+    # ── 依赖 ──
+    cmd_check()
+    if cf_on: _install_cloudflared()
+    if cf_req and not cf_on: _die("REQUIRE_CLOUDFLARE_LINK=1 但 ENABLE_CLOUDFLARE_TUNNEL=0")
+
+    # ── noVNC ──
+    novnc_web = _find_novnc_web()
+    if not novnc_web: _die("未找到 noVNC 静态文件")
+
+    # ── 清理旧实例 ──
+    if PIDFILE.exists():
+        cmd_stop(quiet=True)
+        time.sleep(1)
+    for pat in (f"x11vnc.*:{dn}", f"Xvfb.*:{dn}", f"websockify.*{vnc_port}", f"vrd.py.*serve"):
+        _pkill(pat)
+    time.sleep(1)
+
+    # ── 目录 ──
+    for d in (WORKDIR, LOGDIR, Path(profile)):
+        d.mkdir(parents=True, exist_ok=True) if isinstance(d, Path) else Path(d).mkdir(parents=True, exist_ok=True)
+    shutil.copy2(SCRIPT_DIR / "vnc_mode.html", f"{novnc_web}/vnc_mode.html")
+    for p in (f"/tmp/.X{dn}-lock", f"/tmp/.X11-unix/X{dn}"):
+        try: os.unlink(p)
+        except FileNotFoundError: pass
+
+    # ── Xvfb ──
+    xvfb = subprocess.Popen(
+        ["Xvfb", f":{dn}", "-screen", "0", f"{geom}x{depth}"],
+        stdout=open(LOGDIR / "xvfb.log", "a"), stderr=subprocess.STDOUT,
+        start_new_session=True,
+    )
+    time.sleep(1)
+    if xvfb.poll() is not None: _die("Xvfb 启动失败")
+
+    # ── WM ──
+    wm_pid = ""
+    if enable_wm == "1":
+        wm_proc = subprocess.Popen(
+            ["icewm"], stdout=open(LOGDIR / "icewm.log", "a"),
+            stderr=subprocess.STDOUT, env=dict(os.environ, DISPLAY=f":{dn}"),
+            start_new_session=True,
+        )
+        wm_pid = str(wm_proc.pid)
+
+    # ── websockify ──
+    ws = subprocess.Popen(
+        ["websockify", "--web", novnc_web, f"{bind}:{vnc_port}", f"127.0.0.1:{rfb_port}"],
+        stdout=open(LOGDIR / "novnc.log", "a"), stderr=subprocess.STDOUT,
+        start_new_session=True,
+    )
+    time.sleep(1)
+    if ws.poll() is not None: _die("websockify 启动失败")
+
+    # ── Chrome ──
+    chrome_bin = _pick_chrome(strategy, pin_dir) if auto_chr else ""
+    chrome_pid, x11vnc_pid, export_mode, win_id = "", "", "display", ""
+    if auto_chr and chrome_bin:
+        _prepare_profile(profile, str(WORKDIR))
+        cw, ch = geom.split("x")
+        c_args = [
+            chrome_bin, "--disable-dev-shm-usage", "--disable-gpu", "--new-window",
+            "--window-position=0,0", f"--window-size={cw},{ch}",
+            "--force-device-scale-factor=1", "--hide-crash-restore-bubble", "--no-first-run",
+            f"--remote-debugging-port={cdp_port}", "--remote-debugging-address=0.0.0.0",
+            "--remote-allow-origins=*", f"--user-data-dir={profile}", "--profile-directory=Default",
+        ]
+        if os.getuid() == 0: c_args.append("--no-sandbox")
+        c_args.append(f"--app={auto_url}" if auto_url else "about:blank")
+        cp = subprocess.Popen(
+            c_args, stdout=open(LOGDIR / "chrome.log", "a"), stderr=subprocess.STDOUT,
+            env=dict(os.environ, DISPLAY=f":{dn}"), start_new_session=True,
+        )
+        chrome_pid = str(cp.pid)
+        if browser_only == "1":
+            win_id = _wait_chrome_window(dn, cp.pid)
+            if win_id:
+                x11vnc_pid, export_mode = _start_x11vnc(dn, rfb_port, str(LOGDIR / "x11vnc.log"), win_id)
+        else:
+            _maximize_window(dn, cp.pid)
+    if not x11vnc_pid:
+        x11vnc_pid, export_mode = _start_x11vnc(dn, rfb_port, str(LOGDIR / "x11vnc.log"))
+
+    # ── serve（HTTP 控制面，后台拉起自身） ──
+    serve_proc = subprocess.Popen(
+        [sys.executable, str(Path(__file__).resolve()), "serve", "--port", sw_port],
+        stdout=open(LOGDIR / "serve.log", "a"), stderr=subprocess.STDOUT,
+        env=dict(os.environ, WORKDIR=str(WORKDIR)), start_new_session=True,
+    )
+    time.sleep(1)
+    if serve_proc.poll() is not None: _die("HTTP 控制面启动失败")
+
+    # ── Cloudflare ──
+    cf_vnc_pid, cf_vnc_url, cf_sw_pid, cf_sw_url = "", "", "", ""
+    token = ""
+    if cf_on:
+        cf_vnc_pid, cf_vnc_url = _start_tunnel(f"http://127.0.0.1:{vnc_port}", str(LOGDIR / "cf-vnc.log"))
+        cf_sw_pid, cf_sw_url   = _start_tunnel(f"http://127.0.0.1:{sw_port}",  str(LOGDIR / "cf-sw.log"))
+
+    public_url = ""
+    if cf_vnc_url:
+        token = secrets.token_urlsafe(24)
+        if cf_sw_url:
+            public_url = f"{cf_vnc_url}/vnc_mode.html?switch_api={cf_sw_url}&token={token}"
+        else:
+            public_url = f"{cf_vnc_url}/vnc_mode.html"
+    if cf_req and not public_url:
+        _die("无法获取 Cloudflare 公网 URL，请检查网络后重试")
+
+    # ── 写入状态 ──
+    state = {
+        "WORKDIR": str(WORKDIR), "LOGDIR": str(LOGDIR),
+        "DISPLAY": f":{dn}", "DISPLAY_NUM": dn,
+        "GEOM": geom, "DISPLAY_GEOM": geom, "VIEWPORT_GEOM": geom,
+        "WINDOW_GEOM": geom, "DESKTOP_GEOM": geom,
+        "MOBILE_VIEWPORT_GEOM": mvp_geom, "MOBILE_DPR": m_dpr,
+        "MOBILE_FRAME_WIDTH_PAD": m_fw, "MOBILE_FRAME_HEIGHT_PAD": m_fh,
+        "MOBILE_WINDOW_GEOM": m_win, "MOBILE_GEOM": m_geom,
+        "DEPTH": depth, "KASM_BIND": bind,
+        "NOVNC_PORT": vnc_port, "RFB_PORT": rfb_port,
+        "XVFB_PID": str(xvfb.pid), "WM_PID": wm_pid,
+        "X11VNC_PID": x11vnc_pid, "NOVNC_PID": str(ws.pid),
+        "NOVNC_WEB": novnc_web,
+        "AUTO_LAUNCH_URL": auto_url,
+        "CHROME_BIN": chrome_bin, "CHROME_PROFILE_DIR": profile,
+        "CHROME_PID": chrome_pid, "CDP_PORT": cdp_port,
+        "MODE_SWITCH_PID": str(serve_proc.pid), "MODE_SWITCH_PORT": sw_port,
+        "MODE": "desktop",
+        "BROWSER_ONLY_VNC": browser_only, "VNC_EXPORT_MODE": export_mode,
+        "CHROME_WINDOW_ID": win_id,
+        "CHROME_BROWSER_STRATEGY": strategy, "ENABLE_WM": enable_wm,
+        "ENABLE_CLOUDFLARE_TUNNEL": "1" if cf_on else "0",
+        "REQUIRE_CLOUDFLARE_LINK":  "1" if cf_req else "0",
+        "CF_VNC_TUNNEL_PID": cf_vnc_pid, "CF_VNC_TUNNEL_URL": cf_vnc_url,
+        "CF_SWITCH_TUNNEL_PID": cf_sw_pid, "CF_SWITCH_TUNNEL_URL": cf_sw_url,
+        "SWITCH_TOKEN": token, "PUBLIC_URL": public_url,
+    }
+    _save(state)
+
+    # ── 输出 ──
+    print()
+    print("Virtual Remote Desktop is up.")
+    print(f"URL: {public_url}")
+    print(f"Display: :{dn} ({geom}x{depth})")
+    print(f"Mobile: {mvp_geom} → window {m_win} → display {m_geom} @{m_dpr}x")
+    print(f"Export: {export_mode}")
+    if chrome_pid:
+        print(f"CDP: http://127.0.0.1:{cdp_port}")
+        print(f"Browser: {chrome_bin} ({strategy})")
+        tag = "复用登录数据" if _profile_has_login(profile) else "新建"
+        print(f"Profile: {tag} ({profile})")
+    print(f"Cloudflare: {'ON' if cf_vnc_url else 'OFF'}")
+    print(f"State: {PIDFILE}")
+
+# ════════════════════════════════════════════════════════════════════════
+#  CLI: stop
+# ════════════════════════════════════════════════════════════════════════
+def cmd_stop(quiet: bool = False) -> None:
+    env = _load()
+    dn       = env.get("DISPLAY_NUM", "55")
+    vnc_port = env.get("NOVNC_PORT",  "6080")
+    sw_port  = env.get("MODE_SWITCH_PORT", "6090")
+    if env:
+        _graceful_stop_chrome(env.get("CHROME_PID", ""), env.get("CHROME_PROFILE_DIR", ""))
+        _backup_profile(env.get("CHROME_PROFILE_DIR", ""), str(WORKDIR))
+        for k in ("NOVNC_PID", "X11VNC_PID", "WM_PID",
+                   "MODE_SWITCH_PID", "CF_VNC_TUNNEL_PID", "CF_SWITCH_TUNNEL_PID", "XVFB_PID"):
+            _kill(env.get(k, ""))
+        PIDFILE.unlink(missing_ok=True)
+    else:
+        if not quiet: _warn(f"状态文件不存在: {PIDFILE}")
+    for pat in (f"Xvfb :{dn}", f"x11vnc.*:{dn}", f"websockify.*:{vnc_port}",
+                f"icewm.*:{dn}", f"cloudflared.*127.0.0.1:{vnc_port}",
+                f"cloudflared.*127.0.0.1:{sw_port}"):
+        _pkill(pat)
+    for p in (f"/tmp/.X{dn}-lock", f"/tmp/.X11-unix/X{dn}"):
+        try: os.unlink(p)
+        except FileNotFoundError: pass
+    if not quiet: print("Stopped.")
+
+# ════════════════════════════════════════════════════════════════════════
+#  CLI: status
+# ════════════════════════════════════════════════════════════════════════
+def cmd_status() -> None:
+    env = _load()
+    if not env: _die("状态文件不存在（VRD 未运行）")
+    def tag(k):
+        pid = env.get(k, "")
+        return f"up ({pid})" if pid and _alive(pid) else "down"
+    cookie = Path(env.get("CHROME_PROFILE_DIR", "")) / "Default" / "Cookies"
+    login  = "present" if cookie.is_file() else "missing"
+    lines = [
+        "status:",
+        f"  xvfb:       {tag('XVFB_PID')}",
+        f"  wm:         {tag('WM_PID')}",
+        f"  x11vnc:     {tag('X11VNC_PID')}",
+        f"  novnc:      {tag('NOVNC_PID')}",
+        f"  serve:      {tag('MODE_SWITCH_PID')}",
+        f"  tunnel_vnc: {tag('CF_VNC_TUNNEL_PID')}",
+        f"  tunnel_api: {tag('CF_SWITCH_TUNNEL_PID')}",
+        f"  chrome:     {tag('CHROME_PID')}",
+        f"  display:    {env.get('DISPLAY', '')}",
+        f"  geom:       {env.get('GEOM', '')}",
+        f"  mode:       {env.get('MODE', 'desktop')}",
+        f"  export:     {env.get('VNC_EXPORT_MODE', '')}",
+        f"  chrome_bin: {env.get('CHROME_BIN', '')}",
+        f"  cdp:        {env.get('CDP_PORT', '')}",
+        f"  cookies:    {login}",
+        f"  url:        {env.get('PUBLIC_URL', 'none')}",
+    ]
+    print("\n".join(lines))
+
+# ════════════════════════════════════════════════════════════════════════
+#  CLI: switch / screenshot / clipboard
+# ════════════════════════════════════════════════════════════════════════
+def cmd_switch(mode: str) -> None:
+    if not mode: _die(f"用法: vrd.py switch <mode>  可选: {list(PRESETS)}")
+    res = switch_mode(mode)
+    if res.get("status") == "ok":
+        print(f"已切换: {res.get('label')} ({res.get('display_geom')})")
+    else:
+        _die(res.get("error", "切换失败"))
+
+def cmd_screenshot(label: str = "") -> None:
+    r = take_screenshot(label)
+    if r.get("ok"): print(f"截图: {r['path']}")
+    else: _die(r.get("error", "截图失败"))
+
+def cmd_clipboard(args: list) -> None:
+    if not args: _die("用法: vrd.py clipboard get|set <text>")
+    if args[0] == "get":
+        r = get_clipboard()
+        if r.get("ok"): print(r["text"])
+        else: _die(r.get("error", ""))
+    elif args[0] == "set":
+        text = " ".join(args[1:])
+        r = set_clipboard(text)
+        if r.get("ok"): print("✓")
+        else: _die(r.get("error", ""))
+    else:
+        _die("用法: vrd.py clipboard get|set <text>")
+
+
+def cmd_export_session(args: list) -> None:
+    if len(args) < 2:
+        _die("用法: vrd.py export-session <platform> <output_path>")
+    result = export_session(args[0], args[1])
+    print(f"session exported: {result['path']}")
+
+# ════════════════════════════════════════════════════════════════════════
+#  HTTP 控制面 (serve)
+# ════════════════════════════════════════════════════════════════════════
+class _Handler(BaseHTTPRequestHandler):
+
+    def _cors(self):
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET,POST,DELETE,OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+
+    def do_OPTIONS(self):
+        self.send_response(204); self._cors()
+        self.send_header("Content-Length", "0"); self.end_headers()
+
+    def _body(self) -> dict:
+        n = int(self.headers.get("Content-Length", 0))
+        if n:
+            try: return json.loads(self.rfile.read(n))
+            except Exception: pass
+        return {}
+
+    def _dispatch(self, method):
+        parsed  = urlparse(self.path)
+        qs      = parse_qs(parsed.query)
+        path    = parsed.path.rstrip("/") or "/"
+        env, ok = _auth(qs)
+        body    = self._body() if method in ("POST", "DELETE") else {}
+
+        # 公开端点
+        if path == "/guide" and method == "GET":
+            with _lock: return self._ok(dict(_guide))
+        if path == "/gate" and method == "GET" and not ok:
+            with _lock: return self._ok(dict(_gate))
+        if path == "/continue" and method == "POST" and not ok:
+            pass  # 允许 VNC 页面无 token 发信号
+        elif not ok and path not in ("/continue",):
+            return self._err(403, "forbidden")
+
+        # /status
+        if path == "/status" and method == "GET":
+            is_mob = env.get("MODE", "desktop") != "desktop"
+            with _lock: rec = _record["active"]
+            return self._ok({
+                "mode": env.get("MODE", "desktop"),
+                "geom": env.get("GEOM", ""),
+                "display_geom":  env.get("DISPLAY_GEOM",  env.get("GEOM", "")),
+                "window_geom":   env.get("WINDOW_GEOM",   env.get("GEOM", "")),
+                "viewer_geom":   env.get("VIEWPORT_GEOM", env.get("GEOM", "")),
+                "viewport_geom": env.get("VIEWPORT_GEOM", env.get("GEOM", "")),
+                "dpr":  env.get("MOBILE_DPR", "3") if is_mob else "1",
+                "fw":   env.get("MOBILE_FRAME_WIDTH_PAD",  "24") if is_mob else "0",
+                "fh":   env.get("MOBILE_FRAME_HEIGHT_PAD", "112") if is_mob else "0",
+                "export": env.get("VNC_EXPORT_MODE", "display"),
+                "browser_only_vnc": env.get("BROWSER_ONLY_VNC", "1"),
+                "presets": list(PRESETS), "recording": rec,
+                "health": check_health().get("ok", True),
+            })
+        if path == "/presets" and method == "GET":
+            return self._ok({k: {"label": v["label"], "viewport": v["vp"], "dpr": v["dpr"]}
+                             for k, v in PRESETS.items()})
+        # /switch
+        if path == "/switch" and method == "POST":
+            mode = qs.get("mode", [""])[0] or body.get("mode", "")
+            try:
+                res = switch_mode(mode)
+                return self._ok(res) if res.get("status") == "ok" else self._err(400, res.get("error", ""))
+            except Exception as e: return self._err(500, str(e))
+        # /guide
+        if path == "/guide":
+            if method == "POST":
+                with _lock: _guide.update({"text": body.get("text", ""), "kind": body.get("kind", "info"), "ts": time.time()})
+                return self._ok({"ok": True})
+            if method == "DELETE":
+                with _lock: _guide.update({"text": "", "kind": "info", "ts": time.time()})
+                return self._ok({"ok": True})
+            if method == "GET":
+                with _lock: return self._ok(dict(_guide))
+        # /continue
+        if path == "/continue" and method == "POST":
+            with _lock: _cont["ts"] = time.time()
+            return self._ok({"ok": True, "ts": _cont["ts"]})
+        if path == "/continue/poll" and method == "GET":
+            after   = float(qs.get("after",   ["0"])[0])
+            timeout = min(float(qs.get("timeout", ["30"])[0]), 30)
+            deadline = time.time() + timeout
+            while time.time() < deadline:
+                with _lock:
+                    if _cont["ts"] > after: return self._ok({"ok": True, "signaled": True, "ts": _cont["ts"]})
+                time.sleep(0.5)
+            with _lock: return self._ok({"ok": True, "signaled": False, "ts": _cont["ts"]})
+        # /gate
+        if path == "/gate":
+            if method == "POST":
+                with _lock: _gate.update({"id": str(uuid.uuid4())[:8], "prompt": body.get("prompt", "确认？"),
+                                          "approved": None, "ts": time.time(), "timeout": body.get("timeout", 300)})
+                return self._ok({"ok": True, "id": _gate["id"]})
+            if method == "GET":
+                with _lock: return self._ok(dict(_gate))
+            if method == "DELETE":
+                with _lock: _gate.update({"id": "", "prompt": "", "approved": None, "ts": time.time()})
+                return self._ok({"ok": True})
+        if path == "/gate/respond" and method == "POST":
+            with _lock: _gate["approved"] = bool(body.get("approved", False))
+            return self._ok({"ok": True, "approved": _gate["approved"]})
+        # /screenshot
+        if path == "/screenshot" and method == "POST":
+            r = take_screenshot(body.get("label", ""))
+            return self._ok(r) if r.get("ok") else self._err(500, r.get("error", ""))
+        if path == "/screenshots" and method == "GET":
+            files = sorted(_glob.glob(str(SSHOT_DIR / "*.png")), key=lambda p: -os.path.getmtime(p))[:50]
+            return self._ok({"files": [{"path": p, "filename": os.path.basename(p),
+                                        "mtime": int(os.path.getmtime(p)), "size": os.path.getsize(p)} for p in files]})
+        # /record
+        if path == "/record/start" and method == "POST":
+            return self._ok(start_recording(body.get("interval", 3)))
+        if path == "/record/stop" and method == "POST":
+            return self._ok(stop_recording())
+        # /clipboard
+        if path == "/clipboard":
+            if method == "POST": return self._ok(set_clipboard(body.get("text", "")))
+            if method == "GET":  return self._ok(get_clipboard())
+        # /files
+        if path == "/files" and method == "GET":
+            cat = qs.get("dir", ["downloads"])[0]
+            return self._ok({"files": list_files(cat), "category": cat})
+        # /health
+        if path == "/health" and method == "GET":
+            return self._ok(check_health())
+
+        self._err(404, "not found")
+
+    def do_GET(self):    self._dispatch("GET")
+    def do_POST(self):   self._dispatch("POST")
+    def do_DELETE(self):  self._dispatch("DELETE")
+
+    def _ok(self, body):  self._json(200, body)
+    def _err(self, code, msg): self._json(code, {"status": "error", "error": msg})
+    def _json(self, code, body):
+        raw = json.dumps(body, ensure_ascii=False).encode()
+        self.send_response(code); self._cors()
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(raw))); self.end_headers()
+        self.wfile.write(raw)
+
+    def log_message(self, fmt, *args):
+        sys.stderr.write("[vrd] " + (fmt % args) + "\n")
+
+def _auth(params):
+    env = _load()
+    return env, bool(env.get("SWITCH_TOKEN")) and params.get("token", [""])[0] == env["SWITCH_TOKEN"]
+
+def cmd_serve() -> None:
+    SSHOT_DIR.mkdir(parents=True, exist_ok=True)
+    port = 6090
+    if "--port" in sys.argv:
+        i = sys.argv.index("--port")
+        if i + 1 < len(sys.argv): port = int(sys.argv[i + 1])
+    print(f"[vrd] HTTP 控制面 0.0.0.0:{port}")
+    ThreadingHTTPServer(("0.0.0.0", port), _Handler).serve_forever()
+
+# ════════════════════════════════════════════════════════════════════════
+#  入口
+# ════════════════════════════════════════════════════════════════════════
+USAGE = """用法: python3 vrd.py <command>
+
+  check                     检查 / 安装依赖
+  start                     启动全栈
+  stop                      停止并备份 profile
+  status                    查看状态
+  serve [--port 6090]       HTTP 控制面
+  switch <mode>             切换设备模式
+  screenshot [label]        截图
+  clipboard get|set <text>  剪贴板
+  export-session <platform> <output_path>  导出当前浏览器会话
+"""
+
+def main() -> None:
+    if len(sys.argv) < 2:
+        print(USAGE); return
+    cmd = sys.argv[1]
+    dispatch = {
+        "check":      cmd_check,
+        "start":      cmd_start,
+        "stop":       lambda: cmd_stop(),
+        "status":     cmd_status,
+        "serve":      cmd_serve,
+        "switch":     lambda: cmd_switch(sys.argv[2] if len(sys.argv) > 2 else ""),
+        "screenshot": lambda: cmd_screenshot(sys.argv[2] if len(sys.argv) > 2 else ""),
+        "clipboard":  lambda: cmd_clipboard(sys.argv[2:]),
+        "export-session": lambda: cmd_export_session(sys.argv[2:]),
+    }
+    fn = dispatch.get(cmd)
+    if fn: fn()
+    else: print(USAGE)
+
+if __name__ == "__main__":
+    main()

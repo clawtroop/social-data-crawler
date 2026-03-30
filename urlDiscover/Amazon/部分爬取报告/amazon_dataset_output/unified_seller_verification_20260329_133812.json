@@ -1,0 +1,1480 @@
+{
+  "summary": {
+    "total_discovered": 230,
+    "verified_accessible": 91,
+    "verified_failed": 138,
+    "pending": 1
+  },
+  "verified_sellers": [
+    {
+      "seller_id": "ALAQLAKJ574UN",
+      "seller_url": "https://www.amazon.com/s?me=ALAQLAKJ574UN",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:39:10.586612",
+      "product_count": "3000"
+    },
+    {
+      "seller_id": "A1SBHZ17FF6KRN",
+      "seller_url": "https://www.amazon.com/s?me=A1SBHZ17FF6KRN",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:43:34.370626",
+      "product_count": "264"
+    },
+    {
+      "seller_id": "A1W3JAPFP88EHS",
+      "seller_url": "https://www.amazon.com/s?me=A1W3JAPFP88EHS",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:48:57.626719",
+      "product_count": "48"
+    },
+    {
+      "seller_id": "A3B0PMTA3KENQS",
+      "seller_url": "https://www.amazon.com/s?me=A3B0PMTA3KENQS",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:49:04.022463",
+      "product_count": "70"
+    },
+    {
+      "seller_id": "AGGFBHL50PS4D",
+      "seller_url": "https://www.amazon.com/s?me=AGGFBHL50PS4D",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:49:10.424139",
+      "product_count": "499"
+    },
+    {
+      "seller_id": "A2C32DJIW9ZJUY",
+      "seller_url": "https://www.amazon.com/s?me=A2C32DJIW9ZJUY",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:49:17.496704",
+      "product_count": "40"
+    },
+    {
+      "seller_id": "A65CUHLW5BI0P",
+      "seller_url": "https://www.amazon.com/s?me=A65CUHLW5BI0P",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:49:23.749269",
+      "product_count": "370"
+    },
+    {
+      "seller_id": "A126CCES06OK91",
+      "seller_url": "https://www.amazon.com/s?me=A126CCES06OK91",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:49:29.173115",
+      "product_count": "52"
+    },
+    {
+      "seller_id": "A1DO1RY9E7SWPS",
+      "seller_url": "https://www.amazon.com/s?me=A1DO1RY9E7SWPS",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:49:36.048200",
+      "product_count": "2"
+    },
+    {
+      "seller_id": "A35M6MZ1KA9B0G",
+      "seller_url": "https://www.amazon.com/s?me=A35M6MZ1KA9B0G",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:49:41.895167",
+      "product_count": "222"
+    },
+    {
+      "seller_id": "A35LLZTIT5S01N",
+      "seller_url": "https://www.amazon.com/s?me=A35LLZTIT5S01N",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:49:48.448861",
+      "product_count": "123"
+    },
+    {
+      "seller_id": "A3G6L0HBC1E4VR",
+      "seller_url": "https://www.amazon.com/s?me=A3G6L0HBC1E4VR",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:49:55.263383",
+      "product_count": "6"
+    },
+    {
+      "seller_id": "A3Q7KK2GT06VYU",
+      "seller_url": "https://www.amazon.com/s?me=A3Q7KK2GT06VYU",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:50:11.583728",
+      "product_count": "20"
+    },
+    {
+      "seller_id": "A1DNQ2TO380RGE",
+      "seller_url": "https://www.amazon.com/s?me=A1DNQ2TO380RGE",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:50:30.971792",
+      "product_count": "46"
+    },
+    {
+      "seller_id": "A2K3O02BTB6PS6",
+      "seller_url": "https://www.amazon.com/s?me=A2K3O02BTB6PS6",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:50:50.118151",
+      "product_count": "7"
+    },
+    {
+      "seller_id": "A3Q3T451T7TTSM",
+      "seller_url": "https://www.amazon.com/s?me=A3Q3T451T7TTSM",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:50:55.652287",
+      "product_count": "2"
+    },
+    {
+      "seller_id": "A1KWJVS57NX03I",
+      "seller_url": "https://www.amazon.com/s?me=A1KWJVS57NX03I",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:51:01.933014",
+      "product_count": "10000"
+    },
+    {
+      "seller_id": "A59O6ZC9J4H5S",
+      "seller_url": "https://www.amazon.com/s?me=A59O6ZC9J4H5S",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:51:34.492498",
+      "product_count": "83"
+    },
+    {
+      "seller_id": "A37FI61TFZMV1Y",
+      "seller_url": "https://www.amazon.com/s?me=A37FI61TFZMV1Y",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:51:41.458115",
+      "product_count": "2000"
+    },
+    {
+      "seller_id": "AR1FTLUUZC24W",
+      "seller_url": "https://www.amazon.com/s?me=AR1FTLUUZC24W",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:51:47.678427",
+      "product_count": "1000"
+    },
+    {
+      "seller_id": "A36UZVYSKR2ZI5",
+      "seller_url": "https://www.amazon.com/s?me=A36UZVYSKR2ZI5",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:52:06.602530",
+      "product_count": "19"
+    },
+    {
+      "seller_id": "AG6ODI3SOQ7F5",
+      "seller_url": "https://www.amazon.com/s?me=AG6ODI3SOQ7F5",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:52:13.389871",
+      "product_count": "118"
+    },
+    {
+      "seller_id": "A1NX6LTILXOAJO",
+      "seller_url": "https://www.amazon.com/s?me=A1NX6LTILXOAJO",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:52:20.120285",
+      "product_count": "41"
+    },
+    {
+      "seller_id": "A25SG7EATCL8K6",
+      "seller_url": "https://www.amazon.com/s?me=A25SG7EATCL8K6",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:52:27.084699",
+      "product_count": "32"
+    },
+    {
+      "seller_id": "AZ3466M00L9B3",
+      "seller_url": "https://www.amazon.com/s?me=AZ3466M00L9B3",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:52:34.041970",
+      "product_count": "57"
+    },
+    {
+      "seller_id": "AT1DRI0SUE1WL",
+      "seller_url": "https://www.amazon.com/s?me=AT1DRI0SUE1WL",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:52:40.309590",
+      "product_count": "188"
+    },
+    {
+      "seller_id": "A1X8EV8XYXWBPL",
+      "seller_url": "https://www.amazon.com/s?me=A1X8EV8XYXWBPL",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:52:46.637437",
+      "product_count": "33"
+    },
+    {
+      "seller_id": "A3UQFZV91RE0UX",
+      "seller_url": "https://www.amazon.com/s?me=A3UQFZV91RE0UX",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:52:52.492645",
+      "product_count": "2000"
+    },
+    {
+      "seller_id": "AF3DJOY0ZHFVY",
+      "seller_url": "https://www.amazon.com/s?me=AF3DJOY0ZHFVY",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:54:44.767770",
+      "product_count": "2000"
+    },
+    {
+      "seller_id": "A69JDS4AEJP0B",
+      "seller_url": "https://www.amazon.com/s?me=A69JDS4AEJP0B",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:55:10.482165",
+      "product_count": "988"
+    },
+    {
+      "seller_id": "A2NJJS65JSTOFD",
+      "seller_url": "https://www.amazon.com/s?me=A2NJJS65JSTOFD",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:55:17.061815",
+      "product_count": "33"
+    },
+    {
+      "seller_id": "AAZRLVTNON75Z",
+      "seller_url": "https://www.amazon.com/s?me=AAZRLVTNON75Z",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:55:23.218772",
+      "product_count": "80000"
+    },
+    {
+      "seller_id": "A2BY2SQM61WZVB",
+      "seller_url": "https://www.amazon.com/s?me=A2BY2SQM61WZVB",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:56:18.658685",
+      "product_count": "10000"
+    },
+    {
+      "seller_id": "A2E00TCQQ2O80P",
+      "seller_url": "https://www.amazon.com/s?me=A2E00TCQQ2O80P",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:56:24.495190",
+      "product_count": "424"
+    },
+    {
+      "seller_id": "AZM0JK8B2V3H",
+      "seller_url": "https://www.amazon.com/s?me=AZM0JK8B2V3H",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:56:31.993643",
+      "product_count": "235"
+    },
+    {
+      "seller_id": "A1RPQ7V42WAEJD",
+      "seller_url": "https://www.amazon.com/s?me=A1RPQ7V42WAEJD",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:56:38.149919",
+      "product_count": "246"
+    },
+    {
+      "seller_id": "AO9EU0V84CET9",
+      "seller_url": "https://www.amazon.com/s?me=AO9EU0V84CET9",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:56:43.869004",
+      "product_count": "48"
+    },
+    {
+      "seller_id": "A98SUY4BRFGZ6",
+      "seller_url": "https://www.amazon.com/s?me=A98SUY4BRFGZ6",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:57:27.200813",
+      "product_count": "1000"
+    },
+    {
+      "seller_id": "A1WD4FAN98ILJF",
+      "seller_url": "https://www.amazon.com/s?me=A1WD4FAN98ILJF",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:57:32.901882",
+      "product_count": "86"
+    },
+    {
+      "seller_id": "A5W45QDYAHWB2",
+      "seller_url": "https://www.amazon.com/s?me=A5W45QDYAHWB2",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:57:40.210512",
+      "product_count": "178"
+    },
+    {
+      "seller_id": "A1RZL3CP2ZABPI",
+      "seller_url": "https://www.amazon.com/s?me=A1RZL3CP2ZABPI",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:57:46.877489",
+      "product_count": "70"
+    },
+    {
+      "seller_id": "A1ELWL8B9U1SUC",
+      "seller_url": "https://www.amazon.com/s?me=A1ELWL8B9U1SUC",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:58:41.794579",
+      "product_count": "269"
+    },
+    {
+      "seller_id": "A3JEKQLX9Y2C9L",
+      "seller_url": "https://www.amazon.com/s?me=A3JEKQLX9Y2C9L",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:58:48.715397",
+      "product_count": "769"
+    },
+    {
+      "seller_id": "A3ND7RDCVFPXRF",
+      "seller_url": "https://www.amazon.com/s?me=A3ND7RDCVFPXRF",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:58:55.843139",
+      "product_count": "136"
+    },
+    {
+      "seller_id": "A3HI5JAVUWQ3MJ",
+      "seller_url": "https://www.amazon.com/s?me=A3HI5JAVUWQ3MJ",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:59:02.648349",
+      "product_count": "1000"
+    },
+    {
+      "seller_id": "A17J18A7XABQI9",
+      "seller_url": "https://www.amazon.com/s?me=A17J18A7XABQI9",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:59:08.924268",
+      "product_count": "229"
+    },
+    {
+      "seller_id": "A3KCYT6INGG858",
+      "seller_url": "https://www.amazon.com/s?me=A3KCYT6INGG858",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:59:15.794786",
+      "product_count": "517"
+    },
+    {
+      "seller_id": "AD21V1UPTSCVD",
+      "seller_url": "https://www.amazon.com/s?me=AD21V1UPTSCVD",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:59:23.309007",
+      "product_count": "527"
+    },
+    {
+      "seller_id": "A2E7NH3SLWCOH4",
+      "seller_url": "https://www.amazon.com/s?me=A2E7NH3SLWCOH4",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:59:29.763978",
+      "product_count": "747"
+    },
+    {
+      "seller_id": "A3TM85MIWGBU37",
+      "seller_url": "https://www.amazon.com/s?me=A3TM85MIWGBU37",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:59:36.346444",
+      "product_count": "2000"
+    },
+    {
+      "seller_id": "A1QT4E30ZNS20Y",
+      "seller_url": "https://www.amazon.com/s?me=A1QT4E30ZNS20Y",
+      "accessible": true,
+      "timestamp": "2026-03-29T12:59:56.148441",
+      "product_count": "2000"
+    },
+    {
+      "seller_id": "A2NT1PF6SKFVW3",
+      "seller_url": "https://www.amazon.com/s?me=A2NT1PF6SKFVW3",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:00:03.134278",
+      "product_count": "152"
+    },
+    {
+      "seller_id": "A37RA98ZWKJPJR",
+      "seller_url": "https://www.amazon.com/s?me=A37RA98ZWKJPJR",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:00:08.968205",
+      "product_count": "14"
+    },
+    {
+      "seller_id": "A18IW5B63ZEKEY",
+      "seller_url": "https://www.amazon.com/s?me=A18IW5B63ZEKEY",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:00:29.079568",
+      "product_count": "7"
+    },
+    {
+      "seller_id": "ATE7Q42V0E18G",
+      "seller_url": "https://www.amazon.com/s?me=ATE7Q42V0E18G",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:00:35.411222",
+      "product_count": "10000"
+    },
+    {
+      "seller_id": "A2CRS11RF94RX8",
+      "seller_url": "https://www.amazon.com/s?me=A2CRS11RF94RX8",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:00:42.647456",
+      "product_count": "310"
+    },
+    {
+      "seller_id": "A1S7YS0EBKHU3D",
+      "seller_url": "https://www.amazon.com/s?me=A1S7YS0EBKHU3D",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:00:49.564624",
+      "product_count": "374"
+    },
+    {
+      "seller_id": "A1XIU3S83TSJ4I",
+      "seller_url": "https://www.amazon.com/s?me=A1XIU3S83TSJ4I",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:00:55.340594",
+      "product_count": "173"
+    },
+    {
+      "seller_id": "A13BNE3P7C8THK",
+      "seller_url": "https://www.amazon.com/s?me=A13BNE3P7C8THK",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:02:27.632628",
+      "product_count": "1000"
+    },
+    {
+      "seller_id": "A3CSJDRVQMCC1A",
+      "seller_url": "https://www.amazon.com/s?me=A3CSJDRVQMCC1A",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:02:33.893793",
+      "product_count": "233"
+    },
+    {
+      "seller_id": "A22H5TAO9K54D6",
+      "seller_url": "https://www.amazon.com/s?me=A22H5TAO9K54D6",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:02:40.847566",
+      "product_count": "29"
+    },
+    {
+      "seller_id": "A11P7DRDAPU3UA",
+      "seller_url": "https://www.amazon.com/s?me=A11P7DRDAPU3UA",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:02:47.377650",
+      "product_count": "160"
+    },
+    {
+      "seller_id": "AE0PRMBZ3HXYG",
+      "seller_url": "https://www.amazon.com/s?me=AE0PRMBZ3HXYG",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:02:53.481334",
+      "product_count": "52"
+    },
+    {
+      "seller_id": "A1XBPHGHAXLHDG",
+      "seller_url": "https://www.amazon.com/s?me=A1XBPHGHAXLHDG",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:03:12.786528",
+      "product_count": "10000"
+    },
+    {
+      "seller_id": "AR5DREBZO8VES",
+      "seller_url": "https://www.amazon.com/s?me=AR5DREBZO8VES",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:03:19.191114",
+      "product_count": "233"
+    },
+    {
+      "seller_id": "A1TUQEH7FRORBR",
+      "seller_url": "https://www.amazon.com/s?me=A1TUQEH7FRORBR",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:03:38.755803",
+      "product_count": "9"
+    },
+    {
+      "seller_id": "A308LPWOTF5KQA",
+      "seller_url": "https://www.amazon.com/s?me=A308LPWOTF5KQA",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:03:47.603100",
+      "product_count": "2"
+    },
+    {
+      "seller_id": "A3CKA25JLS4XIZ",
+      "seller_url": "https://www.amazon.com/s?me=A3CKA25JLS4XIZ",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:03:53.815425",
+      "product_count": "27"
+    },
+    {
+      "seller_id": "AI3XWTUP7GUDX",
+      "seller_url": "https://www.amazon.com/s?me=AI3XWTUP7GUDX",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:04:00.330100",
+      "product_count": "129"
+    },
+    {
+      "seller_id": "A3SEUWUBQJDUH2",
+      "seller_url": "https://www.amazon.com/s?me=A3SEUWUBQJDUH2",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:04:19.584953",
+      "product_count": "6"
+    },
+    {
+      "seller_id": "A1SR3JXNDXAHHB",
+      "seller_url": "https://www.amazon.com/s?me=A1SR3JXNDXAHHB",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:04:38.339973",
+      "product_count": "343"
+    },
+    {
+      "seller_id": "A3SFPIL4KA3KL",
+      "seller_url": "https://www.amazon.com/s?me=A3SFPIL4KA3KL",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:04:44.612293",
+      "product_count": "1000"
+    },
+    {
+      "seller_id": "A23KD5S5NPGJB5",
+      "seller_url": "https://www.amazon.com/s?me=A23KD5S5NPGJB5",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:04:51.611911",
+      "product_count": "993"
+    },
+    {
+      "seller_id": "A3DJR8M9Y3OUPG",
+      "seller_url": "https://www.amazon.com/s?me=A3DJR8M9Y3OUPG",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:04:56.867779",
+      "product_count": "100000"
+    },
+    {
+      "seller_id": "A7IA6AV4KH4FA",
+      "seller_url": "https://www.amazon.com/s?me=A7IA6AV4KH4FA",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:05:04.013976",
+      "product_count": "100000"
+    },
+    {
+      "seller_id": "A15DVUDUKDPKEI",
+      "seller_url": "https://www.amazon.com/s?me=A15DVUDUKDPKEI",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:05:22.889212",
+      "product_count": "148"
+    },
+    {
+      "seller_id": "A34CX0ISM2EQ00",
+      "seller_url": "https://www.amazon.com/s?me=A34CX0ISM2EQ00",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:05:30.041569",
+      "product_count": "356"
+    },
+    {
+      "seller_id": "A1EP53GHT90KIF",
+      "seller_url": "https://www.amazon.com/s?me=A1EP53GHT90KIF",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:05:57.828713",
+      "product_count": "901"
+    },
+    {
+      "seller_id": "A3KO3B0FA95YGB",
+      "seller_url": "https://www.amazon.com/s?me=A3KO3B0FA95YGB",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:06:04.426614",
+      "product_count": "1000"
+    },
+    {
+      "seller_id": "A2V0TEAVRAHGHL",
+      "seller_url": "https://www.amazon.com/s?me=A2V0TEAVRAHGHL",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:06:12.338391",
+      "product_count": "18"
+    },
+    {
+      "seller_id": "A3MPXWDJHMHGHZ",
+      "seller_url": "https://www.amazon.com/s?me=A3MPXWDJHMHGHZ",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:06:18.442174",
+      "product_count": "64"
+    },
+    {
+      "seller_id": "A2VHGMDGXPDUTI",
+      "seller_url": "https://www.amazon.com/s?me=A2VHGMDGXPDUTI",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:06:24.090484",
+      "product_count": "13"
+    },
+    {
+      "seller_id": "A3P2WOJ1QXP3UK",
+      "seller_url": "https://www.amazon.com/s?me=A3P2WOJ1QXP3UK",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:06:31.111595",
+      "product_count": "386"
+    },
+    {
+      "seller_id": "A2T3Z1T5ZN5DAZ",
+      "seller_url": "https://www.amazon.com/s?me=A2T3Z1T5ZN5DAZ",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:06:50.507860",
+      "product_count": "88"
+    },
+    {
+      "seller_id": "A4UCFL9LU89NR",
+      "seller_url": "https://www.amazon.com/s?me=A4UCFL9LU89NR",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:06:57.782858",
+      "product_count": "2000"
+    },
+    {
+      "seller_id": "A9W1RO4XJ8D1Y",
+      "seller_url": "https://www.amazon.com/s?me=A9W1RO4XJ8D1Y",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:07:04.651698",
+      "product_count": "4000"
+    },
+    {
+      "seller_id": "A39035O0D9W53U",
+      "seller_url": "https://www.amazon.com/s?me=A39035O0D9W53U",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:07:12.039660",
+      "product_count": "397"
+    },
+    {
+      "seller_id": "A245GMXHBSBS5M",
+      "seller_url": "https://www.amazon.com/s?me=A245GMXHBSBS5M",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:07:18.445702",
+      "product_count": "138"
+    },
+    {
+      "seller_id": "A3AD5LSIIOXN9N",
+      "seller_url": "https://www.amazon.com/s?me=A3AD5LSIIOXN9N",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:15:14.245921",
+      "product_count": "42"
+    },
+    {
+      "seller_id": "A1MBC4DXP54TN9",
+      "seller_url": "https://www.amazon.com/s?me=A1MBC4DXP54TN9",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:15:38.696462",
+      "product_count": "86"
+    },
+    {
+      "seller_id": "A3LD4J8153HKUB",
+      "seller_url": "https://www.amazon.com/s?me=A3LD4J8153HKUB",
+      "accessible": true,
+      "timestamp": "2026-03-29T13:30:33.387039",
+      "product_count": "71"
+    }
+  ],
+  "failed_sellers": [
+    {
+      "seller_id": "A2L77EE7U53NWQ",
+      "seller_url": "https://www.amazon.com/s?me=A2L77EE7U53NWQ",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:38:36.596874"
+    },
+    {
+      "seller_id": "AN8LN2YPKS7DF",
+      "seller_url": "https://www.amazon.com/s?me=AN8LN2YPKS7DF",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:39:04.335879"
+    },
+    {
+      "seller_id": "A17MC6HOH9AVE6",
+      "seller_url": "https://www.amazon.com/s?me=A17MC6HOH9AVE6",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:39:54.908007"
+    },
+    {
+      "seller_id": "ATQQBVXK188KS",
+      "seller_url": "https://www.amazon.com/s?me=ATQQBVXK188KS",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:40:00.716865"
+    },
+    {
+      "seller_id": "A21QINWEWAKJ9Y",
+      "seller_url": "https://www.amazon.com/s?me=A21QINWEWAKJ9Y",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:41:27.988290"
+    },
+    {
+      "seller_id": "A27RIP0968G1L9",
+      "seller_url": "https://www.amazon.com/s?me=A27RIP0968G1L9",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:42:33.913266"
+    },
+    {
+      "seller_id": "A2FNJK7KJVY243",
+      "seller_url": "https://www.amazon.com/s?me=A2FNJK7KJVY243",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:43:39.757698"
+    },
+    {
+      "seller_id": "AF8CJ05KGZIBN",
+      "seller_url": "https://www.amazon.com/s?me=AF8CJ05KGZIBN",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:43:45.762561"
+    },
+    {
+      "seller_id": "A3C2UZZKYRDEBM",
+      "seller_url": "https://www.amazon.com/s?me=A3C2UZZKYRDEBM",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:43:52.162197"
+    },
+    {
+      "seller_id": "A2PQBA7L2BFM79",
+      "seller_url": "https://www.amazon.com/s?me=A2PQBA7L2BFM79",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:43:58.737475"
+    },
+    {
+      "seller_id": "ASH1H6YCFH4EF",
+      "seller_url": "https://www.amazon.com/s?me=ASH1H6YCFH4EF",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:44:04.028304"
+    },
+    {
+      "seller_id": "AUQ7FX7PMICC4",
+      "seller_url": "https://www.amazon.com/s?me=AUQ7FX7PMICC4",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:44:09.984574"
+    },
+    {
+      "seller_id": "AL2946FNTLWRW",
+      "seller_url": "https://www.amazon.com/s?me=AL2946FNTLWRW",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:44:15.638311"
+    },
+    {
+      "seller_id": "A34ABF00R5C25H",
+      "seller_url": "https://www.amazon.com/s?me=A34ABF00R5C25H",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:44:43.466272"
+    },
+    {
+      "seller_id": "A1MTMP1LZL4FAB",
+      "seller_url": "https://www.amazon.com/s?me=A1MTMP1LZL4FAB",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:44:50.130185"
+    },
+    {
+      "seller_id": "A2S7K2TA9M2NLE",
+      "seller_url": "https://www.amazon.com/s?me=A2S7K2TA9M2NLE",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:44:56.176921"
+    },
+    {
+      "seller_id": "AQXHDTP41R7Y5",
+      "seller_url": "https://www.amazon.com/s?me=AQXHDTP41R7Y5",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:45:00.829586"
+    },
+    {
+      "seller_id": "A3O17OVF2R4JDF",
+      "seller_url": "https://www.amazon.com/s?me=A3O17OVF2R4JDF",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:45:40.242505"
+    },
+    {
+      "seller_id": "A2YLYLTN75J8LR",
+      "seller_url": "https://www.amazon.com/s?me=A2YLYLTN75J8LR",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:45:46.297660"
+    },
+    {
+      "seller_id": "A3L2KOXEXJZT5E",
+      "seller_url": "https://www.amazon.com/s?me=A3L2KOXEXJZT5E",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:46:13.377445"
+    },
+    {
+      "seller_id": "A1LFV0XJWP2G8K",
+      "seller_url": "https://www.amazon.com/s?me=A1LFV0XJWP2G8K",
+      "accessible": false,
+      "timestamp": "2026-03-29T12:46:18.799941"
+    },
+    {
+      "seller_id": "A3876XVCAXN576",
+      "seller_url": "https://www.amazon.com/s?me=A3876XVCAXN576",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:07:47.421944"
+    },
+    {
+      "seller_id": "A6P24X4MLZCLS",
+      "seller_url": "https://www.amazon.com/s?me=A6P24X4MLZCLS",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:07:52.773666"
+    },
+    {
+      "seller_id": "AL6WK378AGUOV",
+      "seller_url": "https://www.amazon.com/s?me=AL6WK378AGUOV",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:08:10.191741"
+    },
+    {
+      "seller_id": "AT85ZJVMIQL6M",
+      "seller_url": "https://www.amazon.com/s?me=AT85ZJVMIQL6M",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:09:03.900477"
+    },
+    {
+      "seller_id": "A3ODHND3J0WMC8",
+      "seller_url": "https://www.amazon.com/s?me=A3ODHND3J0WMC8",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:09:42.723186"
+    },
+    {
+      "seller_id": "AHRE9QVX0Y88V",
+      "seller_url": "https://www.amazon.com/s?me=AHRE9QVX0Y88V",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:10:51.854949"
+    },
+    {
+      "seller_id": "A3V7TP3WFFORU4",
+      "seller_url": "https://www.amazon.com/s?me=A3V7TP3WFFORU4",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:10:58.487116"
+    },
+    {
+      "seller_id": "A25TR4NTKBYTJ4",
+      "seller_url": "https://www.amazon.com/s?me=A25TR4NTKBYTJ4",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:11:03.980914"
+    },
+    {
+      "seller_id": "A13KUM7MUVO95H",
+      "seller_url": "https://www.amazon.com/s?me=A13KUM7MUVO95H",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:11:10.629468"
+    },
+    {
+      "seller_id": "A1H5XXZXDARIZA",
+      "seller_url": "https://www.amazon.com/s?me=A1H5XXZXDARIZA",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:11:15.945874"
+    },
+    {
+      "seller_id": "A280NRE8KX931R",
+      "seller_url": "https://www.amazon.com/s?me=A280NRE8KX931R",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:11:21.854097"
+    },
+    {
+      "seller_id": "A3GMNP3CXMIPDP",
+      "seller_url": "https://www.amazon.com/s?me=A3GMNP3CXMIPDP",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:11:27.276267"
+    },
+    {
+      "seller_id": "A1Z8HN9APE8NTZ",
+      "seller_url": "https://www.amazon.com/s?me=A1Z8HN9APE8NTZ",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:11:54.963105"
+    },
+    {
+      "seller_id": "A20TN593PQK9IF",
+      "seller_url": "https://www.amazon.com/s?me=A20TN593PQK9IF",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:12:01.586562"
+    },
+    {
+      "seller_id": "A26IZ3J41IPJFQ",
+      "seller_url": "https://www.amazon.com/s?me=A26IZ3J41IPJFQ",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:12:46.368735"
+    },
+    {
+      "seller_id": "A1ASNRAEDIC2KH",
+      "seller_url": "https://www.amazon.com/s?me=A1ASNRAEDIC2KH",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:13:11.960746"
+    },
+    {
+      "seller_id": "A4ZGZF9HP3NFZ",
+      "seller_url": "https://www.amazon.com/s?me=A4ZGZF9HP3NFZ",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:13:17.992651"
+    },
+    {
+      "seller_id": "A5I0A27YTAJ6F",
+      "seller_url": "https://www.amazon.com/s?me=A5I0A27YTAJ6F",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:13:22.540878"
+    },
+    {
+      "seller_id": "AJCMQ6GSX1EB5",
+      "seller_url": "https://www.amazon.com/s?me=AJCMQ6GSX1EB5",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:13:28.360179"
+    },
+    {
+      "seller_id": "A3S8KDLTLWNQQ",
+      "seller_url": "https://www.amazon.com/s?me=A3S8KDLTLWNQQ",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:13:44.814659"
+    },
+    {
+      "seller_id": "A1NESKWKDMSQHO",
+      "seller_url": "https://www.amazon.com/s?me=A1NESKWKDMSQHO",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:13:50.743251"
+    },
+    {
+      "seller_id": "A2OI6JXWP55WJG",
+      "seller_url": "https://www.amazon.com/s?me=A2OI6JXWP55WJG",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:13:56.080780"
+    },
+    {
+      "seller_id": "A3OCV2QBQN3V6I",
+      "seller_url": "https://www.amazon.com/s?me=A3OCV2QBQN3V6I",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:14:01.680006"
+    },
+    {
+      "seller_id": "ATODKWV84AB74",
+      "seller_url": "https://www.amazon.com/s?me=ATODKWV84AB74",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:14:08.323835"
+    },
+    {
+      "seller_id": "A3OAWDOWVY475H",
+      "seller_url": "https://www.amazon.com/s?me=A3OAWDOWVY475H",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:14:14.162614"
+    },
+    {
+      "seller_id": "A2UHMGFQWTHDGH",
+      "seller_url": "https://www.amazon.com/s?me=A2UHMGFQWTHDGH",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:14:20.416573"
+    },
+    {
+      "seller_id": "A3W3KHQ0FILVDZ",
+      "seller_url": "https://www.amazon.com/s?me=A3W3KHQ0FILVDZ",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:14:26.209783"
+    },
+    {
+      "seller_id": "A43BT2R537N7R",
+      "seller_url": "https://www.amazon.com/s?me=A43BT2R537N7R",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:14:31.790959"
+    },
+    {
+      "seller_id": "A2M2K1PY9U27A2",
+      "seller_url": "https://www.amazon.com/s?me=A2M2K1PY9U27A2",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:14:48.407152"
+    },
+    {
+      "seller_id": "AE8XFJQCPS6WP",
+      "seller_url": "https://www.amazon.com/s?me=AE8XFJQCPS6WP",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:14:55.124601"
+    },
+    {
+      "seller_id": "A1FVGXDO8NIMN0",
+      "seller_url": "https://www.amazon.com/s?me=A1FVGXDO8NIMN0",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:15:00.908071"
+    },
+    {
+      "seller_id": "A3TOK7IV6HTPIW",
+      "seller_url": "https://www.amazon.com/s?me=A3TOK7IV6HTPIW",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:15:07.479250"
+    },
+    {
+      "seller_id": "A21I6SH8GPCODY",
+      "seller_url": "https://www.amazon.com/s?me=A21I6SH8GPCODY",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:15:19.928964"
+    },
+    {
+      "seller_id": "A3STZM2JKZANQS",
+      "seller_url": "https://www.amazon.com/s?me=A3STZM2JKZANQS",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:15:25.770545"
+    },
+    {
+      "seller_id": "A2WSPQVFF10DOJ",
+      "seller_url": "https://www.amazon.com/s?me=A2WSPQVFF10DOJ",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:15:32.434299"
+    },
+    {
+      "seller_id": "A3JPV73P1TY70T",
+      "seller_url": "https://www.amazon.com/s?me=A3JPV73P1TY70T",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:15:45.867999"
+    },
+    {
+      "seller_id": "A241IAO8OWIZ0F",
+      "seller_url": "https://www.amazon.com/s?me=A241IAO8OWIZ0F",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:16:14.602269"
+    },
+    {
+      "seller_id": "A2CSPTCSDTROWH",
+      "seller_url": "https://www.amazon.com/s?me=A2CSPTCSDTROWH",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:16:20.002679"
+    },
+    {
+      "seller_id": "AYGGBLY03ZTJZ",
+      "seller_url": "https://www.amazon.com/s?me=AYGGBLY03ZTJZ",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:16:35.151075"
+    },
+    {
+      "seller_id": "A3QG17I111S1F5",
+      "seller_url": "https://www.amazon.com/s?me=A3QG17I111S1F5",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:16:41.854558"
+    },
+    {
+      "seller_id": "A1RAL32L7M2RNZ",
+      "seller_url": "https://www.amazon.com/s?me=A1RAL32L7M2RNZ",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:16:58.474951"
+    },
+    {
+      "seller_id": "A1A8FDH3O7UIAW",
+      "seller_url": "https://www.amazon.com/s?me=A1A8FDH3O7UIAW",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:17:15.248662"
+    },
+    {
+      "seller_id": "A24FNQ0XV24608",
+      "seller_url": "https://www.amazon.com/s?me=A24FNQ0XV24608",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:18:24.662588"
+    },
+    {
+      "seller_id": "A2Q0WBMOT79VLZ",
+      "seller_url": "https://www.amazon.com/s?me=A2Q0WBMOT79VLZ",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:18:30.791131"
+    },
+    {
+      "seller_id": "AGLXT2DXUD6Y7",
+      "seller_url": "https://www.amazon.com/s?me=AGLXT2DXUD6Y7",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:19:03.326728"
+    },
+    {
+      "seller_id": "A1JLZWRBI9NJSI",
+      "seller_url": "https://www.amazon.com/s?me=A1JLZWRBI9NJSI",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:19:08.343974"
+    },
+    {
+      "seller_id": "A30HU29WA7V60E",
+      "seller_url": "https://www.amazon.com/s?me=A30HU29WA7V60E",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:19:13.740972"
+    },
+    {
+      "seller_id": "A3RY3KR0YEAATE",
+      "seller_url": "https://www.amazon.com/s?me=A3RY3KR0YEAATE",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:19:19.949275"
+    },
+    {
+      "seller_id": "A3KURRBVJQ6X4K",
+      "seller_url": "https://www.amazon.com/s?me=A3KURRBVJQ6X4K",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:19:25.292023"
+    },
+    {
+      "seller_id": "AUJTR5K7J766",
+      "seller_url": "https://www.amazon.com/s?me=AUJTR5K7J766",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:19:31.316953"
+    },
+    {
+      "seller_id": "A25I6ZX48O1FGI",
+      "seller_url": "https://www.amazon.com/s?me=A25I6ZX48O1FGI",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:19:36.444684"
+    },
+    {
+      "seller_id": "A3QYC03PJRQT2X",
+      "seller_url": "https://www.amazon.com/s?me=A3QYC03PJRQT2X",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:20:30.851302"
+    },
+    {
+      "seller_id": "A1APMGLUPT74RB",
+      "seller_url": "https://www.amazon.com/s?me=A1APMGLUPT74RB",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:20:54.721090"
+    },
+    {
+      "seller_id": "A1DSFXFIN28PLD",
+      "seller_url": "https://www.amazon.com/s?me=A1DSFXFIN28PLD",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:21:07.342238"
+    },
+    {
+      "seller_id": "A1L5A98SV4AB0F",
+      "seller_url": "https://www.amazon.com/s?me=A1L5A98SV4AB0F",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:21:24.001894"
+    },
+    {
+      "seller_id": "A2IO1YOAKMWV4Q",
+      "seller_url": "https://www.amazon.com/s?me=A2IO1YOAKMWV4Q",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:21:41.220031"
+    },
+    {
+      "seller_id": "A383F64SMLS6ZC",
+      "seller_url": "https://www.amazon.com/s?me=A383F64SMLS6ZC",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:22:00.684239"
+    },
+    {
+      "seller_id": "A1NI0M2K3LNEWY",
+      "seller_url": "https://www.amazon.com/s?me=A1NI0M2K3LNEWY",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:22:17.480192"
+    },
+    {
+      "seller_id": "A3BKPH93T4QQ6I",
+      "seller_url": "https://www.amazon.com/s?me=A3BKPH93T4QQ6I",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:22:30.543935"
+    },
+    {
+      "seller_id": "A14DAN0LJBA5LF",
+      "seller_url": "https://www.amazon.com/s?me=A14DAN0LJBA5LF",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:22:54.602742"
+    },
+    {
+      "seller_id": "AGKP6W2OC0QQP",
+      "seller_url": "https://www.amazon.com/s?me=AGKP6W2OC0QQP",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:23:10.599056"
+    },
+    {
+      "seller_id": "A2A67SK4IIEOAW",
+      "seller_url": "https://www.amazon.com/s?me=A2A67SK4IIEOAW",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:23:16.930674"
+    },
+    {
+      "seller_id": "A3V3S9H51OOTQX",
+      "seller_url": "https://www.amazon.com/s?me=A3V3S9H51OOTQX",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:23:22.867800"
+    },
+    {
+      "seller_id": "AO2VA4ERVL33C",
+      "seller_url": "https://www.amazon.com/s?me=AO2VA4ERVL33C",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:23:28.937782"
+    },
+    {
+      "seller_id": "A2F3Q1IGMIGXP4",
+      "seller_url": "https://www.amazon.com/s?me=A2F3Q1IGMIGXP4",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:23:34.282903"
+    },
+    {
+      "seller_id": "A2QMIFVXUQVCSH",
+      "seller_url": "https://www.amazon.com/s?me=A2QMIFVXUQVCSH",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:23:51.308862"
+    },
+    {
+      "seller_id": "A2I7HERVLL3MI9",
+      "seller_url": "https://www.amazon.com/s?me=A2I7HERVLL3MI9",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:24:08.462376"
+    },
+    {
+      "seller_id": "A3J9LL0SKEEIO0",
+      "seller_url": "https://www.amazon.com/s?me=A3J9LL0SKEEIO0",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:24:14.109545"
+    },
+    {
+      "seller_id": "A14M1L40RG3I1J",
+      "seller_url": "https://www.amazon.com/s?me=A14M1L40RG3I1J",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:24:19.681788"
+    },
+    {
+      "seller_id": "A1CS3440L4R89K",
+      "seller_url": "https://www.amazon.com/s?me=A1CS3440L4R89K",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:24:24.282856"
+    },
+    {
+      "seller_id": "A3SBLQ9AF6CQVD",
+      "seller_url": "https://www.amazon.com/s?me=A3SBLQ9AF6CQVD",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:24:50.900632"
+    },
+    {
+      "seller_id": "AESX3141EPI7X",
+      "seller_url": "https://www.amazon.com/s?me=AESX3141EPI7X",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:25:18.085938"
+    },
+    {
+      "seller_id": "AMUAVBXOJDLQN",
+      "seller_url": "https://www.amazon.com/s?me=AMUAVBXOJDLQN",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:25:33.480578"
+    },
+    {
+      "seller_id": "A2AGRXPN4RKYKO",
+      "seller_url": "https://www.amazon.com/s?me=A2AGRXPN4RKYKO",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:25:51.086731"
+    },
+    {
+      "seller_id": "A3PVGDCUD7BHIH",
+      "seller_url": "https://www.amazon.com/s?me=A3PVGDCUD7BHIH",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:25:56.997059"
+    },
+    {
+      "seller_id": "AEOCSMZZPFZGU",
+      "seller_url": "https://www.amazon.com/s?me=AEOCSMZZPFZGU",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:26:12.864876"
+    },
+    {
+      "seller_id": "A2AO9OKCJ1UF2O",
+      "seller_url": "https://www.amazon.com/s?me=A2AO9OKCJ1UF2O",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:26:29.625645"
+    },
+    {
+      "seller_id": "ADNMMQWJORFGD",
+      "seller_url": "https://www.amazon.com/s?me=ADNMMQWJORFGD",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:26:35.523748"
+    },
+    {
+      "seller_id": "A1A8MSH1RVSQBU",
+      "seller_url": "https://www.amazon.com/s?me=A1A8MSH1RVSQBU",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:26:52.375042"
+    },
+    {
+      "seller_id": "A35KP1QWR4RQUO",
+      "seller_url": "https://www.amazon.com/s?me=A35KP1QWR4RQUO",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:27:08.711169"
+    },
+    {
+      "seller_id": "AY8ZKZJWGHBJ3",
+      "seller_url": "https://www.amazon.com/s?me=AY8ZKZJWGHBJ3",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:27:13.658167"
+    },
+    {
+      "seller_id": "A2AGRL1XPMLU2W",
+      "seller_url": "https://www.amazon.com/s?me=A2AGRL1XPMLU2W",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:27:58.078761"
+    },
+    {
+      "seller_id": "A230ZFNKXE1WUD",
+      "seller_url": "https://www.amazon.com/s?me=A230ZFNKXE1WUD",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:28:25.084243"
+    },
+    {
+      "seller_id": "A2FQQGLEBZFB7A",
+      "seller_url": "https://www.amazon.com/s?me=A2FQQGLEBZFB7A",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:29:16.374479"
+    },
+    {
+      "seller_id": "A34XSYLZECTRUU",
+      "seller_url": "https://www.amazon.com/s?me=A34XSYLZECTRUU",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:29:43.768488"
+    },
+    {
+      "seller_id": "A1E8ZQ1YY52UPT",
+      "seller_url": "https://www.amazon.com/s?me=A1E8ZQ1YY52UPT",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:29:49.357595"
+    },
+    {
+      "seller_id": "A30HNUK2N7L1IH",
+      "seller_url": "https://www.amazon.com/s?me=A30HNUK2N7L1IH",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:30:26.956265"
+    },
+    {
+      "seller_id": "A327QCNUG0KV2U",
+      "seller_url": "https://www.amazon.com/s?me=A327QCNUG0KV2U",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:30:49.915932"
+    },
+    {
+      "seller_id": "A37VHTD60S0G3C",
+      "seller_url": "https://www.amazon.com/s?me=A37VHTD60S0G3C",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:30:55.249988"
+    },
+    {
+      "seller_id": "A1SB24T16WXQM6",
+      "seller_url": "https://www.amazon.com/s?me=A1SB24T16WXQM6",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:31:54.824120"
+    },
+    {
+      "seller_id": "AE61J8RLN7PWG",
+      "seller_url": "https://www.amazon.com/s?me=AE61J8RLN7PWG",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:31:59.966259"
+    },
+    {
+      "seller_id": "A1UK372G1RLYU6",
+      "seller_url": "https://www.amazon.com/s?me=A1UK372G1RLYU6",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:32:05.109224"
+    },
+    {
+      "seller_id": "AM4AB724EBAWW",
+      "seller_url": "https://www.amazon.com/s?me=AM4AB724EBAWW",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:32:10.159104"
+    },
+    {
+      "seller_id": "A2FVTTLL8Z0R9X",
+      "seller_url": "https://www.amazon.com/s?me=A2FVTTLL8Z0R9X",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:32:28.066470"
+    },
+    {
+      "seller_id": "A3HDY6RPGCCO68",
+      "seller_url": "https://www.amazon.com/s?me=A3HDY6RPGCCO68",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:32:45.951670"
+    },
+    {
+      "seller_id": "A1UBGTFS95S6OX",
+      "seller_url": "https://www.amazon.com/s?me=A1UBGTFS95S6OX",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:33:02.866080"
+    },
+    {
+      "seller_id": "A1VWEV1O4LD8P2",
+      "seller_url": "https://www.amazon.com/s?me=A1VWEV1O4LD8P2",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:33:29.760902"
+    },
+    {
+      "seller_id": "A1MHFCO2PIHZJC",
+      "seller_url": "https://www.amazon.com/s?me=A1MHFCO2PIHZJC",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:33:47.762824"
+    },
+    {
+      "seller_id": "A2KYJN6VYTP6DI",
+      "seller_url": "https://www.amazon.com/s?me=A2KYJN6VYTP6DI",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:34:14.895356"
+    },
+    {
+      "seller_id": "A2E5HNIGT5ZPKQ",
+      "seller_url": "https://www.amazon.com/s?me=A2E5HNIGT5ZPKQ",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:34:31.557538"
+    },
+    {
+      "seller_id": "ABVC263QFMN4G",
+      "seller_url": "https://www.amazon.com/s?me=ABVC263QFMN4G",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:35:08.985675"
+    },
+    {
+      "seller_id": "A3G98SNOIH3F0G",
+      "seller_url": "https://www.amazon.com/s?me=A3G98SNOIH3F0G",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:35:15.640131"
+    },
+    {
+      "seller_id": "A22IYVKVYOT05N",
+      "seller_url": "https://www.amazon.com/s?me=A22IYVKVYOT05N",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:35:21.822225"
+    },
+    {
+      "seller_id": "A1NO4B2WVO4T9J",
+      "seller_url": "https://www.amazon.com/s?me=A1NO4B2WVO4T9J",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:35:27.887177"
+    },
+    {
+      "seller_id": "A1MBE6EX7XEE5E",
+      "seller_url": "https://www.amazon.com/s?me=A1MBE6EX7XEE5E",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:35:33.872221"
+    },
+    {
+      "seller_id": "A3B7K6G14F3AX0",
+      "seller_url": "https://www.amazon.com/s?me=A3B7K6G14F3AX0",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:35:40.103389"
+    },
+    {
+      "seller_id": "A1B2EE2P0I30OG",
+      "seller_url": "https://www.amazon.com/s?me=A1B2EE2P0I30OG",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:35:46.360540"
+    },
+    {
+      "seller_id": "AJUUH5VZRMO0E",
+      "seller_url": "https://www.amazon.com/s?me=AJUUH5VZRMO0E",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:35:51.537074"
+    },
+    {
+      "seller_id": "A333O6U06Y7Y48",
+      "seller_url": "https://www.amazon.com/s?me=A333O6U06Y7Y48",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:35:57.530753"
+    },
+    {
+      "seller_id": "AWZ5ROU8H8A6M",
+      "seller_url": "https://www.amazon.com/s?me=AWZ5ROU8H8A6M",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:36:13.540196"
+    },
+    {
+      "seller_id": "A3YXPH7QZBY90",
+      "seller_url": "https://www.amazon.com/s?me=A3YXPH7QZBY90",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:36:30.601475"
+    },
+    {
+      "seller_id": "A124P75JMFIE9M",
+      "seller_url": "https://www.amazon.com/s?me=A124P75JMFIE9M",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:36:36.674350"
+    },
+    {
+      "seller_id": "AUGMGZOJR3BLB",
+      "seller_url": "https://www.amazon.com/s?me=AUGMGZOJR3BLB",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:37:36.902028"
+    },
+    {
+      "seller_id": "AXDQETSB4MUQT",
+      "seller_url": "https://www.amazon.com/s?me=AXDQETSB4MUQT",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:37:43.130320"
+    },
+    {
+      "seller_id": "A1NKG3EZ8M5P15",
+      "seller_url": "https://www.amazon.com/s?me=A1NKG3EZ8M5P15",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:37:48.903997"
+    },
+    {
+      "seller_id": "A33T0EMRHT99U4",
+      "seller_url": "https://www.amazon.com/s?me=A33T0EMRHT99U4",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:37:54.505920"
+    },
+    {
+      "seller_id": "A2D7O58H15W1J9",
+      "seller_url": "https://www.amazon.com/s?me=A2D7O58H15W1J9",
+      "accessible": false,
+      "timestamp": "2026-03-29T13:37:59.914494"
+    }
+  ],
+  "pending_seller_urls": [
+    "https://www.amazon.com/s?me=A2MNG96QPNGMO7"
+  ]
+}

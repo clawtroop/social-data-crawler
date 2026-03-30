@@ -1,0 +1,2 @@
+# OCR / PDF / rich document parsing
+unstructured[all-docs]>=0.16.11
