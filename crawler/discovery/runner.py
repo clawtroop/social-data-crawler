@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import asyncio
 import inspect
 import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from crawler.discovery.contracts import CrawlOptions, DiscoveryCandidate
+from crawler.core.auth import build_error_from_fetch_error
+from crawler.discovery.contracts import CrawlOptions, DiscoveryCandidate, DiscoveryMode
 from crawler.discovery.scheduler import DiscoveryScheduler
 from crawler.discovery.state.frontier import FrontierEntry
 from crawler.discovery.state.checkpoint import Checkpoint
@@ -14,6 +16,64 @@ from crawler.discovery.state.visited import VisitRecord
 from crawler.discovery.store.checkpoint_store import InMemoryCheckpointStore
 from crawler.discovery.store.frontier_store import InMemoryFrontierStore
 from crawler.discovery.store.visited_store import InMemoryVisitedStore
+from crawler.discovery.throttle import TokenBucketThrottle
+
+
+def _build_record(candidate: DiscoveryCandidate, fetched: dict[str, Any]) -> dict[str, Any]:
+    return {
+        "platform": candidate.platform,
+        "resource_type": candidate.resource_type,
+        "canonical_url": candidate.canonical_url,
+        "seed_url": candidate.seed_url,
+        "discovery_mode": candidate.discovery_mode.value,
+        "hop_depth": candidate.hop_depth,
+        "fetched": fetched,
+    }
+
+
+def _put_visit_record(
+    visited_store: InMemoryVisitedStore,
+    candidate: DiscoveryCandidate,
+    *,
+    crawl_state: str,
+    fetched: dict[str, Any] | None = None,
+) -> None:
+    final_url = candidate.canonical_url
+    http_status = None
+    if fetched is not None:
+        final_url = str(fetched.get("final_url") or fetched.get("url") or candidate.canonical_url)
+        if fetched.get("status_code") is not None:
+            http_status = int(fetched["status_code"])
+    visited_store.put(
+        VisitRecord(
+            url_key=_url_key(candidate),
+            canonical_url=candidate.canonical_url,
+            scope_key=_scope_key(candidate.canonical_url),
+            first_seen_at=_now_iso(),
+            last_seen_at=_now_iso(),
+            best_depth=candidate.hop_depth,
+            crawl_state=crawl_state,
+            final_url=final_url,
+            http_status=http_status,
+        )
+    )
+
+
+def _write_checkpoint(
+    checkpoint_store: InMemoryCheckpointStore,
+    frontier_store: InMemoryFrontierStore,
+    visited_store: InMemoryVisitedStore,
+) -> None:
+    checkpoint_store.put(
+        "discover-crawl",
+        Checkpoint(
+            job_id="discover-crawl",
+            checkpoint_id="discover-crawl",
+            created_at=_now_iso(),
+            frontier_cursor=str(len(frontier_store.list())),
+            visited_cursor=str(len(visited_store.list())),
+        ),
+    )
 
 
 async def run_discover_crawl(
@@ -24,6 +84,7 @@ async def run_discover_crawl(
     adapter_resolver: Any | None = None,
     state_dir: Path | None = None,
     resume: bool = False,
+    errors: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     records: list[dict[str, Any]] = []
     if options.max_pages <= 0:
@@ -37,6 +98,7 @@ async def run_discover_crawl(
             adapter_resolver=adapter_resolver,
             state_dir=state_dir,
             resume=resume,
+            errors=errors,
         )
 
     for candidate in seeds:
@@ -51,16 +113,7 @@ async def run_discover_crawl(
         if inspect.isawaitable(fetched):
             fetched = await fetched
 
-        record = {
-            "platform": candidate.platform,
-            "resource_type": candidate.resource_type,
-            "canonical_url": candidate.canonical_url,
-            "seed_url": candidate.seed_url,
-            "discovery_mode": candidate.discovery_mode.value,
-            "hop_depth": candidate.hop_depth,
-            "fetched": _normalize_fetched_payload(fetched),
-        }
-        records.append(record)
+        records.append(_build_record(candidate, _normalize_fetched_payload(fetched)))
 
     return records
 
@@ -73,6 +126,7 @@ async def _run_discover_crawl_graph(
     adapter_resolver: Any,
     state_dir: Path | None = None,
     resume: bool = False,
+    errors: list[dict[str, Any]] | None = None,
 ) -> list[dict[str, Any]]:
     if state_dir is not None:
         state_dir.mkdir(parents=True, exist_ok=True)
@@ -89,7 +143,11 @@ async def _run_discover_crawl_graph(
     frontier_store = InMemoryFrontierStore(frontier_path)
     visited_store = InMemoryVisitedStore(visited_path)
     checkpoint_store = InMemoryCheckpointStore(checkpoint_path)
-    scheduler = DiscoveryScheduler(frontier_store=frontier_store)
+    platform = seeds[0].platform if seeds else "generic"
+    throttle = TokenBucketThrottle.for_platform(platform)
+    scheduler = DiscoveryScheduler(
+        frontier_store=frontier_store, throttle=throttle, platform=platform,
+    )
     candidates_by_frontier_id = _load_candidates(candidates_path) if resume else {}
     records: list[dict[str, Any]] = []
 
@@ -117,7 +175,7 @@ async def _run_discover_crawl_graph(
 
     async def _worker(worker_index: int) -> None:
         while len(records) < options.max_pages:
-            leased = scheduler.lease_next(f"worker-{worker_index}")
+            leased = await scheduler.lease_next(f"worker-{worker_index}")
             if leased is None:
                 break
 
@@ -129,52 +187,53 @@ async def _run_discover_crawl_graph(
                 scheduler.complete(leased.frontier_id)
                 continue
 
-            adapter = adapter_resolver(candidate.platform)
-            crawl_result = await adapter.crawl(
-                candidate,
-                {
-                    "fetch_fn": lambda _ignored=None, _candidate=candidate: _call_fetch(fetch_fn, _candidate),
-                    "options": options,
-                    "query": candidate.metadata.get("query", ""),
-                    "search_type": candidate.metadata.get("search_type", ""),
-                },
-            )
-            fetched = _normalize_fetched_payload(crawl_result.get("fetched", {}))
-            records.append(
-                {
-                    "platform": candidate.platform,
-                    "resource_type": candidate.resource_type,
-                    "canonical_url": candidate.canonical_url,
-                    "seed_url": candidate.seed_url,
-                    "discovery_mode": candidate.discovery_mode.value,
-                    "hop_depth": candidate.hop_depth,
-                    "fetched": fetched,
-                }
-            )
-            visited_store.put(
-                VisitRecord(
-                    url_key=_url_key(candidate),
-                    canonical_url=candidate.canonical_url,
-                    scope_key=_scope_key(candidate.canonical_url),
-                    first_seen_at=_now_iso(),
-                    last_seen_at=_now_iso(),
-                    best_depth=candidate.hop_depth,
-                    crawl_state="done",
-                    final_url=str(fetched.get("final_url") or fetched.get("url") or candidate.canonical_url),
-                    http_status=int(fetched.get("status_code", 200)) if fetched.get("status_code") is not None else None,
+            try:
+                adapter = adapter_resolver(candidate.platform)
+                crawl_result = await adapter.crawl(
+                    candidate,
+                    {
+                        "fetch_fn": lambda _ignored=None, _candidate=candidate: _call_fetch(fetch_fn, _candidate),
+                        "options": options,
+                        "query": candidate.metadata.get("query", ""),
+                        "search_type": candidate.metadata.get("search_type", ""),
+                    },
                 )
-            )
+            except Exception as exc:
+                if errors is not None:
+                    fetch_error = getattr(exc, "fetch_error", None)
+                    if fetch_error is not None:
+                        error = build_error_from_fetch_error(
+                            platform=candidate.platform,
+                            resource_type=candidate.resource_type,
+                            fetch_error=fetch_error,
+                            stage="discovery_crawl",
+                            message=str(exc),
+                            exception=exc,
+                        )
+                    else:
+                        error = {
+                            "platform": candidate.platform,
+                            "resource_type": candidate.resource_type,
+                            "stage": "discovery_crawl",
+                            "status": "failed",
+                            "error_code": "DISCOVERY_CRAWL_FAILED",
+                            "retryable": False,
+                            "next_action": "inspect error and retry",
+                            "message": str(exc),
+                        }
+                    error["canonical_url"] = candidate.canonical_url
+                    error["seed_url"] = candidate.seed_url
+                    error["hop_depth"] = candidate.hop_depth
+                    errors.append(error)
+                scheduler.report_failure(leased.frontier_id, exc)
+                _put_visit_record(visited_store, candidate, crawl_state="failed")
+                _write_checkpoint(checkpoint_store, frontier_store, visited_store)
+                continue
+            fetched = _normalize_fetched_payload(crawl_result.get("fetched", {}))
+            records.append(_build_record(candidate, fetched))
+            _put_visit_record(visited_store, candidate, crawl_state="done", fetched=fetched)
             scheduler.complete(leased.frontier_id)
-            checkpoint_store.put(
-                "discover-crawl",
-                Checkpoint(
-                    job_id="discover-crawl",
-                    checkpoint_id="discover-crawl",
-                    created_at=_now_iso(),
-                    frontier_cursor=str(len(frontier_store.list())),
-                    visited_cursor=str(len(visited_store.list())),
-                ),
-            )
+            _write_checkpoint(checkpoint_store, frontier_store, visited_store)
 
             for spawned in crawl_result.get("spawned_candidates", []):
                 if not spawned.canonical_url or spawned.hop_depth > options.max_depth:
@@ -201,7 +260,7 @@ async def _run_discover_crawl_graph(
                 )
                 _save_candidates(candidates_path, candidates_by_frontier_id)
 
-    await __import__("asyncio").gather(
+    await asyncio.gather(
         *[_worker(i) for i in range(max(1, options.max_concurrency))]
     )
 
@@ -270,7 +329,7 @@ def _load_candidates(path: Path | None) -> dict[str, DiscoveryCandidate]:
             canonical_url=item["canonical_url"],
             seed_url=item["seed_url"],
             fields=dict(item.get("fields", {})),
-            discovery_mode=__import__("crawler.discovery.contracts", fromlist=["DiscoveryMode"]).DiscoveryMode(item["discovery_mode"]),
+            discovery_mode=DiscoveryMode(item["discovery_mode"]),
             score=float(item["score"]),
             score_breakdown=dict(item.get("score_breakdown", {})),
             hop_depth=int(item["hop_depth"]),
