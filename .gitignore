@@ -17,10 +17,20 @@ ENV/
 
 # Output (generated at runtime)
 output/
+!crawler/output/
+!crawler/output/__init__.py
+!crawler/output/*.py
 .sessions/
+*.auto-browser.json
 *.jsonl
 !data/*.jsonl
 repomix-output.*
+.tmp_*.py
+desktop.ini
+urlDiscover/**/output/
+urlDiscover/**/amazon_review_graph_output*/
+urlDiscover/**/部分爬取报告/
+urlDiscover/**/部分爬虫记录/
 
 # Test/runtime temp
 .pytest-tmp/
@@ -39,3 +49,10 @@ Thumbs.db
 # 密钥目录与本地大型 zip 归档（避免误提交）
 **/.secrets/
 urlDiscover/**/*.zip
+
+# urlDiscover 历史运行产物
+urlDiscover/**/amazon_review_graph_output*/
+urlDiscover/**/amazon_dataset_output/
+urlDiscover/**/desktop.ini
+urlDiscover/arxiv/**/arxiv_*_20*.json
+urlDiscover/arxiv/**/arxiv_*_20*.txt
