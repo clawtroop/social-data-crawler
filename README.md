@@ -61,9 +61,26 @@ Windows PowerShell:
 The installer will:
 
 - build `dist/openclaw-plugin` and release archives
-- register the local plugin in `~/.openclaw/openclaw.json` or `OPENCLAW_CONFIG_PATH`
+- register the plugin in `~/.openclaw/openclaw.json` or `OPENCLAW_CONFIG_PATH`
 - install a workspace skill wrapper for this repo
 - try to install `awp-wallet`, unlock a token, and fall back to `awpWalletTokenRef` via env SecretRef when needed
+
+OpenClaw config is written in modern `plugins.installs` format. Default output uses:
+
+```json
+{
+  "plugins": {
+    "installs": {
+      "social-crawler-agent": {
+        "source": "path",
+        "path": "/abs/path/to/dist/openclaw-plugin"
+      }
+    }
+  }
+}
+```
+
+If you want the packaged archive instead of the unpacked directory, run the installer with `--plugin-source archive`.
 
 Host diagnostics:
 

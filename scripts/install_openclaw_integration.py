@@ -15,6 +15,9 @@ ROOT = Path(__file__).resolve().parents[1]
 PLUGIN_ID = "social-crawler-agent"
 SKILL_NAME = "social-data-crawler"
 DEFAULT_GATEWAY_URL = "http://127.0.0.1:18789/v1"
+# OpenClaw modern installs schema expects values like {"source": "path"} or {"source": "archive"}.
+PLUGIN_SOURCE_PATH = "path"
+PLUGIN_SOURCE_ARCHIVE = "archive"
 
 
 def parse_args() -> argparse.Namespace:
@@ -34,6 +37,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-skill", action="store_true", help="Do not install the workspace skill wrapper.")
     parser.add_argument("--skip-archive", action="store_true", help="Do not emit plugin zip/tar.gz archives.")
     parser.add_argument("--force-build", action="store_true", help="Rebuild dist/openclaw-plugin even when it already exists.")
+    parser.add_argument(
+        "--plugin-source",
+        choices=(PLUGIN_SOURCE_PATH, PLUGIN_SOURCE_ARCHIVE),
+        default=PLUGIN_SOURCE_PATH,
+        help="OpenClaw plugin install source type. 'path' uses dist/openclaw-plugin, 'archive' uses the packaged tar.gz.",
+    )
     return parser.parse_args()
 
 
@@ -169,10 +178,7 @@ def update_openclaw_config(
 ) -> dict[str, Any]:
     config = load_json(config_path)
     plugins = config.setdefault("plugins", {})
-    allow = plugins.setdefault("allow", [])
-    if PLUGIN_ID not in allow:
-        allow.append(PLUGIN_ID)
-    entries = plugins.setdefault("entries", {})
+    installs = plugins.setdefault("installs", {})
     plugin_config: dict[str, Any] = {
         "crawlerRoot": str(crawler_root),
         "pythonBin": args.python_bin,
@@ -192,11 +198,17 @@ def update_openclaw_config(
             "id": args.awp_wallet_token_env,
         }
 
-    entries[PLUGIN_ID] = {
-        "enabled": True,
-        "source": {"type": "local", "path": str(plugin_root)},
+    plugin_path = str(plugin_root)
+    if args.plugin_source == PLUGIN_SOURCE_ARCHIVE:
+        plugin_path = str((ROOT / "dist" / "social-data-crawler-openclaw-plugin.tar.gz").resolve())
+
+    installs[PLUGIN_ID] = {
+        "source": args.plugin_source,
+        "path": plugin_path,
         "config": plugin_config,
     }
+    if "entries" in plugins:
+        plugins.pop("entries", None)
 
     gateway = config.setdefault("gateway", {})
     auth = gateway.setdefault("auth", {})
@@ -233,10 +245,11 @@ def main() -> int:
 
     payload = {
         "plugin_dist": str(DIST_DIR.resolve()),
+        "plugin_source": args.plugin_source,
         "openclaw_config_path": str(config_path),
         "skill_dir": str(skill_dir) if skill_dir else "",
         "wallet_token_env": args.awp_wallet_token_env if not wallet_token else "",
-        "plugin_enabled": PLUGIN_ID in (((config.get("plugins") or {}).get("allow")) or []),
+        "plugin_installed": PLUGIN_ID in (((config.get("plugins") or {}).get("installs")) or {}),
     }
     print(json.dumps(payload, ensure_ascii=False, indent=2))
     return 0

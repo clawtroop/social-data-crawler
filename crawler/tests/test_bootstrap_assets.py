@@ -175,6 +175,15 @@ def test_openclaw_installers_cover_cross_platform_entrypoints_and_wallet_setup()
         assert "openclaw-plugin" in content
 
 
+def test_openclaw_installer_targets_modern_plugin_install_schema() -> None:
+    content = (ROOT / "scripts" / "install_openclaw_integration.py").read_text(encoding="utf-8")
+    assert 'plugins.setdefault("installs"' in content
+    assert '"source": "path"' in content or '"source": "archive"' in content
+    assert '"path":' in content
+    assert 'plugins.setdefault("entries"' not in content
+    assert '"type": "local"' not in content
+
+
 def test_docs_describe_single_repo_openclaw_install_flow() -> None:
     skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
@@ -182,3 +191,4 @@ def test_docs_describe_single_repo_openclaw_install_flow() -> None:
     assert "install_openclaw_integration" in readme
     assert "awp-wallet" in readme
     assert "OpenClaw" in skill
+    assert "plugins.installs" in readme or '"source": "path"' in readme
