@@ -14,7 +14,6 @@ def test_layered_requirement_files_exist() -> None:
         "requirements.txt",
         "requirements-core.txt",
         "requirements-browser.txt",
-        "requirements-ocr.txt",
         "requirements-dev.txt",
     ):
         assert (ROOT / name).exists(), f"missing {name}"
@@ -24,7 +23,6 @@ def test_aggregate_requirements_references_all_layers() -> None:
     content = (ROOT / "requirements.txt").read_text(encoding="utf-8")
     assert "-r requirements-core.txt" in content
     assert "-r requirements-browser.txt" in content
-    assert "-r requirements-ocr.txt" in content
     assert "-r requirements-dev.txt" in content
 
 
@@ -36,7 +34,6 @@ def test_bootstrap_shell_script_supports_profiles_and_smoke_test() -> None:
     assert "host_diagnostics.py" in content
     assert "requirements-core.txt" in content
     assert "requirements-browser.txt" in content
-    assert "requirements-ocr.txt" in content
     assert "requirements-dev.txt" in content
     assert "verify_env.py" in content
     assert "smoke_test.py" in content
@@ -54,7 +51,6 @@ def test_bootstrap_powershell_script_supports_profiles_and_smoke_test() -> None:
     assert "host_diagnostics.py" in content
     assert "requirements-core.txt" in content
     assert "requirements-browser.txt" in content
-    assert "requirements-ocr.txt" in content
     assert "requirements-dev.txt" in content
     assert "verify_env.py" in content
     assert "smoke_test.py" in content

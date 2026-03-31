@@ -1,3 +1,0 @@
-# PDF parsing (lightweight alternative to unstructured)
-# Optional: install pypdf if PDF text extraction is needed
-# pypdf>=4.0.0

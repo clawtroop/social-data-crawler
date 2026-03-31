@@ -83,7 +83,6 @@ function Install-PythonDeps {
     }
     "full" {
       Invoke-CheckedExternal $Vpy "-m" "pip" "install" "-r" (Join-Path $RootDir "requirements-browser.txt")
-      Invoke-CheckedExternal $Vpy "-m" "pip" "install" "-r" (Join-Path $RootDir "requirements-ocr.txt")
       Invoke-CheckedExternal $Vpy "-m" "pip" "install" "-r" (Join-Path $RootDir "requirements-dev.txt")
     }
     default {

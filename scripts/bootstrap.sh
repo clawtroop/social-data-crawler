@@ -79,7 +79,6 @@ install_python_deps() {
       ;;
     full)
       "$vpy" -m pip install -r "${ROOT_DIR}/requirements-browser.txt"
-      "$vpy" -m pip install -r "${ROOT_DIR}/requirements-ocr.txt"
       "$vpy" -m pip install -r "${ROOT_DIR}/requirements-dev.txt"
       ;;
     *)

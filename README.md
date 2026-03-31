@@ -38,6 +38,18 @@ Windows PowerShell:
 ./scripts/bootstrap.ps1
 ```
 
+Windows CMD:
+
+```bat
+scripts\bootstrap.cmd
+```
+
+Host diagnostics:
+
+```bash
+python ./scripts/host_diagnostics.py --json
+```
+
 Crawl:
 
 ```bash
