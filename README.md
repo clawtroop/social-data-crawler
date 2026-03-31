@@ -1,33 +1,19 @@
 # Social Data Crawler
 
-Agent-first local crawler skill for `Wikipedia`, `arXiv`, `Amazon`, `Base`, and `LinkedIn`.
+Agent-first local crawler for `Wikipedia`, `arXiv`, `Amazon`, `Base`, `LinkedIn`, and `generic/page`.
 
-## What It Does
+The project is optimized for stable structured output, not raw page dumping. The main runtime path is:
 
-The redesigned package is built for agents that need stable structured outputs instead of raw page dumps. The intended pipeline is:
+`discover -> fetch -> extract -> enrich -> write`
 
-`discovery -> fetch -> extract -> normalize -> enrich -> write`
+## Supported Commands
 
-Key properties:
-
-- one local Python CLI
-- one skill entry point
-- deterministic output files
-- explicit status and recovery fields for agents
-- AI-powered data enhancement as a standalone stage
-- API-first where stable APIs exist, page fetch fallback where they do not
-- `run` executes `crawl -> enrich` as one pipeline, instead of crawl-only aliasing
-- backend fallback is a real runtime retry path rather than static adapter metadata
-
-## Reference Capabilities Integrated
-
-- `Playwright`: browser contexts, storage state, waiting, interception, screenshots, DOM capture
-- `Camoufox`: anti-detection browser backend for high-risk pages
-- `Firecrawl`: resilient URL-to-clean-content fallback philosophy
-- `Crawl4AI`: LLM-friendly Markdown and JSON output contracts
-- `Scrapy`: queue, retry, dedupe, rate-limit, and pipeline layering
-- `Trafilatura`: article body extraction
-- `Unstructured`: PDF and rich-document parsing
+- `discover-crawl`: start from one or more seed URLs and keep expanding until depth/page limits
+- `crawl`: fetch known targets into canonical records plus artifacts/chunks
+- `enrich`: enrich an existing `records.jsonl`
+- `run`: `crawl -> enrich` in one pass
+- `fill-enrichment`: fill `pending_agent` enrichment results
+- `export-submissions`: convert crawler output into downstream submission payloads
 
 ## Supported Platforms
 
@@ -35,40 +21,93 @@ Key properties:
 - `arxiv` -> `paper`
 - `amazon` -> `product`, `seller`, `search`
 - `base` -> `address`, `transaction`, `token`, `contract`
-- `linkedin` -> `profile`, `company`, `post`, `job`
-- `generic` -> `page` for arbitrary public URLs routed through `http -> playwright -> camoufox`
+- `linkedin` -> `profile`, `company`, `post`, `job`, `search`
+- `generic` -> `page`
 
-## Agent Workflow
+## Quick Start
 
-1. Prepare JSONL input records with explicit `platform` and `resource_type`.
-2. Run the CLI in `crawl`, `enrich`, or `run` mode.
-3. Inspect `summary.json` first.
-4. If the run is partial or failed, inspect `errors.jsonl`.
-5. Read `records.jsonl` for canonical or enriched records.
-6. Use `artifacts/` only when deeper debugging is needed.
+Install:
 
-## OpenClaw Integration
+```bash
+./scripts/bootstrap.sh
+```
 
-This project remains the crawler engine and skill only.
+Windows PowerShell:
 
-If you want to install it into OpenClaw as a native plugin, keep that plugin in a separate project such as `openclaw-social-crawler-plugin/` and let the plugin call this crawler through its CLI or exported Python helpers.
+```powershell
+./scripts/bootstrap.ps1
+```
 
-Common execution controls:
+Minimal crawl:
+
+```bash
+python -m crawler crawl --input ./records.jsonl --output ./out
+```
+
+Full crawl + enrich:
+
+```bash
+python -m crawler run --input ./records.jsonl --output ./out
+```
+
+Discovery crawl:
+
+```bash
+python -m crawler discover-crawl \
+  --input ./seeds.jsonl \
+  --output ./out-discovery \
+  --max-depth 2 \
+  --max-pages 100
+```
+
+Useful flags:
 
 - `--backend api|http|playwright|camoufox`
-- `--resume` to append into an existing run directory
-- `--artifacts-dir <path>` to move artifact persistence
-- `--css-schema <path>` to opt into CSS-based structured extraction for HTML pages
-- `--extract-llm-schema <path>` to opt into extract-stage LLM schema extraction
-- `--enrich-llm-schema <path>` to opt into enrich-stage LLM schema extraction
-- `--model-config <path>` to provide OpenAI-compatible model settings for LLM schema execution
-- `--strict` to return a non-zero exit code if any record fails
+- `--resume`
+- `--strict`
+- `--artifacts-dir <path>`
+- `--css-schema <path>`
+- `--extract-llm-schema <path>`
+- `--enrich-llm-schema <path>`
+- `--model-config <path>`
+- `--auto-login`
 
-If `--backend` is omitted, the dispatcher may escalate through adapter-declared fallback backends after fetch failures. Browser backends share the same session-state contract, so stored auth state can be reused across fallback attempts.
+## Runtime Model
 
-## Output Contract
+The default path uses the newer fetch/extract/enrich pipeline. A deprecated `--use-legacy-pipeline` switch still exists for compatibility, but the project should be operated through the default path unless you are debugging old behavior.
 
-Each run is expected to produce:
+Backend behavior is adapter-driven:
+
+- start from the preferred backend
+- retry through the fallback chain on fetch failure
+- reuse saved browser session state where possible
+- surface auth/captcha/human-gated blockers explicitly instead of hiding them
+
+Typical backend chains:
+
+- `wikipedia` / `arxiv` / `base`: `api -> http -> playwright`
+- `amazon`: `http -> playwright -> camoufox`
+- `linkedin profile/company/search/job`: `api -> playwright -> camoufox`
+- `linkedin post`: `playwright -> camoufox`
+- `generic/page`: `http -> playwright -> camoufox`
+
+## Input And Output
+
+Input is JSONL. Each line must include:
+
+- `platform`
+- `resource_type`
+- the platform-specific discovery fields
+
+Example:
+
+```json
+{"platform":"wikipedia","resource_type":"article","title":"Artificial intelligence"}
+{"platform":"amazon","resource_type":"product","asin":"B09V3KXJPB"}
+{"platform":"linkedin","resource_type":"profile","public_identifier":"john-doe-ai"}
+```
+
+Each run writes:
 
 - `records.jsonl`
 - `errors.jsonl`
@@ -76,34 +115,28 @@ Each run is expected to produce:
 - `run_manifest.json`
 - `artifacts/`
 
-Agent-oriented record control fields:
+Most useful record fields:
 
 - `status`
 - `stage`
 - `retryable`
 - `error_code`
 - `next_action`
+- `plain_text`
+- `markdown`
+- `structured`
+- `chunks`
 
-Extraction-oriented content fields:
+Inspect outputs in this order:
 
-- `plain_text`: compact LLM-ready body text after main-content extraction
-- `markdown`: compact LLM-ready Markdown after the same reduction pass
-- `structured`: platform or page-level structured fields
-- `chunks`: semantic chunks generated from the compacted content
+1. `summary.json`
+2. `errors.jsonl`
+3. `records.jsonl`
+4. `artifacts/`
 
-Artifact layering for HTML records is intentionally single-path:
+## Optional Schema Features
 
-`raw page html -> cleaned_html -> compact plain_text/markdown -> chunks`
-
-Notes:
-
-- `cleaned_html` is the reduced HTML body used to derive the final text outputs
-- `plain_text` and `markdown` are not raw page dumps; they are compacted outputs with obvious boilerplate removed
-- chunking runs on the compacted content, not on the raw extracted page
-
-## CSS Extraction
-
-HTML extraction supports an explicit opt-in CSS schema:
+CSS schema extraction adds opt-in HTML field extraction:
 
 ```bash
 python -m crawler crawl \
@@ -112,28 +145,7 @@ python -m crawler crawl \
   --css-schema ./references/css_schema.example.json
 ```
 
-The schema format is intentionally small:
-
-- `title`: one selector for the record title
-- `description`: one selector for the record description
-- `fields`: additional structured fields
-
-Each field supports:
-
-- `selector`: required CSS selector
-- `multiple`: optional, return a list when `true`
-- `attribute`: optional, read an attribute instead of text, for example `href`
-
-When `--css-schema` is not provided, the default extraction path is unchanged.
-
-## LLM Schema Extraction
-
-Two separate opt-in LLM schema paths are supported:
-
-- extract stage: extends `structured`
-- enrich stage: extends `enrichment`
-
-Example:
+LLM schema extraction is also opt-in:
 
 ```bash
 python -m crawler run \
@@ -147,76 +159,62 @@ python -m crawler run \
 
 Rules:
 
-- extract-stage schema only adds or overrides `structured` fields
-- enrich-stage schema only writes to `enrichment`
-- if no schema path is provided, the default pipeline is unchanged
-- if schema execution fails, the crawler records the failure explicitly instead of silently falling back
+- extract-stage schema extends `structured`
+- enrich-stage schema writes to `enrichment`
+- schema failures are recorded explicitly
 
-## LinkedIn Auth
+## Auth And Sessions
 
-`LinkedIn` usually requires cookies or persisted browser state.
+`LinkedIn` and some browser-backed flows may require cookies or persisted Playwright state.
 
-Use:
+Example:
 
 ```bash
 python -m crawler crawl --input ./linkedin.jsonl --output ./out --cookies ./cookies.json
 ```
 
-`cookies.json` may be any of:
+`cookies.json` may be:
 
 - a raw cookie list
 - a Playwright `storage_state` object
-- a wrapper object with a top-level `storage_state` field exported by another tool
+- a wrapper object with top-level `storage_state`
 
-The crawler normalizes session state into `output/.sessions/` and reuses it on later runs in the same output directory. Browser-backed fetches also refresh the stored Playwright state after a successful run.
+The crawler normalizes this into `output/.sessions/` and reuses it on reruns. With `--auto-login`, the crawler can trigger the built-in browser auth flow and retry once when the stored session is expired.
 
-If a run fails with `error_code: AUTH_REQUIRED`, provide valid cookies or storage state and rerun, optionally with `--resume`.
+Common auth outcomes:
 
-If a run fails with `error_code: AUTH_EXPIRED`, refresh the login session and rerun the same command.
+- `AUTH_REQUIRED`: provide cookies/storage state or enable `--auto-login`
+- `AUTH_EXPIRED`: refresh and retry
 
-## Installation
+## Enrichment
+
+Enrichment is extractive-first.
+
+- if an extractive rule is strong enough, the field group finishes immediately
+- if generation is needed and no model is configured, the result becomes `pending_agent`
+- use `fill-enrichment` to write agent-produced responses back into `records.jsonl`
+
+Example:
 
 ```bash
-./scripts/bootstrap.sh
+python -m crawler enrich \
+  --input ./out/records.jsonl \
+  --output ./out-enriched \
+  --field-group summaries
 ```
 
-PowerShell on Windows:
+## Recovery
 
-```powershell
-./scripts/bootstrap.ps1
-```
+- partial crawl failure: fix input/auth and rerun
+- crawl complete, enrich missing: rerun `enrich` on prior `records.jsonl`
+- need non-zero exit on any failure: use `--strict`
+- need append/resume semantics: use `--resume`
 
-CMD-friendly wrapper on Windows:
+## Notes
 
-```cmd
-scripts\bootstrap.cmd
-```
-
-### What `bootstrap.sh` does
-
-`metadata.openclaw.requires` should only be treated as a coarse availability gate.
-It checks whether the host looks plausible for activation, but it does not prove Python packages,
-browser bundles, or system libraries are actually ready. `bootstrap.sh` is the real installation step.
-
-- checks required host binaries such as `bash` and `python3`
-- prints host dependency guidance before browser install
-- performs best-effort host dependency checks before browser install
-- creates `.venv`
-- installs layered dependency files
-- runs `python -m playwright install`
-- runs `python -m camoufox fetch`
-- runs [`scripts/verify_env.py`](scripts/verify_env.py) to validate installed Python modules and Playwright browser bundles for the selected profile
-- runs a local smoke test via [`scripts/smoke_test.py`](scripts/smoke_test.py)
-
-### Dependency layers
-
-- [`requirements-core.txt`](requirements-core.txt): runtime packages needed for HTTP/API crawling and extraction
-- [`requirements-browser.txt`](requirements-browser.txt): browser-backed crawling packages
-- [`requirements-ocr.txt`](requirements-ocr.txt): OCR / PDF / rich document parsing
-- [`requirements-dev.txt`](requirements-dev.txt): test and development tools
-- [`requirements.txt`](requirements.txt): aggregate file that includes all layers
-
-Both bootstrap scripts support `INSTALL_PROFILE`:
+- This repo is the crawler engine and skill, not a monolithic plugin host.
+- Keep runtime examples small and deterministic.
+- Prefer the default pipeline over the legacy compatibility path.
 
 - `minimal`: core only
 - `browser`: core + browser

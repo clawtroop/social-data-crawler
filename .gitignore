@@ -17,6 +17,7 @@ ENV/
 
 # Output (generated at runtime)
 output/
+.sessions/
 *.jsonl
 !data/*.jsonl
 repomix-output.*

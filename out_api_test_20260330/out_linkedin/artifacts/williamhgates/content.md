@@ -1,3 +1,0 @@
-# Bill Gates
-
-Chair, Gates Foundation and Founder, Breakthrough Energy

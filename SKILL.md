@@ -16,86 +16,80 @@ metadata:
 
 # Social Data Crawler
 
-Agent-first crawler skill for deterministic record collection and follow-up enrichment.
+Agent-first crawler skill for deterministic collection, extraction, and enrichment.
 
-这个 skill 面向 **agent 内部执行**。文档中的 CLI 示例用于说明调用形式与参数契约，不应要求用户手动运行命令。
+这个 skill 面向 agent 内部执行。CLI 片段用于说明契约，不要求用户手动跑整套命令。
 
 ## Use This Skill When
 
 Use this skill when the task requires any of:
 
 - build canonical URLs from dataset identifiers
-- crawl `Wikipedia`, `arXiv`, `Amazon`, `Base`, or `LinkedIn`
-- crawl arbitrary public pages through `generic/page`
-- extract readable Markdown or text from HTML or PDFs
-- **produce LLM-ready chunked content** for RAG or embedding pipelines
-- write stable structured outputs for downstream agents
-- rerun enrichment on already crawled records
+- crawl `Wikipedia`, `arXiv`, `Amazon`, `Base`, `LinkedIn`, or `generic/page`
+- collect readable text or markdown from HTML / PDF / API responses
+- produce stable `records.jsonl` plus crawl artifacts
+- enrich existing records with extractive or agent-executed generative field groups
+- expand a seed set into more URLs through multi-hop discovery
 
 Do not use this skill for:
 
-- generic exploratory web browsing
-- one-off search tasks without structured output requirements
-- unsupported platforms such as `Twitter/X`
+- casual web browsing
+- one-off search without structured output
+- unsupported targets such as `Twitter/X`
+
+## Command Choice
+
+Choose commands by goal:
+
+- need more URLs from seeds: `discover-crawl`
+- already know the target pages and need content/chunks: `crawl`
+- already have `records.jsonl` and only need enrichment: `enrich`
+- need crawl plus enrich in one pass: `run`
+- need to write agent responses back into `pending_agent` results: `fill-enrichment`
+
+Do not expose `discover-map` as a public command. Discovery adapters may use mapping internally, but the public entrypoint is `discover-crawl`.
 
 ## Supported Platforms
 
-| Platform | Resource Types | Default Backend | Special Notes |
-| --- | --- | --- | --- |
-| `wikipedia` | `article` | `api` | MediaWiki API first, page fetch fallback |
-| `arxiv` | `paper` | `api` | arXiv Atom API first, PDF artifact path |
-| `amazon` | `product`, `seller`, `search` | `http` | HTTP first, then `playwright`, then `camoufox` |
-| `base` | `address`, `transaction`, `token`, `contract` | `api` | Base RPC / explorer API first |
-| `linkedin` | `profile`, `company`, `post`, `job`, `search` | `api` | Voyager API first when auth is present; `post` stays browser-oriented |
-| `generic` | `page` | `http` | Direct URL input, then fallback chain `playwright -> camoufox` |
-
-## Core Commands
-
-Use this command selection rule strictly:
-
-| Goal | Command | Notes |
+| Platform | Resource Types | Preferred Backend |
 | --- | --- | --- |
-| discover more related URLs from one or more seeds | `discover-crawl` | the only public discovery CLI entrypoint; supports multi-hop expansion |
-| fetch known pages into canonical records with chunks | `crawl` | no automatic URL expansion |
-| fetch and then enrich in one pass | `run` | no automatic URL expansion |
-| enrich existing crawl output only | `enrich` | reads prior `records.jsonl` |
-| fill `pending_agent` enrichment results | `fill-enrichment` | legacy/manual completion path |
-
-Do **not** invent or use `discover-map` from this skill. That path is now an **internal adapter capability**, not a public CLI entrypoint. If you need automatic discovery, always start with `discover-crawl`.
+| `wikipedia` | `article` | `api` |
+| `arxiv` | `paper` | `api` |
+| `amazon` | `product`, `seller`, `search` | `http` |
+| `base` | `address`, `transaction`, `token`, `contract` | `api` |
+| `linkedin` | `profile`, `company`, `post`, `job`, `search` | `api` or browser |
+| `generic` | `page` | `http` |
 
 ## Installation Gate
 
-Before using this skill in a fresh environment:
+Before using the skill in a fresh environment:
 
-- `metadata.openclaw.requires` is only a trigger gate, not an installer
+- treat `metadata.openclaw.requires` as a coarse gate only
 - run `./scripts/bootstrap.sh`
 - on Windows, prefer `./scripts/bootstrap.ps1`
-- do not trigger browser-backed flows until bootstrap finishes
-- if bootstrap reports missing host libraries, fix them first and rerun
-- treat `scripts/verify_env.py` success as the package and browser-bundle validation step
-- treat `scripts/smoke_test.py` success as the minimum usable state
+- wait for `scripts/verify_env.py` and `scripts/smoke_test.py` to pass before browser-backed runs
 
-Run crawl only:
+## Core Usage
+
+Crawl:
 
 ```bash
 python -m crawler crawl --input ./records.jsonl --output ./out
 ```
 
-Run enrich only on existing records:
+Enrich:
 
 ```bash
 python -m crawler enrich --input ./out/records.jsonl --output ./out-enriched
 ```
 
-Run crawl plus enrich:
+Run full pipeline:
 
 ```bash
 python -m crawler run --input ./records.jsonl --output ./out
 ```
 
-`run` executes the full `crawl -> enrich` path in one command and writes enriched records to the target output directory.
-
-Run automatic discovery with multi-hop expansion:
+Discovery crawl:
 
 ```bash
 python -m crawler discover-crawl \
@@ -105,111 +99,143 @@ python -m crawler discover-crawl \
   --max-pages 100
 ```
 
-`discover-crawl` is the only public discovery command. It fetches each seed, lets the platform discovery adapter emit `spawned_candidates`, deduplicates them, and keeps expanding until it hits `--max-depth` or `--max-pages`.
+Useful flags:
 
-Use execution controls when needed:
+- `--backend api|http|playwright|camoufox`
+- `--resume`
+- `--strict`
+- `--artifacts-dir <path>`
+- `--css-schema <path>`
+- `--extract-llm-schema <path>`
+- `--enrich-llm-schema <path>`
+- `--model-config <path>`
+- `--auto-login`
+- `--max-chunk-tokens <n>`
+- `--chunk-overlap <n>`
 
-```bash
-python -m crawler crawl \
-  --input ./records.jsonl \
-  --output ./out \
-  --backend http \
-  --resume \
-  --artifacts-dir ./out/artifacts \
-  --strict
-```
+## Runtime Model
 
-## Pipeline Architecture (Default)
+Default execution uses the newer fetch/extract/enrich pipeline:
 
-The crawler uses a 3-layer pipeline architecture by default:
+`discover -> FetchEngine -> ExtractPipeline -> EnrichPipeline -> write`
 
-1. **FetchEngine** — BrowserPool, intelligent wait strategies, automatic backend escalation
-2. **ExtractPipeline** — HTML cleaning, main content detection, semantic chunking
-3. **EnrichPipeline** — Extractive-first enrichment, LLM only when needed
+Practical rules:
 
-```bash
-python -m crawler run \
-  --input ./records.jsonl \
-  --output ./out \
-  --max-chunk-tokens 512 \
-  --chunk-overlap 50
-```
+- use the default pipeline unless you are debugging compatibility
+- `--use-legacy-pipeline` exists only as a fallback path
+- backend fallback is runtime behavior, not just metadata
+- browser-backed retries can reuse normalized session state
 
-### Pipeline Options
+Typical backend chains:
 
-| Option | Default | Description |
-| ------ | ------- | ----------- |
-| `--use-legacy-pipeline` | off | Fall back to old dispatcher-based pipeline |
-| `--max-chunk-tokens` | 512 | Maximum tokens per chunk |
-| `--chunk-overlap` | 50 | Overlap tokens between chunks |
+- `wikipedia` / `arxiv` / `base`: `api -> http -> playwright`
+- `amazon`: `http -> playwright -> camoufox`
+- `linkedin profile/company/search/job`: `api -> playwright -> camoufox`
+- `linkedin post`: `playwright -> camoufox`
+- `generic/page`: `http -> playwright -> camoufox`
 
-### Discovery Controls
+## Discovery Rules
 
-| Option | Default | Description |
-| ------ | ------- | ----------- |
-| `--max-depth` | 2 | Maximum hop depth for `discover-crawl` |
-| `--max-pages` | 100 | Maximum discovered/fetched records for `discover-crawl` |
-| `--sitemap-mode` | `include` | Sitemap handling mode for discovery adapters |
-| `--resume` | off | Reuse prior `.discovery_state` and append outputs |
+Use `discover-crawl` only when the task is to find more URLs.
 
-## Discovery Mode
+Expect discovery-oriented outputs such as:
 
-Use `discover-crawl` when the task is "I only have a seed and need the crawler to keep finding the next URLs."
+- `canonical_url`
+- `seed_url`
+- `hop_depth`
+- `discovery_mode`
+- `fetched`
 
-What it does:
+Do not assume `discover-crawl` returns the same `structured` or `chunks` payloads as `crawl` / `run`.
 
-1. reads each input line as a depth-0 `DiscoveryCandidate`
-2. fetches the current page with `FetchEngine`
-3. calls the platform discovery adapter's `crawl()` method
-4. accepts any returned `spawned_candidates`
-5. deduplicates by `platform + canonical_url`
-6. enqueues new candidates until depth/page limits are reached
+## Input And Output
 
-What it does **not** do:
+Input is JSONL. Each line must include:
 
-- it does not run the full extract/chunk/enrich pipeline
-- it does not replace `crawl` or `run`
-- it does not expose `discover-map` as a CLI choice
+- `platform`
+- `resource_type`
+- required platform-specific discovery fields
 
-Agent decision rules:
+Each run writes:
 
-- If the user wants **more URLs** or **multi-hop expansion**, use `discover-crawl`
-- If the user already knows the target pages and wants **content/chunks**, use `crawl`
-- If the user already has `records.jsonl` and wants **structured fields**, use `enrich`
-- If the user wants both content and enrichment in one pass, use `run`
+- `records.jsonl`
+- `errors.jsonl`
+- `summary.json`
+- `run_manifest.json`
+- `artifacts/`
 
-Internal note for agents: discovery adapters may still use `map()` / `MapResult` internally to convert fetched HTML into candidate URLs. Treat that as an implementation detail and do not expose it as a public command choice.
+Most useful record fields:
 
-### Output Fields
+- `status`
+- `stage`
+- `retryable`
+- `error_code`
+- `next_action`
+- `plain_text`
+- `markdown`
+- `structured`
+- `chunks`
 
-Records include LLM-ready chunked content:
+Inspect outputs in this order:
 
-```json
-{
-  "chunks": [
-    {
-      "chunk_id": "abc123#chunk_0",
-      "chunk_index": 0,
-      "text": "...",
-      "markdown": "...",
-      "section_path": ["Introduction", "Overview"],
-      "heading_text": "Overview",
-      "heading_level": 2,
-      "char_offset_start": 0,
-      "char_offset_end": 512,
-      "token_count_estimate": 128
-    }
-  ],
-  "extraction_quality": {
-    "content_ratio": 0.42,
-    "noise_removed": 15,
-    "chunking_strategy": "hybrid:platform_selector",
-    "total_chunks": 8
-  }
-}
-```
+1. `summary.json`
+2. `errors.jsonl`
+3. `records.jsonl`
+4. `artifacts/`
+
+## Auth And Sessions
+
+`LinkedIn` and some browser-backed flows require cookies or persisted state.
+
+Recommended agent workflow:
+
+1. use `auto-browser` when login/captcha/human confirmation is needed
+2. let the user complete only the browser-side confirmation step
+3. pass the exported state through `--cookies` or let `--auto-login` refresh it
+
+`cookies.json` may be:
+
+- a raw cookie list
+- a Playwright `storage_state` object
+- a wrapper object with top-level `storage_state`
+
+Common auth outcomes:
+
+- `AUTH_REQUIRED`: provide state or enable `--auto-login`
+- `AUTH_EXPIRED`: refresh and retry once
+
+The crawler normalizes session state into `.sessions/` under the chosen output root and reuses it on reruns.
+
+## Enrichment Model
+
+Enrichment is extractive-first.
+
+- if extractive confidence is sufficient, finish immediately
+- if generation is needed and no model is configured, return `pending_agent`
+- if model config exists, run the generative step directly
+- use `fill-enrichment` only when the run intentionally deferred generation to the agent
+
+Common field groups:
+
+- `classifications`
+- `linkables`
+- `standardized_job_title`
+- `skills_extraction`
+- `about_summary`
+- `summaries`
+- `llm_schema`
+
+## Recovery
+
+- partial crawl failure: fix input/auth and rerun
+- crawl complete but enrich missing: rerun `enrich` on prior `records.jsonl`
+- require non-zero exit on any failure: use `--strict`
+- append into an existing run tree: use `--resume`
+
+Do not manually patch output files if a deterministic rerun is possible.
 
 Use `chunks[]` directly for:
+
 - RAG vector embedding (each chunk has context via `section_path`)
 - LLM context window management (respect `token_count_estimate`)
 - Source attribution (use `char_offset_*` for highlighting)
@@ -249,6 +275,13 @@ Each run writes:
 - `run_manifest.json`
 - `artifacts/`
 
+Quick validation rule:
+
+- test the skill by running its public CLI directly
+- do not build a wrapper script or ad-hoc harness unless you are debugging the crawler itself
+- for `generic/page` discovery smoke, prefer stable docs-style sites such as `https://docs.python.org/3/`
+- avoid using anti-bot-heavy or low-content pages as first validation seeds
+
 Key agent-facing fields in `records.jsonl`:
 
 - `status`
@@ -263,41 +296,88 @@ Key agent-facing fields in `records.jsonl`:
 - `document_blocks`
 - `structured`
 
-## LinkedIn Auth
+## Auth Orchestration
 
-`LinkedIn` usually requires authenticated browser state.
+Auth handling is now unified for `crawl`, `run`, and `discover-crawl`.
 
-Recommended agent workflow:
+Use this rule strictly:
 
-1. invoke `auto-browser` to open the login page in the shared VRD browser
-2. ask the user to complete only the browser-side login / captcha / confirmation steps
-3. export the current browser session from `auto-browser`
-4. pass the exported session file into this skill as `--cookies`
+1. If the target platform does not require auth, run normally.
+2. If the platform requires auth and `--cookies` or `output/.sessions/<platform>.json` already exists, reuse that session.
+3. If the platform requires auth and there is no session:
+   - without `--auto-login`, the crawler returns `AUTH_REQUIRED`
+   - with `--auto-login`, the crawler launches `@social-data-crawler/auto-browser`, opens the login page, and waits for browser-side completion
+4. If fetch fails with `AUTH_EXPIRED` and `--auto-login` is enabled, the crawler refreshes the session once through `auto-browser` and retries that failed item once
 
-Internal CLI form:
+The user should only handle browser-side actions such as captcha, account/password input, scan, MFA, or confirmation screens.
+
+### Agent Workflow For Auth Platforms
+
+When `--auto-login` is enabled, the expected behavior is:
+
+1. keep processing other records and platforms normally
+2. open the auth platform in the shared VRD browser
+3. if manual takeover is needed, show the `PUBLIC_URL` / VNC link to the user
+4. wait for the user to click "已完成，继续"
+5. export `<platform>.auto-browser.json`
+6. normalize that export into `output/.sessions/<platform>.json`
+7. retry only the failed item once, not the whole batch
+
+If the browser-side step times out or export fails, the crawler writes a structured auth error into `errors.jsonl`. These auth errors may include:
+
+- `public_url`
+- `login_url`
+- `error_code`
+- `next_action`
+
+### Auth Input Formats
+
+`--cookies` may be any of:
+
+- a raw cookie list
+- a Playwright `storage_state` JSON object
+- a wrapper object with a top-level `storage_state` field exported by `auto-browser`
+
+The crawler normalizes this into `output/.sessions/<platform>.json` and reuses it on later runs in the same output directory.
+
+### Recommended CLI Forms
+
+Manual session import:
 
 ```bash
 python -m crawler crawl --input ./linkedin.jsonl --output ./out --cookies ./cookies.json
 ```
 
-`cookies.json` may be any of:
+Automatic login and retry:
 
-- a raw cookie list
-- a Playwright `storage_state` JSON object
-- a wrapper object with a top-level `storage_state` field exported by another tool
+```bash
+python -m crawler run --input ./records.jsonl --output ./out --auto-login
+```
 
-The crawler normalizes this into `output/.sessions/<platform>.json` and reuses it on later runs in the same output directory. Browser-backed fetches also refresh the stored Playwright state after a successful run.
+Automatic discovery plus auth handling:
 
-If a run fails with `error_code: AUTH_REQUIRED`:
+```bash
+python -m crawler discover-crawl --input ./seeds.jsonl --output ./out --auto-login --resume
+```
 
-1. Inspect `errors.jsonl`
-2. Provide valid cookies or storage state
-3. Rerun the same command
-4. Use `--resume` if you want to append into the same output directory
+### Error Semantics
 
-If the error is `AUTH_EXPIRED`, refresh the login session and rerun the same command.
+- `AUTH_REQUIRED`: no valid session is available for an auth-required platform
+- `AUTH_EXPIRED`: an existing session was rejected and should be refreshed
+- `AUTH_INTERACTIVE_TIMEOUT`: the crawler exposed `PUBLIC_URL`, but the browser-side login was not completed in time
+- `AUTH_SESSION_EXPORT_FAILED`: the user finished login but session export failed
+- `AUTH_AUTO_LOGIN_FAILED`: `auto-browser` could not start or open the login page
 
-The user should only complete the web login action itself. Session export, retry, and rerun are all agent responsibilities.
+### Resume Policy
+
+Prefer failed-item retry, not full rerun:
+
+1. inspect `errors.jsonl`
+2. keep the same `--output`
+3. rerun the same command with `--resume`
+4. only resubmit failed auth items when you are driving the retry from the agent side
+
+`LinkedIn` is still the main auth-required platform today, but this auth flow is intentionally platform-agnostic and should be reused for any future auth-required platform.
 
 ## Autonomous Fallback Policy
 
