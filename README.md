@@ -2,20 +2,20 @@
 
 Agent-first local crawler for `Wikipedia`, `arXiv`, `Amazon`, `Base`, `LinkedIn`, and `generic/page`.
 
-The project is optimized for stable structured output, not raw page dumping. The main runtime path is:
+The runtime is built for stable structured output, not raw page dumping:
 
 `discover -> fetch -> extract -> enrich -> write`
 
-## Supported Commands
+## Commands
 
-- `discover-crawl`: start from one or more seed URLs and keep expanding until depth/page limits
+- `discover-crawl`: start from seed URLs and keep expanding until depth/page limits
 - `crawl`: fetch known targets into canonical records plus artifacts/chunks
 - `enrich`: enrich an existing `records.jsonl`
 - `run`: `crawl -> enrich` in one pass
 - `fill-enrichment`: fill `pending_agent` enrichment results
 - `export-submissions`: convert crawler output into downstream submission payloads
 
-## Supported Platforms
+## Platforms
 
 - `wikipedia` -> `article`
 - `arxiv` -> `paper`
@@ -38,13 +38,13 @@ Windows PowerShell:
 ./scripts/bootstrap.ps1
 ```
 
-Minimal crawl:
+Crawl:
 
 ```bash
 python -m crawler crawl --input ./records.jsonl --output ./out
 ```
 
-Full crawl + enrich:
+Run full pipeline:
 
 ```bash
 python -m crawler run --input ./records.jsonl --output ./out
@@ -74,14 +74,12 @@ Useful flags:
 
 ## Runtime Model
 
-The default path uses the newer fetch/extract/enrich pipeline. A deprecated `--use-legacy-pipeline` switch still exists for compatibility, but the project should be operated through the default path unless you are debugging old behavior.
-
 Backend behavior is adapter-driven:
 
 - start from the preferred backend
 - retry through the fallback chain on fetch failure
 - reuse saved browser session state where possible
-- surface auth/captcha/human-gated blockers explicitly instead of hiding them
+- surface auth or captcha blockers explicitly
 
 Typical backend chains:
 
@@ -97,7 +95,7 @@ Input is JSONL. Each line must include:
 
 - `platform`
 - `resource_type`
-- the platform-specific discovery fields
+- platform-specific discovery fields
 
 Example:
 
@@ -136,7 +134,7 @@ Inspect outputs in this order:
 
 ## Optional Schema Features
 
-CSS schema extraction adds opt-in HTML field extraction:
+CSS schema extraction:
 
 ```bash
 python -m crawler crawl \
@@ -145,7 +143,7 @@ python -m crawler crawl \
   --css-schema ./references/css_schema.example.json
 ```
 
-LLM schema extraction is also opt-in:
+LLM schema extraction:
 
 ```bash
 python -m crawler run \
@@ -167,8 +165,6 @@ Rules:
 
 `LinkedIn` and some browser-backed flows may require cookies or persisted Playwright state.
 
-Example:
-
 ```bash
 python -m crawler crawl --input ./linkedin.jsonl --output ./out --cookies ./cookies.json
 ```
@@ -179,7 +175,7 @@ python -m crawler crawl --input ./linkedin.jsonl --output ./out --cookies ./cook
 - a Playwright `storage_state` object
 - a wrapper object with top-level `storage_state`
 
-The crawler normalizes this into `output/.sessions/` and reuses it on reruns. With `--auto-login`, the crawler can trigger the built-in browser auth flow and retry once when the stored session is expired.
+The crawler normalizes this into `output/.sessions/` and reuses it on reruns. With `--auto-login`, it can trigger the built-in browser auth flow and retry once when stored state is expired.
 
 Common auth outcomes:
 
@@ -194,15 +190,6 @@ Enrichment is extractive-first.
 - if generation is needed and no model is configured, the result becomes `pending_agent`
 - use `fill-enrichment` to write agent-produced responses back into `records.jsonl`
 
-Example:
-
-```bash
-python -m crawler enrich \
-  --input ./out/records.jsonl \
-  --output ./out-enriched \
-  --field-group summaries
-```
-
 ## Recovery
 
 - partial crawl failure: fix input/auth and rerun
@@ -214,38 +201,3 @@ python -m crawler enrich \
 
 - This repo is the crawler engine and skill, not a monolithic plugin host.
 - Keep runtime examples small and deterministic.
-- Prefer the default pipeline over the legacy compatibility path.
-
-- `minimal`: core only
-- `browser`: core + browser
-- `full`: core + browser + OCR/PDF + dev
-
-### Host dependency guidance
-
-- Linux: install the system libraries Playwright browsers need before expecting browser-backed crawling to work
-- macOS: install Xcode Command Line Tools first
-- Windows: run `bootstrap.sh` from Git Bash or WSL
-
-Use [`scripts/host_diagnostics.py`](scripts/host_diagnostics.py) directly when you need a structured host prerequisite report:
-
-```bash
-python ./scripts/host_diagnostics.py --json
-```
-
-The smoke test is intentionally local and deterministic. It starts a temporary local HTTP server, crawls a `generic/page` URL through the standard CLI, and verifies `records.jsonl` plus `summary.json`.
-
-Use [`scripts/verify_env.py`](scripts/verify_env.py) directly when you need a fast post-install check without running the full smoke test:
-
-```bash
-python ./scripts/verify_env.py --profile browser
-```
-
-Machine-readable output for agents:
-
-```bash
-python ./scripts/verify_env.py --profile browser --json
-```
-
-## Status
-
-This directory is under active rewrite. Legacy `scripts/` and old fixtures are being replaced by the new package-oriented implementation.

@@ -8,7 +8,7 @@ from typing import Any
 
 from crawler.enrich.extractive.lookup_enricher import LookupEnricher
 from crawler.enrich.extractive.regex_enricher import RegexEnricher
-from crawler.enrich.generative.llm_client import parse_json_response
+from crawler.enrich.generative.llm_client import LLMClient, parse_json_response
 from crawler.enrich.generative.prompt_renderer import render_prompt
 from crawler.enrich.models import (
     EnrichedField,
@@ -18,14 +18,10 @@ from crawler.enrich.models import (
     StructuredFields,
 )
 from crawler.enrich.schemas.field_group_registry import (
-    FIELD_GROUP_REGISTRY,
     FieldGroupSpec,
     get_field_group_spec,
 )
 from crawler.schema_runtime import LLMExecutor
-
-# Legacy re-export for backward compatibility
-from crawler.enrich.templates import FIELD_GROUP_TEMPLATES
 
 
 class LLMSchemaFieldGroupExecutor:
@@ -50,11 +46,12 @@ class LLMSchemaFieldGroupExecutor:
 
 
 class EnrichPipeline:
-    """Enrichment pipeline: extractive-first, generative delegated to agent.
+    """Enrichment pipeline: extractive-first, generative with graceful fallback.
 
-    No external LLM API key is needed. Generative field groups return
-    ``pending_agent`` with a ready-to-execute prompt that the orchestrating
-    agent (e.g. OpenClaw) fulfills using its own LLM capability.
+    Without ``model_config``, generative field groups return ``pending_agent``
+    so an orchestrating agent can fulfill the prompt later. When
+    ``model_config`` is available, the pipeline executes the generative prompt
+    directly and writes the final structured result.
     """
 
     def __init__(
@@ -67,10 +64,12 @@ class EnrichPipeline:
         self._lookup_cache: dict[str, LookupEnricher] = {}
         self._regex_cache: dict[str, RegexEnricher] = {}
         self._cache_dir = cache_dir
+        self._model_config = model_config or {}
+        self._llm_client = LLMClient.from_model_config(self._model_config) if self._model_config else None
         if self._cache_dir is not None:
             self._cache_dir.mkdir(parents=True, exist_ok=True)
         self._llm_schema_executor = (
-            LLMSchemaFieldGroupExecutor(enrich_llm_schema_path, model_config or {})
+            LLMSchemaFieldGroupExecutor(enrich_llm_schema_path, self._model_config)
             if enrich_llm_schema_path is not None
             else None
         )
@@ -128,7 +127,11 @@ class EnrichPipeline:
                 continue
             spec = get_field_group_spec(group_name)
             if spec is None:
-                result = self._run_legacy_group(group_name, document)
+                result = FieldGroupResult(
+                    field_group=group_name,
+                    status="skipped",
+                    error=f"unknown field group: {group_name}",
+                )
                 self._write_cached_result(document, result)
                 record.merge_field_group_result(result)
                 continue
@@ -211,6 +214,9 @@ class EnrichPipeline:
 
         strategy = spec.strategy
 
+        if strategy == "passthrough":
+            return self._run_passthrough(spec, document, start)
+
         # ── Step 1: Run extractive if applicable ──
         if strategy in ("extractive_only", "extractive_then_generative"):
             extractive_result = self._run_extractive(spec, source_fields)
@@ -252,6 +258,8 @@ class EnrichPipeline:
 
             gen_config = spec.generative_config
             prompt = render_prompt(gen_config.prompt_template, source_fields)
+            if self._llm_client is not None:
+                return await self._run_generative(spec, prompt, gen_config.system_prompt, start, document)
             return FieldGroupResult(
                 field_group=spec.name,
                 status="pending_agent",
@@ -267,6 +275,50 @@ class EnrichPipeline:
             error=f"unknown strategy: {strategy}",
             latency_ms=int((time.monotonic() - start) * 1000),
         )
+
+    async def _run_generative(
+        self,
+        spec: FieldGroupSpec,
+        prompt: str,
+        system_prompt: str | None,
+        start: float,
+        document: dict[str, Any] | None = None,
+    ) -> FieldGroupResult:
+        if self._llm_client is None:
+            return FieldGroupResult(
+                field_group=spec.name,
+                status="failed",
+                error="llm client not configured",
+                latency_ms=int((time.monotonic() - start) * 1000),
+            )
+
+        try:
+            response = await self._llm_client.complete(
+                prompt,
+                model=str(self._model_config.get("model", "")),
+                max_tokens=int(self._model_config.get("max_tokens", 768)),
+                temperature=float(self._model_config.get("temperature", 0.1)),
+                system_prompt=system_prompt or "",
+            )
+        except Exception as exc:
+            return FieldGroupResult(
+                field_group=spec.name,
+                status="failed",
+                error=str(exc),
+                latency_ms=int((time.monotonic() - start) * 1000),
+            )
+
+        result = self.fill_pending_agent_result(
+            spec.name,
+            response.content,
+            document=document,
+            source_details=f"llm:{response.model}",
+            model_used=response.model,
+            tokens_used=response.tokens_used,
+            evidence=["llm_executed"],
+        )
+        result.latency_ms = int((time.monotonic() - start) * 1000)
+        return result
 
     def _collect_source_fields(self, spec: FieldGroupSpec, document: dict[str, Any]) -> dict[str, Any]:
         """Collect all relevant source fields from the document."""
@@ -324,43 +376,41 @@ class EnrichPipeline:
             )
         return fields
 
-    def _run_legacy_group(self, group_name: str, document: dict[str, Any]) -> FieldGroupResult:
-        """Fallback: run enrichment using the legacy FieldGroupTemplate system."""
-        from crawler.enrich.templates import get_field_group_template
-
-        template = get_field_group_template(group_name)
-        if template is None:
+    @staticmethod
+    def _run_passthrough(spec: FieldGroupSpec, document: dict[str, Any], start: float) -> FieldGroupResult:
+        config = spec.passthrough_config
+        if config is None:
             return FieldGroupResult(
-                field_group=group_name,
-                status="skipped",
-                error=f"unknown field group: {group_name}",
+                field_group=spec.name,
+                status="failed",
+                error="passthrough strategy but no passthrough_config",
+                latency_ms=int((time.monotonic() - start) * 1000),
             )
 
-        routed = template.route(document)
-        if routed["unsupported_reason"] is not None:
-            return FieldGroupResult(
-                field_group=group_name,
-                status="skipped",
-                error=routed["unsupported_reason"],
-            )
-
-        fields = []
-        for field_name, value in routed["generated_fields"].items():
-            fields.append(
-                EnrichedField(
-                    field_name=field_name,
-                    value=value,
-                    source_type="passthrough",
-                    source_details="legacy_template",
-                    confidence=routed["confidence"],
-                    evidence=routed["evidence"],
+        for source_field in config.source_fields:
+            value = document.get(source_field)
+            if value not in (None, "", [], {}, ()):
+                return FieldGroupResult(
+                    field_group=spec.name,
+                    status="success",
+                    fields=[
+                        EnrichedField(
+                            field_name=config.output_field,
+                            value=value,
+                            source_type="passthrough",
+                            source_details=f"passthrough:{source_field}",
+                            confidence=0.6,
+                            evidence=[source_field],
+                        )
+                    ],
+                    latency_ms=int((time.monotonic() - start) * 1000),
                 )
-            )
 
         return FieldGroupResult(
-            field_group=group_name,
-            status="success" if fields else "failed",
-            fields=fields,
+            field_group=spec.name,
+            status="skipped",
+            error=f"no routable source fields for {spec.name}",
+            latency_ms=int((time.monotonic() - start) * 1000),
         )
 
     def fill_pending_agent_result(
@@ -368,6 +418,11 @@ class EnrichPipeline:
         field_group: str,
         llm_response_text: str,
         document: dict[str, Any] | None = None,
+        *,
+        source_details: str = "agent:claude",
+        model_used: str | None = None,
+        tokens_used: int | None = None,
+        evidence: list[str] | None = None,
     ) -> FieldGroupResult:
         """Fill a pending_agent result with the LLM response from agent execution.
 
@@ -384,6 +439,7 @@ class EnrichPipeline:
         parsed = parse_json_response(llm_response_text)
         fields = []
         parsed_dict = parsed if isinstance(parsed, dict) else {"raw": parsed}
+        field_evidence = evidence or ["agent_executed"]
 
         for output_spec in spec.output_fields:
             value = parsed_dict.get(output_spec.name)
@@ -394,9 +450,11 @@ class EnrichPipeline:
                     field_name=output_spec.name,
                     value=value,
                     source_type="generative",
-                    source_details="agent:claude",
+                    source_details=source_details,
                     confidence=0.8 if value is not None else 0.0,
-                    evidence=["agent_executed"],
+                    evidence=field_evidence,
+                    model_used=model_used,
+                    tokens_used=tokens_used,
                 )
             )
 

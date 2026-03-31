@@ -37,6 +37,14 @@ class GenerativeConfig:
 
 
 @dataclass(frozen=True, slots=True)
+class PassthroughConfig:
+    """Configuration for lightweight field groups that reuse existing fields."""
+
+    source_fields: list[str]
+    output_field: str
+
+
+@dataclass(frozen=True, slots=True)
 class FieldGroupSpec:
     """Complete specification for a field group."""
 
@@ -44,9 +52,10 @@ class FieldGroupSpec:
     description: str
     required_source_fields: list[str]
     output_fields: list[OutputFieldSpec]
-    strategy: Literal["extractive_only", "generative_only", "extractive_then_generative"]
+    strategy: Literal["extractive_only", "generative_only", "extractive_then_generative", "passthrough"]
     extractive_config: ExtractiveConfig | None = None
     generative_config: GenerativeConfig | None = None
+    passthrough_config: PassthroughConfig | None = None
     min_extractive_confidence: float = 0.8
     # 新增字段
     requires_vision: bool = False  # 是否需要视觉能力（多模态）
@@ -178,9 +187,68 @@ _LEGACY_FIELD_GROUPS: dict[str, FieldGroupSpec] = {
     ),
 }
 
+_PASSTHROUGH_FIELD_GROUPS: dict[str, FieldGroupSpec] = {
+    "multimodal": FieldGroupSpec(
+        name="multimodal",
+        description="Reuse the strongest available multimodal signal from existing fields.",
+        required_source_fields=[],
+        output_fields=[OutputFieldSpec(name="multimodal_signal", description="Primary multimodal signal")],
+        strategy="passthrough",
+        passthrough_config=PassthroughConfig(
+            source_fields=["image_url", "media_url", "thumbnail"],
+            output_field="multimodal_signal",
+        ),
+    ),
+    "behavior": FieldGroupSpec(
+        name="behavior",
+        description="Reuse the strongest available behavioral signal from existing fields.",
+        required_source_fields=[],
+        output_fields=[OutputFieldSpec(name="behavior_signal", description="Primary behavioral signal")],
+        strategy="passthrough",
+        passthrough_config=PassthroughConfig(
+            source_fields=["behavior", "activity", "actions"],
+            output_field="behavior_signal",
+        ),
+    ),
+    "risk": FieldGroupSpec(
+        name="risk",
+        description="Reuse the strongest available risk signal from existing fields.",
+        required_source_fields=[],
+        output_fields=[OutputFieldSpec(name="risk_signal", description="Primary risk signal")],
+        strategy="passthrough",
+        passthrough_config=PassthroughConfig(
+            source_fields=["risk", "severity", "issue"],
+            output_field="risk_signal",
+        ),
+    ),
+    "code": FieldGroupSpec(
+        name="code",
+        description="Reuse the strongest available code-related signal from existing fields.",
+        required_source_fields=[],
+        output_fields=[OutputFieldSpec(name="code_signal", description="Primary code signal")],
+        strategy="passthrough",
+        passthrough_config=PassthroughConfig(
+            source_fields=["code_url", "repo", "language", "filename"],
+            output_field="code_signal",
+        ),
+    ),
+    "figures": FieldGroupSpec(
+        name="figures",
+        description="Reuse the strongest available figure or chart signal from existing fields.",
+        required_source_fields=[],
+        output_fields=[OutputFieldSpec(name="figure_signal", description="Primary figure or chart signal")],
+        strategy="passthrough",
+        passthrough_config=PassthroughConfig(
+            source_fields=["figure_url", "figure_caption", "figure_id"],
+            output_field="figure_signal",
+        ),
+    ),
+}
+
 # Combine all field groups into the main registry
 FIELD_GROUP_REGISTRY: dict[str, FieldGroupSpec] = {
     **_LEGACY_FIELD_GROUPS,
+    **_PASSTHROUGH_FIELD_GROUPS,
     **LINKEDIN_FIELD_GROUPS,
     **ACADEMIC_FIELD_GROUPS,
     **AMAZON_FIELD_GROUPS,
@@ -189,7 +257,7 @@ FIELD_GROUP_REGISTRY: dict[str, FieldGroupSpec] = {
 
 
 def get_field_group_spec(name: str) -> FieldGroupSpec | None:
-    """Get a field group spec by name, falling back to legacy templates."""
+    """Get a field group spec by name."""
     return FIELD_GROUP_REGISTRY.get(name)
 
 

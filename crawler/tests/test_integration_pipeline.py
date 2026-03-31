@@ -7,7 +7,7 @@ from crawler.cli import main
 
 
 def test_wikipedia_crawl_end_to_end_fetches_real_page(workspace_tmp_path: Path) -> None:
-    """End-to-end integration test using legacy pipeline for predictable output format."""
+    """End-to-end integration test for the default pipeline."""
     input_path = workspace_tmp_path / "input.jsonl"
     output_dir = workspace_tmp_path / "out"
     input_path.write_text(
@@ -22,7 +22,7 @@ def test_wikipedia_crawl_end_to_end_fetches_real_page(workspace_tmp_path: Path) 
         encoding="utf-8",
     )
 
-    exit_code = main(["crawl", "--input", str(input_path), "--output", str(output_dir), "--strict", "--use-legacy-pipeline"])
+    exit_code = main(["crawl", "--input", str(input_path), "--output", str(output_dir), "--strict"])
 
     assert exit_code == 0
     record = json.loads((output_dir / "records.jsonl").read_text(encoding="utf-8").splitlines()[0])

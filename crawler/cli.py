@@ -52,12 +52,6 @@ def build_parser() -> argparse.ArgumentParser:
         subparser.add_argument("--artifacts-dir", dest="artifacts_dir", type=Path)
         subparser.add_argument("--strict", action="store_true")
         subparser.add_argument("--field-group", dest="field_groups", action="append", default=[])
-        # Pipeline options
-        subparser.add_argument(
-            "--use-legacy-pipeline",
-            action="store_true",
-            help="Use the legacy dispatcher-based pipeline instead of the new 3-layer pipeline",
-        )
         subparser.add_argument(
             "--max-chunk-tokens",
             dest="max_chunk_tokens",
@@ -110,7 +104,7 @@ def build_parser() -> argparse.ArgumentParser:
     fill_parser.add_argument("--records", dest="records_path", type=Path, required=True,
                              help="Path to records.jsonl with pending_agent results")
     fill_parser.add_argument("--responses", dest="responses_path", type=Path, required=True,
-                             help="Path to JSON file with LLM responses keyed by doc_id and field_group")
+                             help="Path to JSON file with LLM responses keyed by record identifier and field_group")
 
     export_parser = subparsers.add_parser(
         "export-submissions",
@@ -195,7 +189,7 @@ def _fill_enrichment(records_path: Path, responses_path: Path) -> int:
 
     Args:
         records_path: Path to records.jsonl with pending_agent results
-        responses_path: Path to JSON with responses keyed by "{doc_id}:{field_group}"
+        responses_path: Path to JSON with responses keyed by "{record_id}:{field_group}"
 
     Returns:
         0 on success, 1 on error
@@ -218,16 +212,29 @@ def _fill_enrichment(records_path: Path, responses_path: Path) -> int:
     filled_count = 0
 
     for record in read_jsonl_file(records_path):
-        doc_id = record.get("doc_id", record.get("canonical_url", ""))
+        enrichment = record.get("enrichment", {})
+        candidate_ids = []
+        for candidate in (
+            record.get("doc_id"),
+            enrichment.get("doc_id") if isinstance(enrichment, dict) else None,
+            record.get("canonical_url"),
+        ):
+            if candidate and candidate not in candidate_ids:
+                candidate_ids.append(candidate)
 
         # Check each enrichment result for pending_agent status
         if "enrichment" in record and "enrichment_results" in record["enrichment"]:
             for field_group, result in record["enrichment"]["enrichment_results"].items():
                 if result.get("status") == "pending_agent":
-                    key = f"{doc_id}:{field_group}"
-                    if key in responses:
+                    response_text = None
+                    for candidate_id in candidate_ids:
+                        key = f"{candidate_id}:{field_group}"
+                        if key in responses:
+                            response_text = responses[key]
+                            break
+                    if response_text is not None:
                         # Fill with agent response
-                        filled = pipeline.fill_pending_agent_result(field_group, responses[key], document=record)
+                        filled = pipeline.fill_pending_agent_result(field_group, response_text, document=record)
                         record["enrichment"]["enrichment_results"][field_group] = filled.to_dict()
                         # Also update enriched_fields
                         for field in filled.fields:

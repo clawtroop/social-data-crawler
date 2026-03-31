@@ -78,8 +78,6 @@ class CrawlerConfig:
     artifacts_dir: Path | None = None
     strict: bool = False
     field_groups: tuple[str, ...] = ()
-    # Pipeline options (new pipeline is default; --use-legacy-pipeline falls back to old dispatcher)
-    use_legacy_pipeline: bool = False
     max_chunk_tokens: int = 512
     chunk_overlap: int = 50
     # Runtime / discovery options
@@ -130,7 +128,6 @@ class CrawlerConfig:
             ),
             strict=bool(values.get("strict", False)),
             field_groups=tuple(str(value) for value in values.get("field_groups", []) if value),
-            use_legacy_pipeline=bool(values.get("use_legacy_pipeline", False)),
             max_chunk_tokens=int(values.get("max_chunk_tokens", 512)),
             chunk_overlap=int(values.get("chunk_overlap", 50)),
             concurrency=int(values.get("concurrency", 3)),

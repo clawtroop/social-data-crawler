@@ -2,25 +2,29 @@ from __future__ import annotations
 
 import asyncio
 import json
-import os
 from pathlib import Path
 from typing import Any
 
 from crawler.contracts import CrawlCommand, CrawlerConfig
+from crawler.core.auth import (
+    build_auth_required_error,
+    build_error_from_fetch_error,
+    classify_auth_failure,
+    refresh_storage_state_path,
+    resolve_storage_state_path,
+)
 from crawler.enrich.input_normalizer import build_enrich_input
+from crawler.fetch.error_classifier import FetchError
 from crawler.io import read_json_file, read_jsonl_file
 
 
 def run_command(config: CrawlerConfig) -> tuple[list[dict], list[dict]]:
     """Run the crawler pipeline.
 
-    By default uses the new 3-layer pipeline (FetchEngine → ExtractPipeline → EnrichPipeline).
-    Pass --use-legacy-pipeline to fall back to the old dispatcher-based implementation.
+    Uses the default fetch/extract/enrich pipeline for all crawl, run, and enrich commands.
     """
     if config.command is CrawlCommand.DISCOVER_CRAWL:
         return _run_discovery_crawl_pipeline(config)
-    if config.use_legacy_pipeline:
-        return _run_legacy_pipeline(config)
     return _run_new_pipeline(config)
 
 
@@ -35,6 +39,8 @@ async def _run_discovery_crawl_pipeline_async(config: CrawlerConfig) -> tuple[li
     from crawler.discovery.contracts import CrawlOptions, DiscoveryCandidate, DiscoveryMode
     from crawler.discovery.runner import run_discover_crawl
     from crawler.fetch.engine import FetchEngine
+    from crawler.fetch.session_store import SessionStore
+    from crawler.platforms.registry import get_platform_adapter
 
     errors: list[dict[str, Any]] = []
 
@@ -69,6 +75,8 @@ async def _run_discovery_crawl_pipeline_async(config: CrawlerConfig) -> tuple[li
     session_root = config.output_dir / ".sessions"
     session_root.mkdir(parents=True, exist_ok=True)
 
+    session_store = SessionStore(session_root)
+
     async with FetchEngine(session_root) as fetch_engine:
         async def fetch_fn(target: DiscoveryCandidate | str) -> dict[str, Any]:
             if isinstance(target, DiscoveryCandidate):
@@ -79,13 +87,61 @@ async def _run_discovery_crawl_pipeline_async(config: CrawlerConfig) -> tuple[li
                 url = str(target)
                 platform = "generic"
                 resource_type = "page"
-            result = await fetch_engine.fetch(
-                url=url,
+            adapter = get_platform_adapter(platform)
+            requires_auth = bool(getattr(adapter, "requires_auth", False))
+            storage_state_path = resolve_storage_state_path(
+                config=config,
                 platform=platform,
-                resource_type=resource_type,
-                requires_auth=False,
+                requires_auth=requires_auth,
+                session_store=session_store,
             )
-            return result.to_legacy_dict()
+            if requires_auth and storage_state_path is None:
+                auth_error = build_auth_required_error(
+                    platform=platform,
+                    resource_type=resource_type,
+                    auto_login_enabled=config.auto_login,
+                )
+                err = RuntimeError(auth_error["message"])
+                err.fetch_error = FetchError(  # type: ignore[attr-defined]
+                    auth_error["error_code"],
+                    auth_error["next_action"].replace(" ", "_"),
+                    auth_error["message"],
+                    auth_error["retryable"],
+                )
+                raise err
+
+            last_exc: Exception | None = None
+            for fetch_attempt in range(2):
+                try:
+                    result = await fetch_engine.fetch(
+                        url=url,
+                        platform=platform,
+                        resource_type=resource_type,
+                        requires_auth=requires_auth,
+                    )
+                    return result.to_legacy_dict()
+                except Exception as exc:
+                    last_exc = exc
+                    fetch_error = getattr(exc, "fetch_error", None)
+                    should_refresh = (
+                        fetch_attempt == 0
+                        and config.auto_login
+                        and requires_auth
+                        and fetch_error is not None
+                        and fetch_error.error_code == "AUTH_EXPIRED"
+                    )
+                    if not should_refresh:
+                        raise
+                    refreshed_storage_state_path = refresh_storage_state_path(
+                        config=config,
+                        platform=platform,
+                        requires_auth=requires_auth,
+                        session_store=session_store,
+                    )
+                    if refreshed_storage_state_path is None:
+                        raise
+                    continue
+            raise last_exc or RuntimeError(f"discover fetch failed for {url}")
 
         try:
             records = await run_discover_crawl(
@@ -95,35 +151,35 @@ async def _run_discovery_crawl_pipeline_async(config: CrawlerConfig) -> tuple[li
                 adapter_resolver=get_discovery_adapter,
                 state_dir=config.output_dir / ".discovery_state",
                 resume=config.resume,
+                errors=errors,
             )
         except Exception as exc:
-            errors.append({
-                "platform": "generic",
-                "resource_type": "page",
-                "stage": "discovery_crawl",
-                "status": "failed",
-                "error_code": "DISCOVERY_CRAWL_FAILED",
-                "retryable": False,
-                "message": str(exc),
-            })
+            fetch_error = getattr(exc, "fetch_error", None)
+            if fetch_error is not None:
+                errors.append(
+                    build_error_from_fetch_error(
+                        platform="generic",
+                        resource_type="page",
+                        fetch_error=fetch_error,
+                        stage="discovery_crawl",
+                        message=str(exc),
+                        exception=exc,
+                    )
+                )
+            else:
+                errors.append({
+                    "platform": "generic",
+                    "resource_type": "page",
+                    "stage": "discovery_crawl",
+                    "status": "failed",
+                    "error_code": "DISCOVERY_CRAWL_FAILED",
+                    "retryable": False,
+                    "next_action": "inspect error and retry",
+                    "message": str(exc),
+                })
             records = []
 
     return records, errors
-
-
-def _run_legacy_pipeline(config: CrawlerConfig) -> tuple[list[dict], list[dict]]:
-    """Run the legacy dispatcher-based pipeline (deprecated)."""
-    from .dispatcher import run_crawl, run_enrich
-
-    if config.command is CrawlCommand.CRAWL:
-        return run_crawl(config)
-    if config.command is CrawlCommand.ENRICH:
-        return run_enrich(config)
-
-    crawled_records, crawl_errors = run_crawl(config)
-    enriched_records, enrich_errors = run_enrich(config, records=crawled_records)
-    return enriched_records, [*crawl_errors, *enrich_errors]
-
 
 def _run_new_pipeline(config: CrawlerConfig) -> tuple[list[dict], list[dict]]:
     """Run the new 3-layer pipeline: FetchEngine -> ExtractPipeline -> EnrichPipeline."""
@@ -234,14 +290,18 @@ async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], li
 
             # Step 2: Fetch (using new FetchEngine)
             requires_auth = getattr(adapter, "requires_auth", False)
-            storage_state_path = _resolve_storage_state_path(
+            storage_state_path = resolve_storage_state_path(
                 config=config,
                 platform=platform,
                 requires_auth=requires_auth,
                 session_store=session_store,
             )
             if requires_auth and storage_state_path is None:
-                return None, _build_auth_required_error(platform=platform, resource_type=resource_type)
+                return None, build_auth_required_error(
+                    platform=platform,
+                    resource_type=resource_type,
+                    auto_login_enabled=config.auto_login,
+                )
 
             # For API backends, we need the adapter's API fetcher.
             initial_backend = adapter.resolve_backend(record, config.backend, retry_count=0)
@@ -280,14 +340,21 @@ async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], li
                     should_refresh = (
                         fetch_attempt == 0
                         and config.auto_login
-                        and platform == "linkedin"
                         and requires_auth
                         and fetch_error is not None
                         and fetch_error.error_code == "AUTH_EXPIRED"
                     )
                     if not should_refresh:
                         raise
-                    storage_state_path = _export_linkedin_session_via_auto_browser(session_store)
+                    refreshed_storage_state_path = refresh_storage_state_path(
+                        config=config,
+                        platform=platform,
+                        requires_auth=requires_auth,
+                        session_store=session_store,
+                    )
+                    if refreshed_storage_state_path is None:
+                        raise
+                    storage_state_path = refreshed_storage_state_path
                     logger.info("Refreshed %s session after auth expiry, retrying %s", platform, url)
             else:
                 raise last_fetch_exc or RuntimeError(f"fetch failed for {url}")
@@ -323,8 +390,9 @@ async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], li
             )
 
             # Step 4: Enrich (if field_groups specified or running full pipeline)
-            field_groups = list(config.field_groups) if config.field_groups else ["summaries"]
             if config.command in (CrawlCommand.RUN, CrawlCommand.ENRICH):
+                enrichment_request = adapter.build_enrichment_request(record, config.field_groups)
+                field_groups = list(enrichment_request.get("field_groups") or ["summaries"])
                 # Prepare document for enrichment
                 enrich_input = _build_enrich_input_from_record({
                     "doc_id": extracted_doc.doc_id,
@@ -381,19 +449,38 @@ async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], li
             return normalized, None
 
         except Exception as exc:
-            # Extract structured error info if available
+            auth_error = classify_auth_failure(
+                platform=platform,
+                resource_type=resource_type,
+                exception=exc,
+                has_session=storage_state_path is not None,
+                stage="new_pipeline",
+            )
+            if auth_error is not None:
+                auth_error["canonical_url"] = record.get("canonical_url")
+                return None, auth_error
+
             fetch_error = getattr(exc, "fetch_error", None)
-            error_code = fetch_error.error_code if fetch_error else f"{platform.upper()}_PIPELINE_FAILED"
-            agent_hint = fetch_error.agent_hint if fetch_error else "inspect error and retry"
-            retryable = fetch_error.retryable if fetch_error else False
+            if fetch_error is not None:
+                error = build_error_from_fetch_error(
+                    platform=platform,
+                    resource_type=resource_type,
+                    fetch_error=fetch_error,
+                    stage="new_pipeline",
+                    message=str(exc),
+                    exception=exc,
+                )
+                error["canonical_url"] = record.get("canonical_url")
+                return None, error
+
             return None, {
                 "platform": platform,
                 "resource_type": resource_type,
                 "stage": "new_pipeline",
                 "status": "failed",
-                "error_code": error_code,
-                "retryable": retryable,
-                "next_action": agent_hint,
+                "error_code": f"{platform.upper()}_PIPELINE_FAILED",
+                "retryable": False,
+                "next_action": "inspect error and retry",
                 "canonical_url": record.get("canonical_url"),
                 "message": str(exc),
             }
@@ -445,48 +532,6 @@ def _discovered_from_seed(seed) -> dict[str, Any]:
     }
 
 
-def _resolve_storage_state_path(
-    *,
-    config: CrawlerConfig,
-    platform: str,
-    requires_auth: bool,
-    session_store,
-) -> str | None:
-    if not requires_auth:
-        return None
-    if config.cookies_path is not None:
-        return str(session_store.import_cookies(platform, config.cookies_path))
-    if session_store.load(platform) is not None:
-        return str(session_store.root / f"{platform}.json")
-    if config.auto_login and platform == "linkedin":
-        return _export_linkedin_session_via_auto_browser(session_store)
-    return None
-
-
-def _build_auth_required_error(*, platform: str, resource_type: str | None) -> dict[str, Any]:
-    return {
-        "platform": platform,
-        "resource_type": resource_type,
-        "stage": "fetch",
-        "status": "failed",
-        "error_code": "AUTH_REQUIRED",
-        "retryable": False,
-        "next_action": "provide cookies or storage state",
-        "message": f"{platform} requires authenticated browser state",
-    }
-
-
-def _export_linkedin_session_via_auto_browser(session_store) -> str:
-    from crawler.integrations import LinkedInAutoBrowserBridge, get_default_auto_browser_script
-
-    bridge = LinkedInAutoBrowserBridge(
-        script_path=get_default_auto_browser_script(),
-        workdir=Path(os.environ.get("WORKDIR", Path.home() / ".openclaw" / "vrd-data")),
-    )
-    exported_path = bridge.ensure_exported_session(session_store.root.parent)
-    return str(session_store.import_cookies("linkedin", exported_path))
-
-
 def _build_enrich_input_from_record(record: dict[str, Any]) -> dict[str, Any]:
     return build_enrich_input(record)
 
@@ -496,15 +541,20 @@ async def _run_new_enrich_only_pipeline(
     config: CrawlerConfig,
     enrich_pipeline,
 ) -> tuple[list[dict[str, Any]], list[dict[str, Any]]]:
+    from crawler.platforms.registry import get_platform_adapter
+
     results: list[dict[str, Any]] = []
     errors: list[dict[str, Any]] = []
     field_groups = list(config.field_groups) if config.field_groups else ["summaries"]
 
     for record in records:
         try:
+            adapter = get_platform_adapter(record["platform"])
             enrich_input = _build_enrich_input_from_record(record)
             enriched = dict(record)
-            enriched["enrichment"] = (await enrich_pipeline.enrich(enrich_input, field_groups)).to_dict()
+            enrichment_request = adapter.build_enrichment_request(record, config.field_groups)
+            effective_field_groups = list(enrichment_request.get("field_groups") or field_groups)
+            enriched["enrichment"] = (await enrich_pipeline.enrich(enrich_input, effective_field_groups)).to_dict()
             results.append(enriched)
         except Exception as exc:
             errors.append({

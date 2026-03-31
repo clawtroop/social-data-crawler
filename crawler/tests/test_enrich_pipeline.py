@@ -25,6 +25,7 @@ from crawler.enrich.extractive.lookup_enricher import LookupEnricher
 from crawler.enrich.extractive.regex_enricher import RegexEnricher
 from crawler.enrich.generative.llm_client import parse_json_response
 from crawler.enrich.generative.prompt_renderer import render_prompt, list_templates
+from crawler.enrich.agent_executor import AgentEnrichmentExecutor
 from crawler.enrich.pipeline import EnrichPipeline
 from crawler.enrich.batch.async_executor import BatchEnrichmentExecutor
 from crawler.core.pipeline import _build_enrich_input_from_record
@@ -141,11 +142,13 @@ class TestFieldGroupRegistry:
 
     def test_strategies_are_valid(self) -> None:
         for name, spec in FIELD_GROUP_REGISTRY.items():
-            assert spec.strategy in ("extractive_only", "generative_only", "extractive_then_generative")
+            assert spec.strategy in ("extractive_only", "generative_only", "extractive_then_generative", "passthrough")
             if "extractive" in spec.strategy and spec.strategy != "generative_only":
                 assert spec.extractive_config is not None, f"{name} missing extractive_config"
             if "generative" in spec.strategy and spec.strategy != "extractive_only":
                 assert spec.generative_config is not None, f"{name} missing generative_config"
+            if spec.strategy == "passthrough":
+                assert spec.passthrough_config is not None, f"{name} missing passthrough_config"
 
 
 # ─── Lookup Enricher Tests ──────────────────────────────────────────
@@ -352,8 +355,7 @@ class TestEnrichPipeline:
         signals_field = next(field for field in result.fields if field.field_name == "signals")
         assert signals_field.source_details == "llm_schema:enrich-profile"
 
-    def test_pipeline_with_legacy_group(self) -> None:
-        """Test a group that only exists in legacy templates (not in the new registry)."""
+    def test_pipeline_with_passthrough_group(self) -> None:
         pipeline = EnrichPipeline()
         record = asyncio.run(
             pipeline.enrich(
@@ -361,16 +363,16 @@ class TestEnrichPipeline:
                     "platform": "wikipedia",
                     "title": "Artificial Intelligence",
                     "summary": "AI is a field of computer science.",
+                    "behavior": "frequent article edits",
                     "canonical_url": "https://en.wikipedia.org/wiki/AI",
                 },
-                # "behavior" exists in legacy but not in the new registry
                 field_groups=["behavior"],
             )
         )
         assert "behavior" in record.enrichment_results
         result = record.enrichment_results["behavior"]
-        # Legacy groups without matching source fields get skipped
-        assert result.status in ("success", "skipped")
+        assert result.status == "success"
+        assert record.enriched_fields["behavior_signal"] == "frequent article edits"
 
     def test_pipeline_generative_group_without_llm(self) -> None:
         """Generative-only groups fail gracefully when no LLM is configured."""
@@ -393,6 +395,34 @@ class TestEnrichPipeline:
         assert result.agent_prompt is not None
         assert len(result.agent_prompt) > 0
         assert result.output_fields == ["summary"]
+
+    def test_pipeline_generative_group_with_model_config_executes_llm(self, monkeypatch) -> None:
+        async def fake_complete(self, prompt: str, **kwargs) -> LLMResponse:
+            return LLMResponse(
+                content='{"summary":"AI is a field of computer science."}',
+                model="test-model",
+                total_tokens=42,
+            )
+
+        monkeypatch.setattr("crawler.enrich.pipeline.LLMClient.complete", fake_complete)
+
+        pipeline = EnrichPipeline(model_config={"model": "test-model", "base_url": "https://api.example.com"})
+        record = asyncio.run(
+            pipeline.enrich(
+                {
+                    "platform": "wikipedia",
+                    "title": "Artificial Intelligence",
+                    "summary": "AI is a field of computer science.",
+                    "canonical_url": "https://en.wikipedia.org/wiki/AI",
+                },
+                field_groups=["summaries"],
+            )
+        )
+        result = record.enrichment_results["summaries"]
+        assert result.status == "success"
+        assert record.enriched_fields["summary"] == "AI is a field of computer science."
+        assert result.fields[0].model_used == "test-model"
+        assert result.fields[0].tokens_used == 42
 
     def test_pipeline_unknown_group_is_skipped(self) -> None:
         pipeline = EnrichPipeline()
@@ -573,6 +603,77 @@ class TestEnrichPipeline:
         assert record.enrichment_results["amazon_products_identity"].status == "pending_agent"
         assert record.enrichment_results["amazon_products_description"].status == "pending_agent"
 
+    def test_pipeline_accepts_amazon_product_unavailable_no_review_fallbacks(self) -> None:
+        pipeline = EnrichPipeline()
+        enrich_input = _build_enrich_input_from_record(
+            {
+                "platform": "amazon",
+                "resource_type": "product",
+                "canonical_url": "https://www.amazon.com/dp/B09V3KXJPB",
+                "availability": "Currently unavailable. We don't know when or if this item will be back in stock.",
+                "fulfillment": "Currently unavailable. We don't know when or if this item will be back in stock.",
+                "rating": "No customer reviews yet",
+                "reviews_count": "0 reviews",
+                "structured": {
+                    "category": ["Electronics"],
+                    "bullet_points": ["10.9-inch Liquid Retina display", "M1 chip"],
+                },
+                "metadata": {
+                    "title": "Apple iPad Air (5th Generation)",
+                    "description": "Thin and light tablet with M1 chip.",
+                },
+            }
+        )
+        record = asyncio.run(
+            pipeline.enrich(
+                enrich_input,
+                field_groups=[
+                    "amazon_products_availability",
+                    "amazon_products_reviews_summary",
+                    "amazon_products_multi_level_summary",
+                    "amazon_products_market_positioning",
+                ],
+            )
+        )
+
+        assert record.enrichment_results["amazon_products_availability"].status == "pending_agent"
+        assert record.enrichment_results["amazon_products_reviews_summary"].status == "pending_agent"
+        assert record.enrichment_results["amazon_products_multi_level_summary"].status == "pending_agent"
+        assert record.enrichment_results["amazon_products_market_positioning"].status == "pending_agent"
+
+    def test_pipeline_executes_amazon_generative_groups_with_model_config(self, monkeypatch) -> None:
+        async def fake_complete(self, prompt: str, **kwargs) -> LLMResponse:
+            return LLMResponse(
+                content='{"title_cleaned":"Keychron K3 Wireless Keyboard","brand_standardized":"Keychron","is_brand_official_store":true}',
+                model="test-model",
+                total_tokens=88,
+            )
+
+        monkeypatch.setattr("crawler.enrich.pipeline.LLMClient.complete", fake_complete)
+
+        pipeline = EnrichPipeline(model_config={"model": "test-model", "base_url": "https://api.example.com"})
+        enrich_input = _build_enrich_input_from_record(
+            {
+                "platform": "amazon",
+                "resource_type": "product",
+                "canonical_url": "https://www.amazon.com/dp/B000TEST",
+                "brand": "Keychron",
+                "metadata": {"title": "Keychron K3 Wireless Keyboard"},
+            }
+        )
+        record = asyncio.run(
+            pipeline.enrich(
+                enrich_input,
+                field_groups=["amazon_products_identity"],
+            )
+        )
+
+        result = record.enrichment_results["amazon_products_identity"]
+        assert result.status == "success"
+        assert record.enriched_fields["title_cleaned"] == "Keychron K3 Wireless Keyboard"
+        assert record.enriched_fields["brand_standardized"] == "Keychron"
+        assert record.enriched_fields["is_brand_official_store"] is True
+
     def test_pipeline_accepts_normalized_wikipedia_aliases(self) -> None:
         pipeline = EnrichPipeline()
         enrich_input = _build_enrich_input_from_record(
@@ -594,6 +695,59 @@ class TestEnrichPipeline:
 
         assert record.enrichment_results["wikipedia_identity"].status == "pending_agent"
         assert record.enrichment_results["wikipedia_categories"].status == "pending_agent"
+
+    def test_pipeline_accepts_normalized_amazon_review_aliases(self) -> None:
+        pipeline = EnrichPipeline()
+        enrich_input = _build_enrich_input_from_record(
+            {
+                "platform": "amazon",
+                "resource_type": "review",
+                "canonical_url": "https://www.amazon.com/review/example",
+                "plain_text": "Great keyboard for travel.",
+                "author": "Alice",
+                "review_rating": "5.0 out of 5 stars",
+                "is_verified_purchase": True,
+                "photo_urls": ["https://example.com/review-1.jpg"],
+            }
+        )
+        record = asyncio.run(
+            pipeline.enrich(
+                enrich_input,
+                field_groups=["amazon_reviews_identity", "amazon_reviews_quality", "amazon_reviews_media"],
+            )
+        )
+
+        assert record.enrichment_results["amazon_reviews_identity"].status == "pending_agent"
+        assert record.enrichment_results["amazon_reviews_quality"].status == "pending_agent"
+        assert record.enrichment_results["amazon_reviews_media"].status == "pending_agent"
+
+    def test_pipeline_accepts_normalized_amazon_seller_aliases(self) -> None:
+        pipeline = EnrichPipeline()
+        enrich_input = _build_enrich_input_from_record(
+            {
+                "platform": "amazon",
+                "resource_type": "seller",
+                "canonical_url": "https://www.amazon.com/sp?seller=ABC123",
+                "name": "Keychron Official",
+                "seller_rating": "4.9 out of 5 stars",
+                "feedback_count": "8,421 ratings",
+                "seller_since": "On Amazon since 2019",
+                "products": [
+                    {"title": "Keychron K3", "price": "$99.99"},
+                    {"title": "Keychron K2", "price": "$89.99"},
+                ],
+            }
+        )
+        record = asyncio.run(
+            pipeline.enrich(
+                enrich_input,
+                field_groups=["amazon_sellers_identity", "amazon_sellers_performance", "amazon_sellers_portfolio"],
+            )
+        )
+
+        assert record.enrichment_results["amazon_sellers_identity"].status == "pending_agent"
+        assert record.enrichment_results["amazon_sellers_performance"].status == "pending_agent"
+        assert record.enrichment_results["amazon_sellers_portfolio"].status == "pending_agent"
 
 
 # ─── Batch Executor Tests ──────────────────────────────────────────
@@ -688,35 +842,6 @@ class TestBatchExecutor:
         assert len(results) == 3  # All 3 returned, one is error placeholder
 
 
-# ─── Backward Compatibility Tests ──────────────────────────────────
-
-class TestBackwardCompatibility:
-    """Ensure the new pipeline doesn't break existing orchestrator usage."""
-
-    def test_legacy_templates_still_accessible(self) -> None:
-        from crawler.enrich.templates import FIELD_GROUP_TEMPLATES, get_field_group_template
-        assert "summaries" in FIELD_GROUP_TEMPLATES
-        template = get_field_group_template("summaries")
-        assert template is not None
-        assert template.output_field == "summary"
-
-    def test_legacy_route_enrichment_still_works_for_extractive_groups(self) -> None:
-        from crawler.enrich.orchestrator import route_enrichment
-        envelope = route_enrichment(
-            {"resource_type": "article", "canonical_url": "https://example.com/test"},
-            field_groups=("classifications",),
-            model_config={},
-        )
-        assert envelope["status"] == "routed"
-        assert "classifications" in envelope["generated_fields"]
-
-    def test_legacy_supported_field_groups(self) -> None:
-        from crawler.enrich.field_groups import supported_field_groups
-        groups = supported_field_groups()
-        assert "summaries" in groups
-        assert "classifications" in groups
-
-
 # ─── Agent Enrichment Tests ──────────────────────────────────────
 
 class TestPendingAgentEnrichment:
@@ -790,3 +915,26 @@ class TestPendingAgentEnrichment:
         result = pipeline.fill_pending_agent_result("nonexistent_group", '{"key": "value"}')
         assert result.status == "failed"
         assert "unknown" in result.error
+
+
+class TestAgentEnrichmentExecutor:
+    def test_executor_fills_pending_groups_into_enriched_fields(self) -> None:
+        async def fake_llm(prompt: str, system: str | None = None) -> str:
+            return '{"about_summary":"Senior data scientist","about_topics":["NLP"],"about_sentiment":"professional"}'
+
+        executor = AgentEnrichmentExecutor(llm_call=fake_llm)
+        result = asyncio.run(
+            executor.enrich(
+                {
+                    "platform": "linkedin",
+                    "about": "Data scientist with 8 years experience in NLP.",
+                    "headline": "Senior Data Scientist",
+                    "canonical_url": "https://linkedin.com/in/test",
+                },
+                ["about_summary"],
+            )
+        )
+
+        assert result.enrichment_results["about_summary"].status == "success"
+        assert result.enriched_fields["about_summary"] == "Senior data scientist"
+        assert result.enriched_fields["about_topics"] == ["NLP"]

@@ -21,7 +21,6 @@ def test_run_command_uses_new_pipeline_by_default(monkeypatch, workspace_tmp_pat
     )
 
     config = parse_args(["run", "--input", str(input_path), "--output", str(workspace_tmp_path / "out")])
-    assert config.use_legacy_pipeline is False
 
     # Mock the new pipeline's async implementation
     mock_result = (
@@ -30,38 +29,6 @@ def test_run_command_uses_new_pipeline_by_default(monkeypatch, workspace_tmp_pat
     )
     with patch("crawler.core.pipeline._run_new_pipeline", return_value=mock_result):
         records, errors = run_command(config)
-
-    assert errors == []
-    assert records[0]["enrichment"]["status"] == "routed"
-
-
-def test_run_command_with_legacy_flag_uses_dispatcher(monkeypatch, workspace_tmp_path: Path) -> None:
-    """--use-legacy-pipeline flag routes to the old dispatcher."""
-    input_path = workspace_tmp_path / "input.jsonl"
-    input_path.write_text(
-        json.dumps({"platform": "wikipedia", "resource_type": "article", "title": "Test"}) + "\n",
-        encoding="utf-8",
-    )
-
-    config = parse_args([
-        "run",
-        "--input", str(input_path),
-        "--output", str(workspace_tmp_path / "out"),
-        "--use-legacy-pipeline",
-    ])
-    assert config.use_legacy_pipeline is True
-
-    # Mock the legacy pipeline's run_crawl and run_enrich
-    monkeypatch.setattr(
-        "crawler.core.dispatcher.run_crawl",
-        lambda config, records=None: ([{"platform": "wikipedia", "resource_type": "article", "status": "success"}], []),
-    )
-    monkeypatch.setattr(
-        "crawler.core.dispatcher.run_enrich",
-        lambda config, records=None: ([{**records[0], "enrichment": {"status": "routed"}}], []),
-    )
-
-    records, errors = run_command(config)
 
     assert errors == []
     assert records[0]["enrichment"]["status"] == "routed"
@@ -353,7 +320,7 @@ def test_new_pipeline_auto_login_retries_after_auth_expired(monkeypatch, workspa
 
     monkeypatch.setattr("crawler.platforms.registry.get_platform_adapter", lambda platform: FakeAdapter())
     monkeypatch.setattr("crawler.fetch.engine.FetchEngine.fetch", fake_fetch)
-    monkeypatch.setattr("crawler.core.pipeline._export_linkedin_session_via_auto_browser", fake_export)
+    monkeypatch.setattr("crawler.core.auth.export_session_via_auto_browser", lambda **kwargs: fake_export(kwargs["session_store"]))
 
     config = parse_args(["crawl", "--input", str(input_path), "--output", str(output_dir), "--auto-login"])
     records, errors = run_command(config)
@@ -512,8 +479,13 @@ def test_new_pipeline_auto_login_exports_session_when_missing(monkeypatch, works
         def normalize_record(self, record: dict, discovered: dict, extracted: dict, supplemental: dict) -> dict:
             return {"headline": "AI Engineer"}
 
-    def fake_export(self, output_dir_path: Path) -> Path:
-        exported = output_dir_path / ".sessions" / "linkedin.auto-browser.json"
+    class FakeSession:
+        def __init__(self, session_path: Path) -> None:
+            self.session_path = session_path
+
+    def fake_export(self, *, platform: str, output_dir: Path, login_url: str | None = None, guide_text: str | None = None) -> FakeSession:
+        assert platform == "linkedin"
+        exported = output_dir / ".sessions" / "linkedin.auto-browser.json"
         exported.parent.mkdir(parents=True, exist_ok=True)
         exported.write_text(
             json.dumps(
@@ -531,7 +503,7 @@ def test_new_pipeline_auto_login_exports_session_when_missing(monkeypatch, works
             ),
             encoding="utf-8",
         )
-        return exported
+        return FakeSession(exported)
 
     monkeypatch.setattr("crawler.platforms.registry.get_platform_adapter", lambda platform: FakeAdapter())
     monkeypatch.setattr(
@@ -539,7 +511,7 @@ def test_new_pipeline_auto_login_exports_session_when_missing(monkeypatch, works
         lambda record: {"canonical_url": "https://www.linkedin.com/in/john-doe/", "fields": {"public_identifier": "john-doe"}, "artifacts": {}},
     )
     monkeypatch.setattr("crawler.extract.pipeline.ExtractPipeline.extract", lambda self, fetched, platform, resource_type: _fake_extracted_document())
-    monkeypatch.setattr("crawler.integrations.linkedin_auth.LinkedInAutoBrowserBridge.ensure_exported_session", fake_export)
+    monkeypatch.setattr("crawler.integrations.browser_auth.AutoBrowserAuthBridge.ensure_exported_session", fake_export)
 
     config = parse_args(["crawl", "--input", str(input_path), "--output", str(output_dir), "--auto-login"])
     records, errors = run_command(config)
@@ -1083,6 +1055,244 @@ def test_new_pipeline_enrich_uses_existing_record_without_build_url(monkeypatch,
     assert records[0]["enrichment"]["doc_id"] == "doc-1"
 
 
+def test_new_pipeline_enrich_uses_platform_default_field_groups_when_not_overridden(monkeypatch, workspace_tmp_path: Path) -> None:
+    input_path = workspace_tmp_path / "records.jsonl"
+    output_dir = workspace_tmp_path / "out"
+    input_path.write_text(
+        json.dumps(
+            {
+                "platform": "amazon",
+                "resource_type": "product",
+                "canonical_url": "https://www.amazon.com/dp/B000TEST",
+                "plain_text": "Keychron K3 keyboard",
+                "structured": {"brand": "Keychron", "price": "$99.99", "availability": "In Stock"},
+                "metadata": {"title": "Keychron K3", "description": "Low-profile wireless keyboard"},
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    class FakeAdapter:
+        def build_enrichment_request(self, record: dict, requested_groups: tuple[str, ...] = ()) -> dict:
+            return {
+                "route": "commerce_graph",
+                "field_groups": tuple(requested_groups) or (
+                    "amazon_products_identity",
+                    "amazon_products_pricing",
+                    "amazon_products_description",
+                    "amazon_products_category",
+                    "amazon_products_visual",
+                    "amazon_products_availability",
+                    "amazon_products_competition",
+                    "amazon_products_reviews_summary",
+                    "amazon_products_variants",
+                    "amazon_products_compliance",
+                    "amazon_products_multimodal_images",
+                    "amazon_products_multi_level_summary",
+                    "amazon_products_market_positioning",
+                    "amazon_products_listing_quality",
+                    "amazon_products_linkable_ids",
+                ),
+            }
+
+    class FakeEnrichmentResult:
+        def to_dict(self) -> dict:
+            return {
+                "doc_id": "doc-amazon-enrich",
+                "enrichment_results": {},
+                "enriched_fields": {},
+            }
+
+    captured: dict[str, object] = {}
+
+    async def fake_enrich(self, record: dict, field_groups: list[str]) -> FakeEnrichmentResult:
+        captured["field_groups"] = field_groups
+        return FakeEnrichmentResult()
+
+    monkeypatch.setattr("crawler.platforms.registry.get_platform_adapter", lambda platform: FakeAdapter())
+    monkeypatch.setattr("crawler.enrich.pipeline.EnrichPipeline.enrich", fake_enrich)
+
+    config = parse_args(["enrich", "--input", str(input_path), "--output", str(output_dir)])
+    records, errors = run_command(config)
+
+    assert errors == []
+    assert records[0]["enrichment"]["doc_id"] == "doc-amazon-enrich"
+    assert captured["field_groups"] == [
+        "amazon_products_pricing",
+        "amazon_products_availability",
+        "amazon_products_description",
+    ]
+
+
+def test_new_pipeline_run_uses_platform_default_field_groups_when_not_overridden(monkeypatch, workspace_tmp_path: Path) -> None:
+    input_path = workspace_tmp_path / "input.jsonl"
+    output_dir = workspace_tmp_path / "out"
+    input_path.write_text(
+        json.dumps({"platform": "amazon", "resource_type": "product", "asin": "B000TEST"}) + "\n",
+        encoding="utf-8",
+    )
+
+    class FakeAdapter:
+        requires_auth = False
+
+        def resolve_backend(self, record: dict, override_backend: str | None = None, retry_count: int = 0) -> str:
+            return "http"
+
+        def normalize_record(self, record: dict, discovered: dict, extracted: dict, supplemental: dict) -> dict:
+            return {"asin": "B000TEST", "title": "Keychron K3", "brand": "Keychron"}
+
+        def build_enrichment_request(self, record: dict, requested_groups: tuple[str, ...] = ()) -> dict:
+            return {
+                "route": "commerce_graph",
+                "field_groups": tuple(requested_groups) or (
+                    "amazon_products_pricing",
+                    "amazon_products_availability",
+                    "amazon_products_description",
+                ),
+            }
+
+    captured: dict[str, object] = {}
+
+    async def fake_fetch(
+        self,
+        url: str,
+        platform: str,
+        resource_type: str | None = None,
+        *,
+        requires_auth: bool = False,
+        override_backend: str | None = None,
+        api_fetcher=None,
+        api_kwargs=None,
+        preferred_backend: str | None = None,
+        fallback_chain=None,
+    ):
+        from datetime import datetime, timezone
+        from crawler.fetch.models import FetchTiming, RawFetchResult
+
+        html = "<html><body><article><h1>Keychron K3</h1><p>Keyboard</p></article></body></html>"
+        return RawFetchResult(
+            url=url,
+            final_url=url,
+            backend="http",
+            fetch_time=datetime.now(timezone.utc),
+            content_type="text/html; charset=utf-8",
+            status_code=200,
+            html=html,
+            content_bytes=html.encode("utf-8"),
+            timing=FetchTiming(start_ms=0, navigation_ms=1, wait_strategy_ms=0, total_ms=1),
+        )
+
+    class FakeEnrichmentResult:
+        def to_dict(self) -> dict:
+            return {"doc_id": "doc-amazon", "enrichment_results": {}, "enriched_fields": {}}
+
+    async def fake_enrich(self, record: dict, field_groups: list[str]) -> FakeEnrichmentResult:
+        captured["field_groups"] = field_groups
+        captured["record"] = record
+        return FakeEnrichmentResult()
+
+    monkeypatch.setattr("crawler.platforms.registry.get_platform_adapter", lambda platform: FakeAdapter())
+    monkeypatch.setattr("crawler.fetch.engine.FetchEngine.fetch", fake_fetch)
+    monkeypatch.setattr(
+        "crawler.discovery.url_builder.build_seed_records",
+        lambda record: [
+            SimpleNamespace(
+                platform="amazon",
+                resource_type="product",
+                canonical_url="https://www.amazon.com/dp/B000TEST",
+                identity={"asin": "B000TEST"},
+                metadata={"artifacts": {}},
+            )
+        ],
+    )
+    monkeypatch.setattr("crawler.enrich.pipeline.EnrichPipeline.enrich", fake_enrich)
+
+    config = parse_args(["run", "--input", str(input_path), "--output", str(output_dir)])
+    records, errors = run_command(config)
+
+    assert errors == []
+    assert records[0]["enrichment"]["doc_id"] == "doc-amazon"
+    assert captured["field_groups"] == [
+        "amazon_products_identity",
+        "amazon_products_pricing",
+        "amazon_products_description",
+        "amazon_products_category",
+        "amazon_products_visual",
+        "amazon_products_availability",
+        "amazon_products_competition",
+        "amazon_products_reviews_summary",
+        "amazon_products_variants",
+        "amazon_products_compliance",
+        "amazon_products_multimodal_images",
+        "amazon_products_multi_level_summary",
+        "amazon_products_market_positioning",
+        "amazon_products_listing_quality",
+        "amazon_products_linkable_ids",
+    ]
+
+
+def test_new_pipeline_enrich_uses_amazon_seller_default_field_groups(monkeypatch, workspace_tmp_path: Path) -> None:
+    input_path = workspace_tmp_path / "input.jsonl"
+    output_dir = workspace_tmp_path / "out"
+    input_path.write_text(
+        json.dumps(
+            {
+                "platform": "amazon",
+                "resource_type": "seller",
+                "seller_id": "ABC123",
+                "canonical_url": "https://www.amazon.com/sp?seller=ABC123",
+            }
+        ) + "\n",
+        encoding="utf-8",
+    )
+
+    class FakeAdapter:
+        def build_enrichment_request(self, record: dict, requested_groups: tuple[str, ...] = ()) -> dict:
+            return {
+                "route": "commerce_graph",
+                "field_groups": tuple(requested_groups) or (
+                    "amazon_sellers_identity",
+                    "amazon_sellers_performance",
+                    "amazon_sellers_portfolio",
+                    "amazon_sellers_business_intel",
+                    "amazon_sellers_multi_level_summary",
+                    "amazon_sellers_linkable_ids",
+                ),
+            }
+
+    class FakeEnrichmentResult:
+        def to_dict(self) -> dict:
+            return {
+                "doc_id": "doc-amazon-seller-enrich",
+                "enrichment_results": {},
+                "enriched_fields": {},
+            }
+
+    captured: dict[str, object] = {}
+
+    async def fake_enrich(self, record: dict, field_groups: list[str]) -> FakeEnrichmentResult:
+        captured["field_groups"] = field_groups
+        return FakeEnrichmentResult()
+
+    monkeypatch.setattr("crawler.platforms.registry.get_platform_adapter", lambda platform: FakeAdapter())
+    monkeypatch.setattr("crawler.enrich.pipeline.EnrichPipeline.enrich", fake_enrich)
+
+    config = parse_args(["enrich", "--input", str(input_path), "--output", str(output_dir)])
+    records, errors = run_command(config)
+
+    assert errors == []
+    assert records[0]["enrichment"]["doc_id"] == "doc-amazon-seller-enrich"
+    assert captured["field_groups"] == [
+        "amazon_sellers_identity",
+        "amazon_sellers_performance",
+        "amazon_sellers_portfolio",
+        "amazon_sellers_business_intel",
+        "amazon_sellers_multi_level_summary",
+        "amazon_sellers_linkable_ids",
+    ]
+
+
 def test_build_enrich_input_from_record_promotes_structured_fields_for_other_platforms() -> None:
     enrich_input = _build_enrich_input_from_record(
         {
@@ -1221,6 +1431,58 @@ def test_build_enrich_input_from_record_adds_amazon_product_and_seller_aliases()
     assert product_enrich_input["fulfillment"] == "Prime"
     assert product_enrich_input["images"] == ["https://example.com/image.jpg"]
     assert seller_enrich_input["seller_name"] == "Keychron Official"
+
+
+def test_build_enrich_input_from_record_adds_amazon_review_extended_aliases() -> None:
+    enrich_input = _build_enrich_input_from_record(
+        {
+            "platform": "amazon",
+            "resource_type": "review",
+            "canonical_url": "https://www.amazon.com/review/example",
+            "plain_text": "Great keyboard for travel.",
+            "author": "Alice",
+            "review_rating": "5.0 out of 5 stars",
+            "is_verified_purchase": True,
+            "photo_urls": ["https://example.com/review-1.jpg"],
+        }
+    )
+
+    assert enrich_input["review_text"] == "Great keyboard for travel."
+    assert enrich_input["reviewer_name"] == "Alice"
+    assert enrich_input["rating"] == "5.0 out of 5 stars"
+    assert enrich_input["verified_purchase"] is True
+    assert enrich_input["review_images"] == ["https://example.com/review-1.jpg"]
+
+
+def test_amazon_normalizer_promotes_extracted_structured_fields() -> None:
+    from crawler.platforms.base import hook_normalizer
+
+    normalizer = hook_normalizer("amazon")
+    result = normalizer(
+        {"platform": "amazon", "resource_type": "product"},
+        {"fields": {"asin": "B000TEST"}},
+        {
+            "metadata": {"title": "Legacy Title"},
+            "structured": {
+                "brand": "Keychron",
+                "price": "$99.99",
+                "availability": "In Stock",
+                "bullet_points": ["Wireless", "Low-profile"],
+                "images": ["https://example.com/image.jpg"],
+                "seller": "Keychron",
+            },
+        },
+        {},
+    )
+
+    assert result["asin"] == "B000TEST"
+    assert result["title"] == "Legacy Title"
+    assert result["brand"] == "Keychron"
+    assert result["price"] == "$99.99"
+    assert result["availability"] == "In Stock"
+    assert result["bullet_points"] == ["Wireless", "Low-profile"]
+    assert result["images"] == ["https://example.com/image.jpg"]
+    assert result["seller"] == "Keychron"
 
 
 def test_build_enrich_input_from_record_adds_base_aliases() -> None:
@@ -1514,3 +1776,77 @@ def test_run_command_dispatches_discover_crawl(monkeypatch, workspace_tmp_path: 
     assert len(records) == 1
     assert records[0]["canonical_url"] == "https://example.com/docs"
     assert "fetched" in records[0]
+
+
+def test_discover_crawl_keeps_other_candidates_running_when_auth_is_required(monkeypatch, workspace_tmp_path: Path) -> None:
+    input_path = workspace_tmp_path / "input.jsonl"
+    output_dir = workspace_tmp_path / "out"
+    input_path.write_text(
+        "\n".join(
+            [
+                json.dumps({"platform": "linkedin", "resource_type": "profile", "url": "https://www.linkedin.com/in/protected/"}),
+                json.dumps({"platform": "generic", "resource_type": "page", "url": "https://example.com/docs"}),
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    class FakeDiscoveryAdapter:
+        async def crawl(self, candidate, context: dict[str, object]) -> dict[str, object]:
+            fetched = await context["fetch_fn"](candidate)
+            return {"fetched": fetched, "spawned_candidates": []}
+
+    class LinkedInPlatformAdapter:
+        requires_auth = True
+
+    class GenericPlatformAdapter:
+        requires_auth = False
+
+    async def fake_fetch(
+        self,
+        url: str,
+        platform: str,
+        resource_type: str | None = None,
+        *,
+        requires_auth: bool = False,
+        **kwargs,
+    ):
+        from datetime import datetime, timezone
+        from crawler.fetch.models import FetchTiming, RawFetchResult
+
+        html = "<html><body><h1>Docs</h1></body></html>"
+        return RawFetchResult(
+            url=url,
+            final_url=url,
+            backend="http",
+            fetch_time=datetime.now(timezone.utc),
+            content_type="text/html",
+            status_code=200,
+            html=html,
+            content_bytes=html.encode("utf-8"),
+            timing=FetchTiming(start_ms=0, navigation_ms=1, wait_strategy_ms=0, total_ms=1),
+        )
+
+    monkeypatch.setattr(
+        "crawler.discovery.adapters.registry.get_discovery_adapter",
+        lambda platform: FakeDiscoveryAdapter(),
+    )
+    monkeypatch.setattr(
+        "crawler.platforms.registry.get_platform_adapter",
+        lambda platform: LinkedInPlatformAdapter() if platform == "linkedin" else GenericPlatformAdapter(),
+    )
+    monkeypatch.setattr("crawler.fetch.engine.FetchEngine.fetch", fake_fetch)
+
+    config = CrawlerConfig.from_mapping({
+        "command": "discover-crawl",
+        "input_path": str(input_path),
+        "output_dir": str(output_dir),
+        "max_depth": 0,
+        "max_pages": 10,
+    })
+    records, errors = run_command(config)
+
+    assert [record["canonical_url"] for record in records] == ["https://example.com/docs"]
+    assert errors[0]["error_code"] == "AUTH_REQUIRED"
+    assert errors[0]["canonical_url"] == "https://www.linkedin.com/in/protected/"
