@@ -59,16 +59,9 @@ def test_crawl_options_extend_map_defaults() -> None:
     assert options.crawl_entire_domain is False
 
 
-def test_crawler_config_accepts_discovery_commands() -> None:
+def test_crawler_config_accepts_discovery_crawl_command() -> None:
     from crawler.contracts import CrawlCommand, CrawlerConfig
 
-    map_config = CrawlerConfig.from_mapping(
-        {
-            "command": "discover-map",
-            "input_path": "input.jsonl",
-            "output_dir": "out",
-        }
-    )
     crawl_config = CrawlerConfig.from_mapping(
         {
             "command": "discover-crawl",
@@ -76,7 +69,6 @@ def test_crawler_config_accepts_discovery_commands() -> None:
             "output_dir": "out",
         }
     )
-    assert map_config.command is CrawlCommand.DISCOVER_MAP
     assert crawl_config.command is CrawlCommand.DISCOVER_CRAWL
 
 

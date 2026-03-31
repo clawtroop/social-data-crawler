@@ -1,0 +1,13 @@
+{
+  "title": "address",
+  "description": "\"0x3508ab81710d6e52d272\"",
+  "canonical_url": "https://basescan.org/address/0x4200000000000000000000000000000000000006",
+  "platform_fields": {
+    "rpc_result": "0x3508ab81710d6e52d272"
+  },
+  "field_sources": {
+    "rpc_result": "legacy_platform:base",
+    "title": "legacy_platform:base",
+    "description": "legacy_platform:base"
+  }
+}

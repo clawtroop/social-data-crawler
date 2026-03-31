@@ -1,0 +1,10 @@
+{
+  "command": "crawl",
+  "input_path": "out_api_test_20260330\\input_amazon.jsonl",
+  "output_dir": "out_api_test_20260330\\out_amazon",
+  "artifacts_dir": "out_api_test_20260330\\out_amazon\\artifacts",
+  "resume": false,
+  "strict": false,
+  "backend": "http",
+  "generated_at": "2026-03-30T08:33:35.228503+00:00"
+}

@@ -7,7 +7,6 @@ from typing import Any, Mapping
 
 
 class CrawlCommand(str, Enum):
-    DISCOVER_MAP = "discover-map"
     DISCOVER_CRAWL = "discover-crawl"
     CRAWL = "crawl"
     RUN = "run"

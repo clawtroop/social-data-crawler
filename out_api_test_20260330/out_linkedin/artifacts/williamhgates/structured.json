@@ -1,0 +1,18 @@
+{
+  "title": "Bill Gates",
+  "description": "Chair, Gates Foundation and Founder, Breakthrough Energy",
+  "canonical_url": "https://www.linkedin.com/in/williamhgates/",
+  "platform_fields": {
+    "source_id": "ACoAAA8BYqEBCGLg_vT_ca6mMEqkpp9nVffJ3hc",
+    "title": "Bill Gates",
+    "headline": "Chair, Gates Foundation and Founder, Breakthrough Energy",
+    "public_identifier": "williamhgates"
+  },
+  "field_sources": {
+    "source_id": "legacy_platform:linkedin",
+    "title": "legacy_platform:linkedin",
+    "headline": "legacy_platform:linkedin",
+    "public_identifier": "legacy_platform:linkedin",
+    "description": "legacy_platform:linkedin"
+  }
+}

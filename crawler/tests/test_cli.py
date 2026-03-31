@@ -146,11 +146,6 @@ def test_parse_args_rejects_unknown_subcommand() -> None:
         )
 
 
-def test_parse_discover_map_command() -> None:
-    config = parse_args(["discover-map", "--input", "in.jsonl", "--output", "out"])
-    assert config.command is CrawlCommand.DISCOVER_MAP
-
-
 def test_parse_discover_crawl_command() -> None:
     config = parse_args(
         ["discover-crawl", "--input", "in.jsonl", "--output", "out", "--max-depth", "3"]

@@ -1,10 +1,23 @@
 """
-LinkedIn URL 规范化与类型解析（Phase 1 MVP）。
+LinkedIn URL 规范化与类型解析。
+
+.. deprecated::
+    This module is deprecated. Use ``crawler.discovery.normalize.linkedin`` instead.
+    The functionality has been migrated to the crawler framework.
 
 discover / extract 解耦：本包仅处理「从任意字符串中识别 LinkedIn URL 并归一化」，
 不包含页面抓取或结构化字段抽取。
 """
 
+import warnings
+
+warnings.warn(
+    "linkedin_url package is deprecated. Use crawler.discovery.normalize.linkedin instead.",
+    DeprecationWarning,
+    stacklevel=2,
+)
+
+# Legacy imports (still work but deprecated)
 from linkedin_url.models import LinkedInEntityType, NormalizeResult
 from linkedin_url.normalize import extract_linkedin_urls, normalize_linkedin_url
 from linkedin_url.parser import (

@@ -1,0 +1,10 @@
+{
+  "command": "crawl",
+  "input_path": "out_api_test_20260330\\input_linkedin.jsonl",
+  "output_dir": "out_api_test_20260330\\out_linkedin_retry2",
+  "artifacts_dir": "out_api_test_20260330\\out_linkedin_retry2\\artifacts",
+  "resume": false,
+  "strict": false,
+  "backend": null,
+  "generated_at": "2026-03-30T13:35:25.822286+00:00"
+}

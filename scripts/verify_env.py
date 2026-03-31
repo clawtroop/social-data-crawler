@@ -13,12 +13,12 @@ from host_diagnostics import build_payload as build_host_diagnostics
 ROOT = Path(__file__).resolve().parents[1]
 
 PROFILE_MODULES = {
-    "minimal": ("pydantic", "httpx", "typer", "trafilatura", "bs4", "lxml", "markdownify"),
+    "minimal": ("pydantic", "httpx", "typer", "crawl4ai", "bs4", "lxml", "markdownify"),
     "browser": (
         "pydantic",
         "httpx",
         "typer",
-        "trafilatura",
+        "crawl4ai",
         "bs4",
         "lxml",
         "markdownify",
@@ -29,7 +29,7 @@ PROFILE_MODULES = {
         "pydantic",
         "httpx",
         "typer",
-        "trafilatura",
+        "crawl4ai",
         "bs4",
         "lxml",
         "markdownify",

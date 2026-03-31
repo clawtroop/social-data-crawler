@@ -51,6 +51,18 @@ Do not use this skill for:
 
 ## Core Commands
 
+Use this command selection rule strictly:
+
+| Goal | Command | Notes |
+| --- | --- | --- |
+| discover more related URLs from one or more seeds | `discover-crawl` | the only public discovery CLI entrypoint; supports multi-hop expansion |
+| fetch known pages into canonical records with chunks | `crawl` | no automatic URL expansion |
+| fetch and then enrich in one pass | `run` | no automatic URL expansion |
+| enrich existing crawl output only | `enrich` | reads prior `records.jsonl` |
+| fill `pending_agent` enrichment results | `fill-enrichment` | legacy/manual completion path |
+
+Do **not** invent or use `discover-map` from this skill. That path is now an **internal adapter capability**, not a public CLI entrypoint. If you need automatic discovery, always start with `discover-crawl`.
+
 ## Installation Gate
 
 Before using this skill in a fresh environment:
@@ -83,6 +95,18 @@ python -m crawler run --input ./records.jsonl --output ./out
 
 `run` executes the full `crawl -> enrich` path in one command and writes enriched records to the target output directory.
 
+Run automatic discovery with multi-hop expansion:
+
+```bash
+python -m crawler discover-crawl \
+  --input ./seeds.jsonl \
+  --output ./out-discovery \
+  --max-depth 2 \
+  --max-pages 100
+```
+
+`discover-crawl` is the only public discovery command. It fetches each seed, lets the platform discovery adapter emit `spawned_candidates`, deduplicates them, and keeps expanding until it hits `--max-depth` or `--max-pages`.
+
 Use execution controls when needed:
 
 ```bash
@@ -114,10 +138,47 @@ python -m crawler run \
 ### Pipeline Options
 
 | Option | Default | Description |
-|--------|---------|-------------|
+| ------ | ------- | ----------- |
 | `--use-legacy-pipeline` | off | Fall back to old dispatcher-based pipeline |
 | `--max-chunk-tokens` | 512 | Maximum tokens per chunk |
 | `--chunk-overlap` | 50 | Overlap tokens between chunks |
+
+### Discovery Controls
+
+| Option | Default | Description |
+| ------ | ------- | ----------- |
+| `--max-depth` | 2 | Maximum hop depth for `discover-crawl` |
+| `--max-pages` | 100 | Maximum discovered/fetched records for `discover-crawl` |
+| `--sitemap-mode` | `include` | Sitemap handling mode for discovery adapters |
+| `--resume` | off | Reuse prior `.discovery_state` and append outputs |
+
+## Discovery Mode
+
+Use `discover-crawl` when the task is "I only have a seed and need the crawler to keep finding the next URLs."
+
+What it does:
+
+1. reads each input line as a depth-0 `DiscoveryCandidate`
+2. fetches the current page with `FetchEngine`
+3. calls the platform discovery adapter's `crawl()` method
+4. accepts any returned `spawned_candidates`
+5. deduplicates by `platform + canonical_url`
+6. enqueues new candidates until depth/page limits are reached
+
+What it does **not** do:
+
+- it does not run the full extract/chunk/enrich pipeline
+- it does not replace `crawl` or `run`
+- it does not expose `discover-map` as a CLI choice
+
+Agent decision rules:
+
+- If the user wants **more URLs** or **multi-hop expansion**, use `discover-crawl`
+- If the user already knows the target pages and wants **content/chunks**, use `crawl`
+- If the user already has `records.jsonl` and wants **structured fields**, use `enrich`
+- If the user wants both content and enrichment in one pass, use `run`
+
+Internal note for agents: discovery adapters may still use `map()` / `MapResult` internally to convert fetched HTML into candidate URLs. Treat that as an implementation detail and do not expose it as a public command choice.
 
 ### Output Fields
 
@@ -171,6 +232,12 @@ Examples:
 {"platform":"linkedin","resource_type":"profile","public_identifier":"john-doe-ai"}
 {"platform":"generic","resource_type":"page","url":"https://www.notion.so/..."}
 ```
+
+For `discover-crawl`, each line must include at least:
+
+- `url` or `canonical_url`
+- optional `platform`
+- optional `resource_type`
 
 ## Output Contract
 

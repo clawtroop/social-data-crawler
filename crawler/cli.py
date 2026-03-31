@@ -18,7 +18,7 @@ def _parse_command(value: str) -> CrawlCommand: #->表示返回值的类型，Cr
         return CrawlCommand(value)
     except ValueError as exc:
         raise argparse.ArgumentTypeError(
-            f"invalid command {value!r}; expected one of: discover-map, discover-crawl, crawl, run, enrich, fill-enrichment"
+            f"invalid command {value!r}; expected one of: discover-crawl, crawl, run, enrich, fill-enrichment"
         ) from exc
 
 
@@ -78,7 +78,7 @@ def build_parser() -> argparse.ArgumentParser:
             default=3,
             help="Max parallel record processing (default: 3)",
         )
-        # Discovery options (for discover-map and discover-crawl commands)
+        # Discovery options (for discover-crawl)
         subparser.add_argument(
             "--max-depth",
             dest="max_depth",
