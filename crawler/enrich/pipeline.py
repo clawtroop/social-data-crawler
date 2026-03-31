@@ -3,6 +3,7 @@ from __future__ import annotations
 import hashlib
 import time
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -208,7 +209,7 @@ class EnrichPipeline:
             return FieldGroupResult(
                 field_group=spec.name,
                 status="skipped",
-                error=f"missing required source fields: {spec.required_source_fields}",
+                error=self._build_missing_source_error(spec, document),
                 latency_ms=int((time.monotonic() - start) * 1000),
             )
 
@@ -333,6 +334,16 @@ class EnrichPipeline:
                 if value is not None and value != "" and value != [] and value != {}:
                     source[key] = value
         return source
+
+    @staticmethod
+    def _build_missing_source_error(spec: FieldGroupSpec, document: dict[str, Any]) -> str:
+        if spec.platform == "amazon" and spec.subdataset == "products" and "price" in spec.required_source_fields:
+            availability = str(document.get("availability") or "")
+            if re.search(r"unavailable|out of stock|currently unavailable|目前无货|無貨", availability, re.IGNORECASE):
+                if spec.name == "amazon_products_pricing":
+                    return "pricing unavailable on source page (product unavailable or no offer data)"
+                return "price-dependent analysis unavailable on source page (product unavailable or no offer data)"
+        return f"missing required source fields: {spec.required_source_fields}"
 
     def _run_extractive(self, spec: FieldGroupSpec, source_fields: dict[str, Any]) -> ExtractiveResult:
         """Run the extractive enrichment step."""

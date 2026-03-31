@@ -51,6 +51,7 @@ def _extract_wikipedia(record: dict, fetched: dict) -> dict:
     pages = ((data.get("query") or {}).get("pages") or {}).values()
     page = next(iter(pages), {})
     categories = [item.get("title", "").removeprefix("Category:") for item in page.get("categories", [])]
+    page_id = page.get("pageid")
     title = page.get("title") or record.get("title")
     plain_text = page.get("extract") or ""
     markdown = f"# {title}\n\n{plain_text}".strip()
@@ -59,12 +60,16 @@ def _extract_wikipedia(record: dict, fetched: dict) -> dict:
             "title": title,
             "content_type": fetched.get("content_type"),
             "source_url": fetched["url"],
+            "page_id": "" if page_id in (None, "") else str(page_id),
             "pageprops": page.get("pageprops", {}),
         },
         "plain_text": plain_text,
         "markdown": markdown,
         "document_blocks": [],
-        "structured": {"categories": categories},
+        "structured": {
+            "categories": categories,
+            "page_id": "" if page_id in (None, "") else str(page_id),
+        },
         "extractor": "wikipedia_api",
     }
 

@@ -42,6 +42,11 @@ def build_parser() -> argparse.ArgumentParser:
         subparser.add_argument("--enrich-llm-schema", dest="enrich_llm_schema_path", type=Path)
         subparser.add_argument("--model-config", dest="model_config_path", type=Path)
         subparser.add_argument(
+            "--use-openclaw",
+            action="store_true",
+            help="Use a locally running OpenClaw Gateway with auto-discovered auth token",
+        )
+        subparser.add_argument(
             "--auto-login",
             action="store_true",
             help="对需要认证的平台自动调用内建浏览器登录流程并导出会话",

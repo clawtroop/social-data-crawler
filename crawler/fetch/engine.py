@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 import time
 from datetime import UTC, datetime
@@ -65,7 +66,6 @@ class FetchEngine:
             self._started = False
 
     async def __aenter__(self) -> FetchEngine:
-        await self.start()
         return self
 
     async def __aexit__(self, *exc: Any) -> None:
@@ -269,6 +269,13 @@ class FetchEngine:
         context = await self._pool.acquire_context(platform, backend)
         try:
             page = await context.new_page()
+            twister_payloads: list[dict[str, Any]] = []
+
+            def _handle_response(response: Any) -> None:
+                if "twisterDimensionSlotsDefault" in response.url:
+                    twister_payloads.append({"url": response.url, "content_type": response.headers.get("content-type", ""), "_response": response})  # type: ignore[dict-item]
+
+            page.on("response", _handle_response)
             nav_start = _now_ms()
 
             try:
@@ -283,6 +290,24 @@ class FetchEngine:
             wait_name, wait_ms = await apply_wait_strategy(page, platform, resource_type)
 
             html = await page.content()
+            captured_twister_payloads: list[dict[str, str]] = []
+            for payload in twister_payloads:
+                response = payload.pop("_response", None)
+                if response is None:
+                    continue
+                try:
+                    body = await response.text()
+                except Exception:
+                    continue
+                if not body.strip():
+                    continue
+                captured_twister_payloads.append({
+                    "url": payload.get("url", ""),
+                    "content_type": payload.get("content_type", ""),
+                    "body": body,
+                })
+            if captured_twister_payloads:
+                html += self._embed_json_script("amazon-twister-responses", captured_twister_payloads)
             final_url = page.url
             screenshot = await page.screenshot(type="png")
 
@@ -312,6 +337,11 @@ class FetchEngine:
             )
         finally:
             await self._pool.release_context(platform, context, backend)
+
+    @staticmethod
+    def _embed_json_script(data_key: str, payload: Any) -> str:
+        json_text = json.dumps(payload, ensure_ascii=False).replace("</script", "<\\/script")
+        return f'\n<script type="application/json" data-{data_key}="true">{json_text}</script>'
 
 
 def _now_ms() -> int:

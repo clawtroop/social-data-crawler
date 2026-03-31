@@ -7,11 +7,13 @@ from __future__ import annotations
 
 import hashlib
 import json
+import re
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 from xml.etree import ElementTree as ET
 
+import httpx
 from bs4 import Tag
 from markdownify import markdownify as to_markdown
 
@@ -28,9 +30,118 @@ from .models import (
     MainContent,
     StructuredFields,
 )
+from .pymupdf4llm_extract import extract_pdf_with_pymupdf4llm
 from .structured.css_extractor import CssExtractionStrategy
 from .structured.json_extractor import JsonExtractor
 from .structured.llm_schema_extractor import LLMSchemaExtractor
+
+
+def fetch_binary_content(url: str) -> bytes:
+    with httpx.Client(follow_redirects=True, timeout=60.0) as client:
+        response = client.get(url)
+        response.raise_for_status()
+        return response.content
+
+
+def _strip_latex(text: str | None) -> str | None:
+    if text is None:
+        return None
+    cleaned = re.sub(r"\\[a-zA-Z]+\{([^{}]+)\}", r"\1", text)
+    cleaned = re.sub(r"[${}]", "", cleaned)
+    cleaned = re.sub(r"\s+", " ", cleaned).strip()
+    return cleaned or None
+
+
+def _split_author_name(name: str) -> tuple[str, str]:
+    parts = [part for part in re.split(r"\s+", name.strip()) if part]
+    if not parts:
+        return "", ""
+    if len(parts) == 1:
+        return parts[0], ""
+    return parts[0], parts[-1]
+
+
+def _category_to_plain_english(category: str | None) -> str | None:
+    if not category:
+        return None
+    mapping = {
+        "cs.CL": "Natural language processing",
+        "cs.AI": "Artificial intelligence",
+        "cs.LG": "Machine learning",
+        "stat.ML": "Statistical machine learning",
+    }
+    return mapping.get(category, category)
+
+
+def _category_to_hierarchy(categories: list[str], primary_category: str | None) -> list[str]:
+    if not categories and not primary_category:
+        return []
+    seed = primary_category or (categories[0] if categories else "")
+    top = seed.split(".", 1)[0] if seed else ""
+    plain = _category_to_plain_english(seed)
+    return [value for value in [top, seed, plain] if value]
+
+
+def _extract_sections_from_markdown(markdown: str) -> list[dict[str, Any]]:
+    sections: list[dict[str, Any]] = []
+    matches = list(re.finditer(r"(?m)^(#{1,6})\s+(.+)$", markdown))
+    if not matches:
+        if markdown.strip():
+            sections.append({
+                "heading": "Main",
+                "content_summary": markdown.strip().split("\n", 1)[0][:240],
+                "section_type": "body",
+            })
+        return sections
+    for index, match in enumerate(matches):
+        start = match.end()
+        end = matches[index + 1].start() if index + 1 < len(matches) else len(markdown)
+        heading = match.group(2).strip()
+        body = markdown[start:end].strip()
+        heading_lower = heading.lower()
+        section_type = "body"
+        for key, value in (
+            ("introduction", "introduction"),
+            ("related work", "related_work"),
+            ("method", "methodology"),
+            ("experiment", "experiment"),
+            ("result", "results"),
+            ("discussion", "discussion"),
+            ("conclusion", "conclusion"),
+            ("reference", "references"),
+        ):
+            if key in heading_lower:
+                section_type = value
+                break
+        sections.append({
+            "heading": heading,
+            "content_summary": body.split("\n", 1)[0][:240] if body else "",
+            "section_type": section_type,
+        })
+    return sections
+
+
+def _extract_references(markdown: str) -> list[str]:
+    ref_match = re.search(r"(?ims)^##?\s*references\s*$([\s\S]+)$", markdown)
+    if not ref_match:
+        return []
+    block = ref_match.group(1)
+    refs = []
+    for line in block.splitlines():
+        stripped = line.strip()
+        if not stripped:
+            continue
+        if stripped.startswith("[") or re.match(r"^\d+\.", stripped):
+            refs.append(stripped)
+    return refs
+
+
+def _extract_urls(text: str) -> list[str]:
+    return sorted(set(re.findall(r"https?://[^\s)>\]]+", text)))
+
+
+def _extract_arxiv_ids(text: str) -> list[str]:
+    return sorted(set(re.findall(r"\b\d{4}\.\d{4,5}(?:v\d+)?\b", text)))
 
 
 def _generate_doc_id(url: str, platform: str) -> str:
@@ -241,6 +352,7 @@ class ExtractPipeline:
             for node in entry.findall("atom:author/atom:name", ns)
             if (node.text or "").strip()
         ]
+        doi = text_or_none("arxiv:doi")
         categories = [
             term.strip()
             for node in entry.findall("atom:category", ns)
@@ -257,8 +369,58 @@ class ExtractPipeline:
                 pdf_url = (link.attrib.get("href") or "").strip() or None
                 break
 
-        full_text = summary or ""
-        full_markdown = f"# {title}\n\n{summary}".strip() if title or summary else ""
+        pdf_markdown = ""
+        pdf_text = ""
+        pdf_document_blocks: list[dict[str, Any]] = []
+        parser_metadata: dict[str, Any] = {}
+        page_count = None
+        if pdf_url:
+            pdf_bytes = fetch_binary_content(pdf_url)
+            import tempfile
+
+            with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
+                tmp.write(pdf_bytes)
+                tmp_path = Path(tmp.name)
+            try:
+                pdf_result = extract_pdf_with_pymupdf4llm(str(tmp_path), title=title)
+            finally:
+                tmp_path.unlink(missing_ok=True)
+            pdf_markdown = str(pdf_result.get("markdown") or "")
+            pdf_text = str(pdf_result.get("plain_text") or "")
+            pdf_document_blocks = list(pdf_result.get("document_blocks") or [])
+            parser_metadata = dict(pdf_result.get("parser_metadata") or {})
+            page_count = pdf_result.get("page_count")
+        full_text = pdf_text or summary or ""
+        preamble = f"# {title}\n\n## Abstract\n\n{summary}".strip() if title or summary else ""
+        body_markdown = pdf_markdown.strip()
+        full_markdown = "\n\n".join(part for part in [preamble, body_markdown] if part).strip()
+        sections_structured = _extract_sections_from_markdown(full_markdown)
+        references = _extract_references(full_markdown)
+        project_urls = _extract_urls(full_markdown)
+        github_urls = [url for url in project_urls if "github.com" in url.lower()]
+        dataset_urls = [url for url in project_urls if "github.com" not in url.lower()]
+        normalized_title = _strip_latex(title)
+        normalized_abstract = _strip_latex(summary)
+        authors_structured = []
+        for author in authors:
+            first_name, last_name = _split_author_name(author)
+            authors_structured.append({
+                "full_name": author,
+                "first_name": first_name,
+                "last_name": last_name,
+                "affiliation_standardized": None,
+                "affiliation_type": None,
+                "affiliation_country": None,
+                "author_id_crossref": None,
+                "h_index_estimated": None,
+                "career_stage_inferred": None,
+            })
+        current_arxiv_id = (url.rstrip("/").split("/")[-1] if url else "").split("v", 1)[0]
+        related_arxiv_ids = []
+        for paper_id in _extract_arxiv_ids(full_markdown):
+            normalized_id = paper_id.split("v", 1)[0]
+            if normalized_id != current_arxiv_id:
+                related_arxiv_ids.append(paper_id)
         structured = StructuredFields(
             platform=platform,
             resource_type=resource_type,
@@ -266,22 +428,67 @@ class ExtractPipeline:
             description=summary,
             canonical_url=url,
             platform_fields={
+                "doi": doi,
                 "authors": authors,
+                "authors_structured": authors_structured,
                 "categories": categories,
                 "primary_category": primary_category,
                 "published": text_or_none("atom:published"),
                 "updated": text_or_none("atom:updated"),
                 "entry_id": text_or_none("atom:id"),
                 "pdf_url": pdf_url,
+                "raw_text": full_text,
+                "title_normalized": normalized_title,
+                "abstract_plain_text": normalized_abstract,
+                "topic_hierarchy": _category_to_hierarchy(categories, primary_category),
+                "research_area_plain_english": _category_to_plain_english(primary_category),
+                "sections_structured": sections_structured,
+                "references": references,
+                "references_structured": [{"title": ref, "authors": [], "year": None, "venue": None} for ref in references],
+                "total_citation_count": len(references),
+                "code_available": bool(github_urls),
+                "code_url": github_urls[0] if github_urls else None,
+                "dataset_released": bool(dataset_urls),
+                "dataset_url": dataset_urls[0] if dataset_urls else None,
+                "open_access_status": "open_access",
+                "linkable_identifiers": {
+                    "github_repos_mentioned": github_urls,
+                    "project_urls_mentioned": project_urls,
+                    "dataset_source_urls": dataset_urls,
+                    "related_arxiv_ids_mentioned": related_arxiv_ids,
+                },
+                "pdf_document_blocks": pdf_document_blocks,
+                "pdf_extractor": "pymupdf4llm" if pdf_text else None,
+                "page_count": page_count,
             },
             field_sources={
+                "doi": "xml:doi",
                 "authors": "xml:author/name",
+                "authors_structured": "xml:author/name+derived",
                 "categories": "xml:category@term",
                 "primary_category": "xml:primary_category@term",
                 "published": "xml:published",
                 "updated": "xml:updated",
                 "entry_id": "xml:id",
                 "pdf_url": "xml:link[type=application/pdf]@href",
+                "raw_text": "pdf:pymupdf4llm",
+                "title_normalized": "xml:title+derived",
+                "abstract_plain_text": "xml:summary+derived",
+                "topic_hierarchy": "xml:category+derived",
+                "research_area_plain_english": "xml:primary_category+derived",
+                "sections_structured": "pdf:pymupdf4llm+derived",
+                "references": "pdf:pymupdf4llm+derived",
+                "references_structured": "pdf:pymupdf4llm+derived",
+                "total_citation_count": "pdf:pymupdf4llm+derived",
+                "code_available": "pdf:pymupdf4llm+derived",
+                "code_url": "pdf:pymupdf4llm+derived",
+                "dataset_released": "pdf:pymupdf4llm+derived",
+                "dataset_url": "pdf:pymupdf4llm+derived",
+                "open_access_status": "arxiv:derived",
+                "linkable_identifiers": "pdf:pymupdf4llm+derived",
+                "pdf_document_blocks": "pdf:pymupdf4llm",
+                "pdf_extractor": "pdf:pymupdf4llm",
+                "page_count": "pdf:pymupdf4llm",
             },
         )
 
@@ -326,6 +533,8 @@ class ExtractPipeline:
             structured=structured,
             quality=quality,
             cleaned_html="",
+            parser_metadata=parser_metadata,
+            binary_artifacts={"raw_pdf": pdf_bytes} if pdf_url and 'pdf_bytes' in locals() else {},
         )
 
     def _extract_from_html(

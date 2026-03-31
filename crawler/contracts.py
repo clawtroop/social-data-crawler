@@ -71,6 +71,7 @@ class CrawlerConfig:
     extract_llm_schema_path: Path | None = None
     enrich_llm_schema_path: Path | None = None
     model_config_path: Path | None = None
+    use_openclaw: bool = False
     auto_login: bool = False
     platform: str | None = None
     backend: str | None = None
@@ -117,6 +118,7 @@ class CrawlerConfig:
                 if values.get("model_config_path") is not None
                 else None
             ),
+            use_openclaw=bool(values.get("use_openclaw", False)),
             auto_login=bool(values.get("auto_login", False)),
             platform=values.get("platform"),
             backend=str(values["backend"]) if values.get("backend") is not None else None,

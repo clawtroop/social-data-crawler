@@ -28,11 +28,15 @@ class LLMClient:
         base_url: str = "",
         api_key: str = "",
         default_model: str = "",
+        provider: str = "",
+        openclaw_model: str = "",
         timeout: float = 60.0,
     ) -> None:
         self.base_url = base_url.rstrip("/")
         self.api_key = api_key
         self.default_model = default_model
+        self.provider = provider.strip().lower()
+        self.openclaw_model = openclaw_model.strip()
         self.timeout = timeout
 
     @classmethod
@@ -41,6 +45,8 @@ class LLMClient:
             base_url=str(model_config.get("base_url", "")),
             api_key=str(model_config.get("api_key", "")),
             default_model=str(model_config.get("model", "")),
+            provider=str(model_config.get("provider", "")),
+            openclaw_model=str(model_config.get("openclaw_model", "")),
             timeout=float(model_config.get("timeout", 60.0)),
         )
 
@@ -58,22 +64,17 @@ class LLMClient:
         if not self.base_url or not resolved_model:
             raise LLMConfigurationError("AI configuration is incomplete")
 
-        url = f"{self.base_url}/chat/completions"
         headers: dict[str, str] = {"Content-Type": "application/json"}
         if self.api_key:
             headers["Authorization"] = f"Bearer {self.api_key}"
-
-        messages: list[dict[str, str]] = []
-        if system_prompt:
-            messages.append({"role": "system", "content": system_prompt})
-        messages.append({"role": "user", "content": prompt})
-
-        payload = {
-            "model": resolved_model,
-            "messages": messages,
-            "max_tokens": max_tokens,
-            "temperature": temperature,
-        }
+        url, payload = self._build_request(
+            prompt=prompt,
+            resolved_model=resolved_model,
+            max_tokens=max_tokens,
+            temperature=temperature,
+            system_prompt=system_prompt,
+            headers=headers,
+        )
 
         try:
             async with httpx.AsyncClient(timeout=self.timeout) as client:
@@ -86,7 +87,7 @@ class LLMClient:
         content = self._extract_content(data)
         if not content:
             raise LLMEmptyResponseError("LLM returned empty response")
-        usage = data.get("usage", {})
+        usage = self._extract_usage(data)
         return LLMResponse(
             content=content,
             model=data.get("model", resolved_model),
@@ -95,8 +96,69 @@ class LLMClient:
             total_tokens=usage.get("total_tokens", 0),
         )
 
+    def _build_request(
+        self,
+        *,
+        prompt: str,
+        resolved_model: str,
+        max_tokens: int,
+        temperature: float,
+        system_prompt: str,
+        headers: dict[str, str],
+    ) -> tuple[str, dict[str, Any]]:
+        if self._uses_openclaw_responses_api(resolved_model):
+            if self.openclaw_model:
+                headers["x-openclaw-model"] = self.openclaw_model
+
+            input_items: list[dict[str, str]] = []
+            if system_prompt:
+                input_items.append({"role": "system", "content": system_prompt})
+            input_items.append({"role": "user", "content": prompt})
+            return (
+                f"{self.base_url}/responses",
+                {
+                    "model": resolved_model,
+                    "input": input_items,
+                },
+            )
+
+        messages: list[dict[str, str]] = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
+        return (
+            f"{self.base_url}/chat/completions",
+            {
+                "model": resolved_model,
+                "messages": messages,
+                "max_tokens": max_tokens,
+                "temperature": temperature,
+            },
+        )
+
+    def _uses_openclaw_responses_api(self, resolved_model: str) -> bool:
+        return self.provider == "openclaw" or resolved_model.startswith("openclaw")
+
     @staticmethod
     def _extract_content(data: dict[str, Any]) -> str:
+        output = data.get("output")
+        if isinstance(output, list):
+            parts: list[str] = []
+            for item in output:
+                if not isinstance(item, dict):
+                    continue
+                content = item.get("content")
+                if not isinstance(content, list):
+                    continue
+                for part in content:
+                    if not isinstance(part, dict):
+                        continue
+                    text = part.get("text")
+                    if isinstance(text, str) and text.strip():
+                        parts.append(text.strip())
+            if parts:
+                return "".join(parts).strip()
+
         choices = data.get("choices", [])
         if not choices:
             return ""
@@ -108,6 +170,25 @@ class LLMClient:
             parts = [p.get("text", "") for p in content if isinstance(p, dict)]
             return "".join(parts).strip()
         return ""
+
+    @staticmethod
+    def _extract_usage(data: dict[str, Any]) -> dict[str, int]:
+        usage = data.get("usage", {})
+        if not isinstance(usage, dict):
+            return {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+
+        if "input_tokens" in usage or "output_tokens" in usage:
+            return {
+                "prompt_tokens": int(usage.get("input_tokens", 0) or 0),
+                "completion_tokens": int(usage.get("output_tokens", 0) or 0),
+                "total_tokens": int(usage.get("total_tokens", 0) or 0),
+            }
+
+        return {
+            "prompt_tokens": int(usage.get("prompt_tokens", 0) or 0),
+            "completion_tokens": int(usage.get("completion_tokens", 0) or 0),
+            "total_tokens": int(usage.get("total_tokens", 0) or 0),
+        }
 
 
 def parse_json_response(content: str) -> dict[str, Any] | list[Any]:

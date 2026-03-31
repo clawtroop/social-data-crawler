@@ -98,6 +98,8 @@ class ExtractedDocument:
     structured: StructuredFields
     quality: ExtractionQuality
     cleaned_html: str = ""
+    parser_metadata: dict[str, Any] = field(default_factory=dict)
+    binary_artifacts: dict[str, bytes] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -126,6 +128,7 @@ class ExtractedDocument:
             "full_text": self.full_text,
             "full_markdown": self.full_markdown,
             "cleaned_html": self.cleaned_html,
+            "parser_metadata": self.parser_metadata,
             "structured": {
                 "platform": self.structured.platform,
                 "resource_type": self.structured.resource_type,

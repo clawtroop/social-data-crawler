@@ -221,7 +221,7 @@ async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], li
     # Read input records
     records = _read_jsonl(config.input_path)
 
-    model_config = load_model_config(config.model_config_path)
+    model_config = load_model_config(config.model_config_path, use_openclaw=config.use_openclaw)
     enrich_pipeline = EnrichPipeline(
         enrich_llm_schema_path=config.enrich_llm_schema_path,
         model_config=model_config,
@@ -445,7 +445,12 @@ async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], li
                 "chunking_strategy": extracted_doc.quality.chunking_strategy,
                 "total_chunks": extracted_doc.total_chunks,
             }
-            normalized_structured = adapter.normalize_record(record, discovered, legacy_extracted, {})
+            normalized_structured = adapter.normalize_record(
+                record,
+                discovered,
+                legacy_extracted,
+                {"document_blocks": extracted_doc.structured.platform_fields.get("pdf_document_blocks", [])},
+            )
             if isinstance(normalized_structured, dict):
                 normalized.update({key: value for key, value in normalized_structured.items() if key not in normalized})
             if enrichment_result:
@@ -779,7 +784,7 @@ def _persist_extraction_artifacts(
     root_for_rel: Path,
 ) -> list[dict[str, Any]]:
     """Persist extraction artifacts."""
-    from crawler.output.artifact_writer import write_artifact_json, write_artifact_text
+    from crawler.output.artifact_writer import write_artifact_bytes, write_artifact_json, write_artifact_text
 
     written: list[dict[str, Any]] = []
 
@@ -808,6 +813,29 @@ def _persist_extraction_artifacts(
             "kind": "cleaned_html",
             "path": _artifact_relpath(cleaned_html_path, root_for_rel),
             "content_type": "text/html",
+        })
+
+    parser_metadata = getattr(extracted, "parser_metadata", {}) or {}
+    if parser_metadata:
+        parser_metadata_path = artifact_root / slug / "parser_metadata.json"
+        write_artifact_json(parser_metadata_path, parser_metadata)
+        written.append({
+            "kind": "parser_metadata",
+            "path": _artifact_relpath(parser_metadata_path, root_for_rel),
+            "content_type": "application/json",
+        })
+
+    for name, payload in (getattr(extracted, "binary_artifacts", {}) or {}).items():
+        if not payload:
+            continue
+        binary_path = artifact_root / slug / f"{name}.bin"
+        if name == "raw_pdf":
+            binary_path = artifact_root / slug / "source.pdf"
+        write_artifact_bytes(binary_path, payload)
+        written.append({
+            "kind": name,
+            "path": _artifact_relpath(binary_path, root_for_rel),
+            "content_type": "application/pdf" if name == "raw_pdf" else "application/octet-stream",
         })
 
     # Chunks as JSON

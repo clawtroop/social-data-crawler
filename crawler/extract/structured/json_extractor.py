@@ -360,6 +360,7 @@ class JsonExtractor:
             set_field("fulfillment", fields["availability"], "amazon_html:availability_fallback")
 
         variant_nodes = soup.select("#twister li[data-defaultasin], #twister li[data-asin]")
+        twister_variant_state = self._extract_amazon_twister_variant_state(soup)
         if variant_nodes:
             variants: list[dict[str, Any]] = []
             for node in variant_nodes:
@@ -374,9 +375,27 @@ class JsonExtractor:
                     variant["asin"] = str(asin)
                 if label:
                     variant["label"] = str(label).strip()
+                if asin and str(asin) in twister_variant_state:
+                    variant.update(twister_variant_state[str(asin)])
                 if variant:
                     variants.append(variant)
             set_field("variants", variants, "amazon_html:variants")
+
+        embedded_json_objects = self._extract_amazon_embedded_json_objects(soup)
+
+        if "price" not in fields:
+            embedded_price = self._extract_amazon_embedded_price(embedded_json_objects)
+            if embedded_price:
+                set_field("price", embedded_price, "amazon_html:embedded_json_price")
+
+        if "variants" not in fields:
+            embedded_variants = self._extract_amazon_embedded_variants(embedded_json_objects)
+            if embedded_variants:
+                for variant in embedded_variants:
+                    asin = variant.get("asin")
+                    if isinstance(asin, str) and asin in twister_variant_state:
+                        variant.update(twister_variant_state[asin])
+                set_field("variants", embedded_variants, "amazon_html:embedded_json_variants")
 
         seller_node = soup.select_one("#merchant-info")
         if seller_node is not None:
@@ -467,6 +486,164 @@ class JsonExtractor:
         if match:
             return match.group(2).strip()
         return None
+
+    def _extract_amazon_embedded_json_objects(self, soup: BeautifulSoup) -> list[dict[str, Any]]:
+        objects: list[dict[str, Any]] = []
+        for script in soup.select("script"):
+            script_text = script.string or script.get_text()
+            if not script_text:
+                continue
+            for match in re.finditer(r"""parseJSON\('(?P<json>\{.*?\})'\)""", script_text, flags=re.DOTALL):
+                raw_json = match.group("json")
+                try:
+                    parsed = json.loads(raw_json)
+                except json.JSONDecodeError:
+                    continue
+                if isinstance(parsed, dict):
+                    objects.append(parsed)
+        return objects
+
+    def _extract_amazon_twister_variant_state(self, soup: BeautifulSoup) -> dict[str, dict[str, Any]]:
+        state_by_asin: dict[str, dict[str, Any]] = {}
+        for script in soup.select('script[data-amazon-twister-responses="true"]'):
+            script_text = script.string or script.get_text()
+            if not script_text.strip():
+                continue
+            try:
+                payloads = json.loads(script_text)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(payloads, list):
+                continue
+            for payload in payloads:
+                if not isinstance(payload, dict):
+                    continue
+                body = payload.get("body")
+                if not isinstance(body, str) or not body.strip():
+                    continue
+                for chunk in body.split("&&&"):
+                    entry = chunk.strip()
+                    if not entry:
+                        continue
+                    try:
+                        parsed = json.loads(entry)
+                    except json.JSONDecodeError:
+                        continue
+                    if not isinstance(parsed, dict):
+                        continue
+                    asin = parsed.get("ASIN")
+                    if not isinstance(asin, str) or not asin.strip():
+                        continue
+                    content = parsed.get("Value", {}).get("content", {}) if isinstance(parsed.get("Value"), dict) else {}
+                    if not isinstance(content, dict):
+                        continue
+                    variant_state: dict[str, Any] = {}
+                    twister_slot_json = content.get("twisterSlotJson")
+                    if isinstance(twister_slot_json, dict):
+                        price = twister_slot_json.get("price")
+                        if price not in (None, "", [], {}):
+                            variant_state["price"] = self._extract_amazon_twister_price_text(content) or str(price)
+                        is_available = twister_slot_json.get("isAvailable")
+                        if isinstance(is_available, bool):
+                            variant_state["availability"] = "In Stock" if is_available else "Unavailable"
+                    if variant_state:
+                        state_by_asin[asin.strip()] = variant_state
+        return state_by_asin
+
+    def _extract_amazon_twister_price_text(self, content: dict[str, Any]) -> str | None:
+        twister_slot_div = content.get("twisterSlotDiv")
+        if not isinstance(twister_slot_div, str) or not twister_slot_div.strip():
+            return None
+        soup = BeautifulSoup(twister_slot_div, "html.parser")
+        price_node = soup.select_one(".a-offscreen, .a-price")
+        if price_node is None:
+            return None
+        text = price_node.get_text(" ", strip=True)
+        return text or None
+
+    def _extract_amazon_embedded_price(self, objects: list[dict[str, Any]]) -> str | None:
+        def find_price(value: Any) -> str | None:
+            if isinstance(value, dict):
+                for path in (
+                    ("priceToPay", "price"),
+                    ("priceToPay", "displayPrice"),
+                    ("dealPrice", "price"),
+                    ("apexPriceToPay", "price"),
+                    ("apexPriceToPay", "displayPrice"),
+                    ("price",),
+                    ("displayPrice",),
+                ):
+                    current: Any = value
+                    for key in path:
+                        if not isinstance(current, dict):
+                            current = None
+                            break
+                        current = current.get(key)
+                    if isinstance(current, (str, int, float)) and str(current).strip():
+                        return str(current).strip()
+                for nested in value.values():
+                    nested_price = find_price(nested)
+                    if nested_price:
+                        return nested_price
+            elif isinstance(value, list):
+                for item in value:
+                    nested_price = find_price(item)
+                    if nested_price:
+                        return nested_price
+            return None
+
+        for obj in objects:
+            price = find_price(obj)
+            if price:
+                return price
+        return None
+
+    def _extract_amazon_embedded_variants(self, objects: list[dict[str, Any]]) -> list[dict[str, Any]]:
+        variants: list[dict[str, Any]] = []
+        seen: set[tuple[str, str]] = set()
+
+        def append_variant(label: str, asin: str) -> None:
+            normalized_label = label.strip()
+            normalized_asin = asin.strip()
+            if not normalized_label or not normalized_asin:
+                return
+            key = (normalized_label, normalized_asin)
+            if key in seen:
+                return
+            seen.add(key)
+            variants.append({"asin": normalized_asin, "label": normalized_label})
+
+        def extract_from_mapping(mapping: Any) -> None:
+            if isinstance(mapping, str):
+                try:
+                    parsed = json.loads(mapping)
+                except json.JSONDecodeError:
+                    return
+                extract_from_mapping(parsed)
+                return
+            if not isinstance(mapping, dict):
+                return
+            for label, value in mapping.items():
+                if isinstance(value, str):
+                    append_variant(str(label), value)
+                elif isinstance(value, dict):
+                    asin = value.get("asin")
+                    if isinstance(asin, str):
+                        append_variant(str(label), asin)
+
+        def visit(value: Any) -> None:
+            if isinstance(value, dict):
+                if "colorToAsin" in value:
+                    extract_from_mapping(value["colorToAsin"])
+                for nested in value.values():
+                    visit(nested)
+            elif isinstance(value, list):
+                for item in value:
+                    visit(item)
+
+        for obj in objects:
+            visit(obj)
+        return variants
 
     def _extract_linkedin_fields(
         self,

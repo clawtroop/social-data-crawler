@@ -57,10 +57,10 @@ def classify_content(html: str | None, final_url: str) -> FetchError | None:
                           "Hit auth wall or login redirect", True)
 
     if re.search(r"captcha|robot check", lower):
-        return FetchError("CAPTCHA", "notify_user",
+        return FetchError("CAPTCHA", "complete_auto_login",
                           "Captcha or robot check detected", False)
 
-    if _looks_like_amazon_product_shell(lower, final_url):
+    if _looks_like_amazon_product_shell(lower, final_url) or _looks_like_amazon_incomplete_twister_page(lower, final_url):
         return FetchError("CONTENT_PARTIAL", "retry_with_browser",
                           "Amazon product page returned a shell page without product details", True)
 
@@ -91,6 +91,38 @@ def _looks_like_amazon_product_shell(lower_html: str, final_url: str) -> bool:
     )
     has_shell_marker = "previewdoh/amazon.png" in lower_html or 'id="page-shell"' in lower_html
     return has_generic_amazon_title and has_shell_marker and not has_product_markers
+
+
+def _looks_like_amazon_incomplete_twister_page(lower_html: str, final_url: str) -> bool:
+    lower_url = final_url.lower()
+    if "amazon." not in lower_url:
+        return False
+    if "/dp/" not in lower_url and "/gp/product/" not in lower_url:
+        return False
+
+    has_product_markers = any(
+        marker in lower_html
+        for marker in (
+            'id="producttitle"',
+            'id="feature-bullets"',
+            'id="bylineinfo"',
+        )
+    )
+    has_twister_marker = any(
+        marker in lower_html
+        for marker in (
+            'id="twister"',
+            'id="twister_feature_div"',
+            'twisterjsinitializer',
+        )
+    )
+    has_empty_variant_state = (
+        '"colortoasin":{}' in lower_html
+        or "'colortoasin': {'initial': '{}'}" in lower_html
+        or '"landingasincolor":"initial"' in lower_html
+    )
+    has_full_variant_state = '"dimensiontoasinmap"' in lower_html or '"colortoasin":{"' in lower_html
+    return has_product_markers and has_twister_marker and has_empty_variant_state and not has_full_variant_state
 
 
 def classify(

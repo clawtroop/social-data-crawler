@@ -187,14 +187,21 @@ def hook_normalizer(hook_name: str) -> Callable[[dict[str, Any], dict[str, Any],
     ) -> dict[str, Any]:
         metadata = extracted.get("metadata", {})
         if hook_name == "wikipedia":
-            return {
+            result = {
                 "title": metadata.get("title") or record.get("title"),
                 "summary": extracted.get("plain_text", "").splitlines()[0] if extracted.get("plain_text") else "",
             }
+            page_id = metadata.get("page_id")
+            if page_id not in (None, ""):
+                result["page_id"] = str(page_id)
+            return result
         if hook_name == "arxiv":
+            abstract = metadata.get("description") or extracted.get("structured", {}).get("abstract_plain_text") or ""
+            if not abstract and extracted.get("plain_text"):
+                abstract = extracted.get("plain_text", "").splitlines()[0]
             return {
                 "arxiv_id": discovered["fields"].get("arxiv_id"),
-                "abstract": extracted.get("plain_text", "").splitlines()[0] if extracted.get("plain_text") else "",
+                "abstract": abstract,
                 "pdf_document_blocks": supplemental.get("document_blocks", []),
             }
         if hook_name == "amazon":

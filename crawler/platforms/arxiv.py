@@ -19,16 +19,33 @@ from .base import (
     strategy_extractor,
 )
 
+ARXIV_ENRICHMENT_GROUPS = (
+    "arxiv_identity",
+    "arxiv_authors",
+    "arxiv_classification",
+    "arxiv_dates",
+    "arxiv_full_text",
+    "arxiv_contribution",
+    "arxiv_methodology",
+    "arxiv_results",
+    "arxiv_limitations",
+    "arxiv_references",
+    "arxiv_code_and_data",
+    "arxiv_embeddings",
+    "arxiv_relations",
+    "arxiv_multimodal_figures",
+    "arxiv_multimodal_equations",
+    "arxiv_multi_level_summary",
+    "arxiv_research_depth_analysis",
+    "arxiv_cross_dataset_linkable_ids",
+)
+
 FETCH_PLAN = PlatformFetchPlan(default_backend="api", fallback_backends=("http", "playwright"))
 EXTRACT_PLAN = PlatformExtractPlan(strategy="paper_metadata")
 NORMALIZE_PLAN = PlatformNormalizePlan(hook_name="arxiv")
 ENRICH_PLAN = PlatformEnrichmentPlan(
     route="research_graph",
-    field_groups=(
-        "summaries",
-        "arxiv_multi_level_summary",
-        "arxiv_references",
-    ),
+    field_groups=ARXIV_ENRICHMENT_GROUPS,
 )
 
 
