@@ -24,6 +24,7 @@ from crawler.enrich.schemas.field_group_registry import (
 from crawler.enrich.extractive.lookup_enricher import LookupEnricher
 from crawler.enrich.extractive.regex_enricher import RegexEnricher
 from crawler.enrich.generative.llm_client import parse_json_response
+from crawler.enrich.generative.llm_client import LLMClient
 from crawler.enrich.generative.prompt_renderer import render_prompt, list_templates
 from crawler.enrich.agent_executor import AgentEnrichmentExecutor
 from crawler.enrich.pipeline import EnrichPipeline
@@ -232,6 +233,136 @@ class TestParseJsonResponse:
     def test_invalid_json_returns_raw(self) -> None:
         result = parse_json_response("not json at all")
         assert result == {"raw": "not json at all"}
+
+
+class TestLLMClient:
+    @pytest.mark.asyncio
+    async def test_complete_uses_openclaw_responses_api_with_override_model(self) -> None:
+        recorded: dict[str, object] = {}
+
+        class DummyResponse:
+            def raise_for_status(self) -> None:
+                return None
+
+            def json(self) -> dict[str, object]:
+                return {
+                    "model": "openclaw/default",
+                    "output": [
+                        {
+                            "type": "message",
+                            "content": [
+                                {
+                                    "type": "output_text",
+                                    "text": '{"summary":"hello from openclaw"}',
+                                }
+                            ],
+                        }
+                    ],
+                    "usage": {
+                        "input_tokens": 11,
+                        "output_tokens": 7,
+                        "total_tokens": 18,
+                    },
+                }
+
+        class DummyClient:
+            def __init__(self, *args, **kwargs) -> None:
+                pass
+
+            async def __aenter__(self) -> "DummyClient":
+                return self
+
+            async def __aexit__(self, exc_type, exc, tb) -> None:
+                return None
+
+            async def post(self, url: str, headers: dict[str, str], json: dict[str, object]) -> DummyResponse:
+                recorded["url"] = url
+                recorded["headers"] = headers
+                recorded["json"] = json
+                return DummyResponse()
+
+        client = LLMClient.from_model_config(
+            {
+                "provider": "openclaw",
+                "base_url": "http://127.0.0.1:18789/v1",
+                "api_key": "gateway-token",
+                "model": "openclaw/default",
+                "openclaw_model": "openai-codex/gpt-5.4",
+            }
+        )
+
+        with patch("crawler.enrich.generative.llm_client.httpx.AsyncClient", DummyClient):
+            response = await client.complete("say hi", system_prompt="system prompt")
+
+        assert recorded["url"] == "http://127.0.0.1:18789/v1/responses"
+        assert recorded["headers"] == {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer gateway-token",
+            "x-openclaw-model": "openai-codex/gpt-5.4",
+        }
+        assert recorded["json"] == {
+            "model": "openclaw/default",
+            "input": [
+                {"role": "system", "content": "system prompt"},
+                {"role": "user", "content": "say hi"},
+            ],
+        }
+        assert response.content == '{"summary":"hello from openclaw"}'
+        assert response.model == "openclaw/default"
+        assert response.prompt_tokens == 11
+        assert response.completion_tokens == 7
+        assert response.total_tokens == 18
+
+    @pytest.mark.asyncio
+    async def test_complete_parses_openclaw_responses_output_text_without_override_model(self) -> None:
+        class DummyResponse:
+            def raise_for_status(self) -> None:
+                return None
+
+            def json(self) -> dict[str, object]:
+                return {
+                    "output": [
+                        {
+                            "type": "message",
+                            "content": [
+                                {"type": "output_text", "text": '{"summary":"ok"}'},
+                            ],
+                        }
+                    ],
+                    "usage": {
+                        "input_tokens": 2,
+                        "output_tokens": 3,
+                        "total_tokens": 5,
+                    },
+                }
+
+        class DummyClient:
+            def __init__(self, *args, **kwargs) -> None:
+                pass
+
+            async def __aenter__(self) -> "DummyClient":
+                return self
+
+            async def __aexit__(self, exc_type, exc, tb) -> None:
+                return None
+
+            async def post(self, url: str, headers: dict[str, str], json: dict[str, object]) -> DummyResponse:
+                return DummyResponse()
+
+        client = LLMClient.from_model_config(
+            {
+                "provider": "openclaw",
+                "base_url": "http://127.0.0.1:18789/v1",
+                "api_key": "gateway-token",
+                "model": "openclaw/default",
+            }
+        )
+
+        with patch("crawler.enrich.generative.llm_client.httpx.AsyncClient", DummyClient):
+            response = await client.complete("say hi")
+
+        assert response.content == '{"summary":"ok"}'
+        assert response.total_tokens == 5
 
 
 # ─── Prompt Renderer Tests ──────────────────────────────────────────
@@ -628,6 +759,8 @@ class TestEnrichPipeline:
             pipeline.enrich(
                 enrich_input,
                 field_groups=[
+                    "amazon_products_pricing",
+                    "amazon_products_competition",
                     "amazon_products_availability",
                     "amazon_products_reviews_summary",
                     "amazon_products_multi_level_summary",
@@ -640,6 +773,63 @@ class TestEnrichPipeline:
         assert record.enrichment_results["amazon_products_reviews_summary"].status == "pending_agent"
         assert record.enrichment_results["amazon_products_multi_level_summary"].status == "pending_agent"
         assert record.enrichment_results["amazon_products_market_positioning"].status == "pending_agent"
+        assert record.enrichment_results["amazon_products_pricing"].status == "skipped"
+        assert record.enrichment_results["amazon_products_pricing"].error == "pricing unavailable on source page (product unavailable or no offer data)"
+        assert record.enrichment_results["amazon_products_competition"].status == "skipped"
+        assert record.enrichment_results["amazon_products_competition"].error == "price-dependent analysis unavailable on source page (product unavailable or no offer data)"
+
+    def test_pipeline_accepts_amazon_product_pricing_when_price_is_present(self) -> None:
+        pipeline = EnrichPipeline()
+        enrich_input = _build_enrich_input_from_record(
+            {
+                "platform": "amazon",
+                "resource_type": "product",
+                "canonical_url": "https://www.amazon.com/dp/B088NMR44C",
+                "price": "JPY 1,592",
+                "structured": {
+                    "category": ["Electronics"],
+                },
+                "metadata": {
+                    "title": "Anker USB C to USB C Cable",
+                    "description": "2-pack charging cable.",
+                },
+            }
+        )
+        record = asyncio.run(
+            pipeline.enrich(
+                enrich_input,
+                field_groups=["amazon_products_pricing"],
+            )
+        )
+
+        assert record.enrichment_results["amazon_products_pricing"].status == "pending_agent"
+
+    def test_pipeline_accepts_amazon_product_competition_when_price_is_present(self) -> None:
+        pipeline = EnrichPipeline()
+        enrich_input = _build_enrich_input_from_record(
+            {
+                "platform": "amazon",
+                "resource_type": "product",
+                "canonical_url": "https://www.amazon.com/dp/B088NMR44C",
+                "price": "JPY 1,592",
+                "rating": "4.7 out of 5 stars",
+                "structured": {
+                    "category": ["Electronics"],
+                },
+                "metadata": {
+                    "title": "Anker USB C to USB C Cable",
+                    "description": "2-pack charging cable.",
+                },
+            }
+        )
+        record = asyncio.run(
+            pipeline.enrich(
+                enrich_input,
+                field_groups=["amazon_products_competition"],
+            )
+        )
+
+        assert record.enrichment_results["amazon_products_competition"].status == "pending_agent"
 
     def test_pipeline_executes_amazon_generative_groups_with_model_config(self, monkeypatch) -> None:
         async def fake_complete(self, prompt: str, **kwargs) -> LLMResponse:

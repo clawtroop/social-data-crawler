@@ -133,6 +133,22 @@ def test_parse_args_supports_llm_schema_options() -> None:
     assert config.model_config_path == Path("config/model.json")
 
 
+def test_parse_args_supports_use_openclaw() -> None:
+    config = parse_args(
+        [
+            "enrich",
+            "--input",
+            "data/input.jsonl",
+            "--output",
+            "output",
+            "--use-openclaw",
+        ]
+    )
+
+    assert config.command is CrawlCommand.ENRICH
+    assert config.use_openclaw is True
+
+
 def test_parse_args_rejects_unknown_subcommand() -> None:
     with pytest.raises(SystemExit):
         parse_args(

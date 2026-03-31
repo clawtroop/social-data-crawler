@@ -3,7 +3,8 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from crawler.platforms import linkedin
+from crawler.platforms import linkedin, wikipedia
+from crawler.platforms.base import hook_normalizer
 from crawler.platforms.registry import get_platform_adapter
 from crawler.platforms.registry import list_platform_adapters
 
@@ -13,6 +14,51 @@ def test_wikipedia_adapter_declares_article_support() -> None:
     assert adapter.platform == "wikipedia"
     assert "article" in adapter.supported_resource_types
     assert adapter.default_backend == "api"
+
+
+def test_wikipedia_extract_includes_page_id_in_metadata() -> None:
+    extracted = wikipedia._extract_wikipedia(
+        {"platform": "wikipedia", "resource_type": "article", "title": "Artificial intelligence"},
+        {
+            "url": "https://en.wikipedia.org/wiki/Artificial_intelligence",
+            "content_type": "application/json",
+            "json_data": {
+                "query": {
+                    "pages": {
+                        "1164": {
+                            "pageid": 1164,
+                            "title": "Artificial intelligence",
+                            "extract": "Artificial intelligence is the capability of computational systems.",
+                            "categories": [{"title": "Category:Artificial intelligence"}],
+                            "pageprops": {"wikibase-shortdesc": "Intelligence of machines"},
+                        }
+                    }
+                }
+            },
+        },
+    )
+
+    assert extracted["metadata"]["page_id"] == "1164"
+
+
+def test_wikipedia_normalizer_maps_page_id_for_submission_schema() -> None:
+    normalizer = hook_normalizer("wikipedia")
+
+    normalized = normalizer(
+        {"platform": "wikipedia", "resource_type": "article", "title": "Artificial intelligence"},
+        {"fields": {"title": "Artificial_intelligence"}},
+        {
+            "metadata": {
+                "title": "Artificial intelligence",
+                "page_id": "1164",
+            },
+            "plain_text": "Artificial intelligence is the capability of computational systems.",
+        },
+        {},
+    )
+
+    assert normalized["title"] == "Artificial intelligence"
+    assert normalized["page_id"] == "1164"
 
 
 def test_linkedin_adapter_requires_auth_and_browser() -> None:

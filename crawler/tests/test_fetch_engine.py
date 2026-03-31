@@ -278,6 +278,33 @@ class TestFetchEngineHttp:
         assert err.error_code == "CONTENT_PARTIAL"
         assert err.agent_hint == "retry_with_browser"
 
+    def test_classify_content_detects_amazon_product_incomplete_twister_page(self):
+        incomplete_page = """
+        <html>
+          <head>
+            <title>Amazon.com: Apple iPad Air : Electronics</title>
+          </head>
+          <body>
+            <span id="productTitle">Apple iPad Air</span>
+            <div id="feature-bullets"><li class="a-list-item">M1 chip</li></div>
+            <div id="twister_feature_div"></div>
+            <script>
+              var obj = jQuery.parseJSON('{"defaultColor":"initial","landingAsinColor":"initial","colorToAsin":{},"colorImages":{}}');
+            </script>
+          </body>
+        </html>
+        """
+        err = classify_content(incomplete_page * 3, "https://www.amazon.com/dp/B09V3KXJPB")
+        assert err is not None
+        assert err.error_code == "CONTENT_PARTIAL"
+        assert err.agent_hint == "retry_with_browser"
+
+    def test_classify_content_detects_captcha_with_recovery_hint(self):
+        err = classify_content("<html><body>captcha required robot check</body></html>" * 20, "https://www.linkedin.com/in/test")
+        assert err is not None
+        assert err.error_code == "CAPTCHA"
+        assert err.agent_hint == "complete_auto_login"
+
     def test_fetch_http_success(self):
         """Test HTTP fetch via the engine with a mocked httpx response."""
         from crawler.fetch.engine import FetchEngine

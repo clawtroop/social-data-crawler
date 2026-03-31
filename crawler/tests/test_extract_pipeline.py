@@ -618,6 +618,21 @@ def test_pipeline_xml_extraction_arxiv_skips_crawl4ai_and_parses_atom(monkeypatc
         "crawler.extract.pipeline.extract_html_with_crawl4ai",
         fail_if_called,
     )
+    monkeypatch.setattr(
+        "crawler.extract.pipeline.fetch_binary_content",
+        lambda url: b"%PDF-1.4 fake",
+    )
+    monkeypatch.setattr(
+        "crawler.extract.pipeline.extract_pdf_with_pymupdf4llm",
+        lambda source, *, title=None: {
+            "markdown": "# GPT-4 Technical Report\n\nFull paper body.\n\n## References\n\n[1] Ref A",
+            "plain_text": "GPT-4 Technical Report\n\nFull paper body.\n\nReferences\n\n[1] Ref A",
+            "document_blocks": [{"type": "section", "text": "Full paper body."}],
+            "extractor": "pymupdf4llm",
+            "page_count": 12,
+            "parser_metadata": {"parser": "pymupdf4llm"},
+        },
+    )
 
     pipeline = ExtractPipeline()
     doc = pipeline.extract(fetch_result, "arxiv", "paper")
@@ -625,13 +640,16 @@ def test_pipeline_xml_extraction_arxiv_skips_crawl4ai_and_parses_atom(monkeypatc
     assert doc.structured.title == "GPT-4 Technical Report"
     assert doc.structured.description == "We report the development of GPT-4, a large-scale, multimodal model."
     assert "GPT-4 Technical Report" in doc.full_markdown
-    assert "We report the development of GPT-4" in doc.full_text
+    assert "Full paper body." in doc.full_text
     assert doc.structured.platform_fields["authors"] == ["OpenAI", "Josh Achiam"]
     assert doc.structured.platform_fields["categories"] == ["cs.CL", "cs.AI"]
     assert doc.structured.platform_fields["primary_category"] == "cs.CL"
     assert doc.structured.platform_fields["published"] == "2023-03-15T17:15:04Z"
     assert doc.structured.platform_fields["updated"] == "2024-03-04T06:01:33Z"
     assert doc.structured.platform_fields["pdf_url"] == "https://arxiv.org/pdf/2303.08774v6"
+    assert doc.structured.platform_fields["pdf_extractor"] == "pymupdf4llm"
+    assert doc.structured.platform_fields["page_count"] == 12
+    assert doc.structured.platform_fields["references"] == ["[1] Ref A"]
     assert doc.quality.chunking_strategy == "xml_structured"
 
 
@@ -929,6 +947,78 @@ def test_pipeline_html_extraction_adds_amazon_product_fallbacks_for_unavailable_
     assert doc.structured.platform_fields["fulfillment"] == "Currently unavailable. We don't know when or if this item will be back in stock."
     assert doc.structured.platform_fields["reviews_count"] == "0 reviews"
     assert doc.structured.platform_fields["rating"] == "No customer reviews yet"
+
+
+def test_pipeline_html_extraction_extracts_amazon_product_price_from_embedded_json() -> None:
+    fetch_result = {
+        "url": "https://www.amazon.com/dp/B000TEST",
+        "text": """
+        <html>
+          <body>
+            <script type="text/javascript">
+              var obj = jQuery.parseJSON('{"priceToPay":{"price":"$99.99"}}');
+            </script>
+          </body>
+        </html>
+        """,
+        "content_type": "text/html",
+    }
+
+    pipeline = ExtractPipeline()
+    doc = pipeline.extract(fetch_result, "amazon", "product")
+
+    assert doc.structured.platform_fields["price"] == "$99.99"
+
+
+def test_pipeline_html_extraction_extracts_amazon_product_variants_from_embedded_json() -> None:
+    fetch_result = {
+        "url": "https://www.amazon.com/dp/B000TEST",
+        "text": """
+        <html>
+          <body>
+            <script type="text/javascript">
+              var obj = jQuery.parseJSON('{"colorToAsin":{"Black":{"asin":"B000TEST-BLACK"},"White":{"asin":"B000TEST-WHITE"}}}');
+            </script>
+          </body>
+        </html>
+        """,
+        "content_type": "text/html",
+    }
+
+    pipeline = ExtractPipeline()
+    doc = pipeline.extract(fetch_result, "amazon", "product")
+
+    assert doc.structured.platform_fields["variants"] == [
+        {"asin": "B000TEST-BLACK", "label": "Black"},
+        {"asin": "B000TEST-WHITE", "label": "White"},
+    ]
+
+
+def test_pipeline_html_extraction_enriches_amazon_variants_with_twister_prices() -> None:
+    fetch_result = {
+        "url": "https://www.amazon.com/dp/B000TEST",
+        "text": """
+        <html>
+          <body>
+            <script type="text/javascript">
+              var obj = jQuery.parseJSON('{"colorToAsin":{"Black":{"asin":"B000TEST-BLACK"},"Red":{"asin":"B000TEST-RED"}}}');
+            </script>
+            <script type="application/json" data-amazon-twister-responses="true">
+              [{"url":"https://www.amazon.com/gp/product/ajax/twisterDimensionSlotsDefault","body":"{\\"ASIN\\":\\"B000TEST-BLACK\\",\\"Type\\":\\"JSON\\",\\"Value\\":{\\"content\\":{\\"twisterSlotJson\\":{\\"isAvailable\\":true,\\"price\\":1592.14626},\\"twisterSlotDiv\\":\\"<div><span class=\\\\\\"a-price\\\\\\"><span class=\\\\\\"a-offscreen\\\\\\">JPY 1,592</span></span></div>\\"}}}&&&{\\"ASIN\\":\\"B000TEST-RED\\",\\"Type\\":\\"JSON\\",\\"Value\\":{\\"content\\":{\\"twisterSlotJson\\":{\\"isAvailable\\":true,\\"price\\":1432.77226},\\"twisterSlotDiv\\":\\"<div><span class=\\\\\\"a-price\\\\\\"><span class=\\\\\\"a-offscreen\\\\\\">JPY 1,433</span></span></div>\\"}}}"}]
+            </script>
+          </body>
+        </html>
+        """,
+        "content_type": "text/html",
+    }
+
+    pipeline = ExtractPipeline()
+    doc = pipeline.extract(fetch_result, "amazon", "product")
+
+    assert doc.structured.platform_fields["variants"] == [
+        {"asin": "B000TEST-BLACK", "label": "Black", "price": "JPY 1,592", "availability": "In Stock"},
+        {"asin": "B000TEST-RED", "label": "Red", "price": "JPY 1,433", "availability": "In Stock"},
+    ]
 
 
 def test_pipeline_html_extraction_extracts_amazon_seller_fields() -> None:

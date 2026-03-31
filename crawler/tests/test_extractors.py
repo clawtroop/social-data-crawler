@@ -4,6 +4,7 @@ from pathlib import Path
 
 from crawler.extract.html_extract import extract_html_document
 from crawler.extract.unstructured_extract import extract_document_blocks
+from crawler.extract.pymupdf4llm_extract import clean_scientific_markdown, extract_pdf_with_pymupdf4llm
 
 
 def test_extract_html_document_collects_title_and_markdown() -> None:
@@ -128,3 +129,52 @@ def test_extract_document_blocks_with_pypdf(monkeypatch, workspace_tmp_path: Pat
     assert result["document_blocks"][0]["text"] == "Page content"
     assert result["plain_text"] == "Page content"
     assert result["extractor"] == "pypdf"
+
+
+def test_clean_scientific_markdown_removes_repeated_page_furniture() -> None:
+    markdown = """
+Paper Title
+
+# Introduction
+
+Body paragraph one.
+
+Page 1
+
+Paper Title
+
+# Method
+
+Body paragraph two.
+
+Page 2
+"""
+
+    cleaned = clean_scientific_markdown(markdown, title="Paper Title")
+
+    assert cleaned.count("Paper Title") == 1
+    assert "Page 1" not in cleaned
+    assert "Page 2" not in cleaned
+    assert "# Introduction" in cleaned
+    assert "# Method" in cleaned
+
+
+def test_extract_pdf_with_pymupdf4llm(monkeypatch, workspace_tmp_path: Path) -> None:
+    source_path = workspace_tmp_path / "paper.pdf"
+    source_path.write_bytes(b"fake-pdf")
+
+    monkeypatch.setattr(
+        "crawler.extract.pymupdf4llm_extract._HAS_PYMUPDF4LLM",
+        True,
+    )
+    monkeypatch.setattr(
+        "crawler.extract.pymupdf4llm_extract.to_markdown",
+        lambda path, **kwargs: "# Sample Paper\n\nPaper body.\n\nPage 1",
+    )
+
+    result = extract_pdf_with_pymupdf4llm(str(source_path), title="Sample Paper")
+
+    assert result["extractor"] == "pymupdf4llm"
+    assert result["markdown"].startswith("# Sample Paper")
+    assert result["plain_text"].startswith("Sample Paper")
+    assert "Page 1" not in result["markdown"]

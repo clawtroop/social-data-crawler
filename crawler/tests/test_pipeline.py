@@ -1277,9 +1277,21 @@ def test_new_pipeline_enrich_uses_platform_default_field_groups_when_not_overrid
     assert errors == []
     assert records[0]["enrichment"]["doc_id"] == "doc-amazon-enrich"
     assert captured["field_groups"] == [
+        "amazon_products_identity",
         "amazon_products_pricing",
-        "amazon_products_availability",
         "amazon_products_description",
+        "amazon_products_category",
+        "amazon_products_visual",
+        "amazon_products_availability",
+        "amazon_products_competition",
+        "amazon_products_reviews_summary",
+        "amazon_products_variants",
+        "amazon_products_compliance",
+        "amazon_products_multimodal_images",
+        "amazon_products_multi_level_summary",
+        "amazon_products_market_positioning",
+        "amazon_products_listing_quality",
+        "amazon_products_linkable_ids",
     ]
 
 
@@ -1304,9 +1316,21 @@ def test_new_pipeline_run_uses_platform_default_field_groups_when_not_overridden
             return {
                 "route": "commerce_graph",
                 "field_groups": tuple(requested_groups) or (
+                    "amazon_products_identity",
                     "amazon_products_pricing",
-                    "amazon_products_availability",
                     "amazon_products_description",
+                    "amazon_products_category",
+                    "amazon_products_visual",
+                    "amazon_products_availability",
+                    "amazon_products_competition",
+                    "amazon_products_reviews_summary",
+                    "amazon_products_variants",
+                    "amazon_products_compliance",
+                    "amazon_products_multimodal_images",
+                    "amazon_products_multi_level_summary",
+                    "amazon_products_market_positioning",
+                    "amazon_products_listing_quality",
+                    "amazon_products_linkable_ids",
                 ),
             }
 
@@ -1730,6 +1754,11 @@ def test_build_enrich_input_from_record_adds_arxiv_aliases() -> None:
                 "authors": ["Alice", "Bob"],
                 "citations": ["Ref A"],
                 "figures": ["fig1.png"],
+                "title_normalized": "Distributionally Robust Receive Combining",
+                "abstract_plain_text": "This paper studies robust receive combining.",
+                "sections_structured": [{"heading": "Introduction", "section_type": "introduction"}],
+                "references_structured": [{"title": "Ref A", "year": 2021}],
+                "linkable_identifiers": {"github_repos_mentioned": ["https://github.com/example/repo"]},
             },
             "metadata": {
                 "title": "Distributionally Robust Receive Combining",
@@ -1742,6 +1771,11 @@ def test_build_enrich_input_from_record_adds_arxiv_aliases() -> None:
     assert enrich_input["references"] == ["Ref A"]
     assert enrich_input["authors"] == ["Alice", "Bob"]
     assert enrich_input["figures"] == ["fig1.png"]
+    assert enrich_input["title_normalized"] == "Distributionally Robust Receive Combining"
+    assert enrich_input["abstract_plain_text"] == "This paper studies robust receive combining."
+    assert enrich_input["sections_structured"] == [{"heading": "Introduction", "section_type": "introduction"}]
+    assert enrich_input["references_structured"] == [{"title": "Ref A", "year": 2021}]
+    assert enrich_input["linkable_identifiers"] == {"github_repos_mentioned": ["https://github.com/example/repo"]}
 
 
 def test_new_pipeline_crawls_linkedin_search_results(monkeypatch, workspace_tmp_path: Path) -> None:
