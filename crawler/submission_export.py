@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from .io import read_json_file, read_jsonl_file
+from .output import read_json_file, read_jsonl_file
 
 
 def build_submission_request(

@@ -943,6 +943,164 @@ def test_new_pipeline_uses_legacy_metadata_for_wikipedia_api(monkeypatch, worksp
     assert records[0]["metadata"]["pageprops"]["wikibase-shortdesc"] == "Intelligence of machines"
 
 
+def test_new_pipeline_preserves_wikipedia_extractor_metadata(monkeypatch, workspace_tmp_path: Path) -> None:
+    input_path = workspace_tmp_path / "input.jsonl"
+    output_dir = workspace_tmp_path / "out"
+    input_path.write_text(
+        json.dumps({"platform": "wikipedia", "resource_type": "article", "title": "Artificial intelligence"}) + "\n",
+        encoding="utf-8",
+    )
+
+    class FakeAdapter:
+        default_backend = "api"
+        requires_auth = False
+
+        def resolve_backend(self, record: dict, override_backend: str | None = None, retry_count: int = 0) -> str:
+            return "api"
+
+        def fetch_record(self, record: dict, discovered: dict, backend: str, storage_state_path: str | None = None) -> dict:
+            return {
+                "backend": "api",
+                "url": discovered["canonical_url"],
+                "content_type": "application/json",
+                "status_code": 200,
+                "headers": {},
+                "json_data": {
+                    "query": {
+                        "pages": {
+                            "1164": {
+                                "title": "Artificial intelligence",
+                                "extract": "Artificial intelligence is the capability of computational systems.",
+                                "categories": [{"title": "Category:Artificial intelligence"}],
+                            }
+                        }
+                    }
+                },
+            }
+
+        def extract_content(self, record: dict, fetched: dict) -> dict:
+            return {
+                "metadata": {
+                    "title": "Artificial intelligence",
+                    "content_type": "application/json",
+                    "source_url": fetched["url"],
+                },
+                "plain_text": "Artificial intelligence is the capability of computational systems.",
+                "markdown": "# Artificial intelligence\n\nArtificial intelligence is the capability of computational systems.",
+                "structured": {"categories": ["Artificial intelligence"]},
+                "document_blocks": [],
+                "extractor": "wikipedia_api",
+            }
+
+        def normalize_record(self, record: dict, discovered: dict, extracted: dict, supplemental: dict) -> dict:
+            return {"title": extracted.get("metadata", {}).get("title")}
+
+    monkeypatch.setattr("crawler.platforms.registry.get_platform_adapter", lambda platform: FakeAdapter())
+    monkeypatch.setattr(
+        "crawler.discovery.url_builder.build_url",
+        lambda record: {
+            "canonical_url": "https://en.wikipedia.org/wiki/Artificial_intelligence",
+            "fields": {"title": "Artificial_intelligence"},
+            "artifacts": {},
+        },
+    )
+
+    config = parse_args(["crawl", "--input", str(input_path), "--output", str(output_dir)])
+    records, errors = run_command(config)
+
+    assert errors == []
+    assert records[0]["extractor"] == "wikipedia_api"
+
+
+@pytest.mark.parametrize(
+    ("platform", "resource_type", "seed_record", "canonical_url", "fields", "extractor"),
+    [
+        (
+            "arxiv",
+            "paper",
+            {"arxiv_id": "2401.12345"},
+            "https://arxiv.org/abs/2401.12345",
+            {"arxiv_id": "2401.12345"},
+            "arxiv_api",
+        ),
+        (
+            "base",
+            "address",
+            {"address": "0x4200000000000000000000000000000000000006"},
+            "https://basescan.org/address/0x4200000000000000000000000000000000000006",
+            {"address": "0x4200000000000000000000000000000000000006"},
+            "base_api",
+        ),
+    ],
+)
+def test_new_pipeline_preserves_api_extractor_metadata_for_other_platforms(
+    monkeypatch,
+    workspace_tmp_path: Path,
+    platform: str,
+    resource_type: str,
+    seed_record: dict[str, str],
+    canonical_url: str,
+    fields: dict[str, str],
+    extractor: str,
+) -> None:
+    input_path = workspace_tmp_path / "input.jsonl"
+    output_dir = workspace_tmp_path / "out"
+    input_path.write_text(
+        json.dumps({"platform": platform, "resource_type": resource_type, **seed_record}) + "\n",
+        encoding="utf-8",
+    )
+
+    class FakeAdapter:
+        default_backend = "api"
+        requires_auth = False
+
+        def resolve_backend(self, record: dict, override_backend: str | None = None, retry_count: int = 0) -> str:
+            return "api"
+
+        def fetch_record(self, record: dict, discovered: dict, backend: str, storage_state_path: str | None = None) -> dict:
+            return {
+                "backend": "api",
+                "url": discovered["canonical_url"],
+                "content_type": "application/json",
+                "status_code": 200,
+                "headers": {},
+                "json_data": {"ok": True},
+            }
+
+        def extract_content(self, record: dict, fetched: dict) -> dict:
+            return {
+                "metadata": {
+                    "title": f"{platform} example",
+                    "content_type": "application/json",
+                    "source_url": fetched["url"],
+                },
+                "plain_text": f"{platform} content",
+                "markdown": f"# {platform} example\n\n{platform} content",
+                "structured": {"source_kind": platform},
+                "document_blocks": [],
+                "extractor": extractor,
+            }
+
+        def normalize_record(self, record: dict, discovered: dict, extracted: dict, supplemental: dict) -> dict:
+            return {"title": extracted.get("metadata", {}).get("title")}
+
+    monkeypatch.setattr("crawler.platforms.registry.get_platform_adapter", lambda _: FakeAdapter())
+    monkeypatch.setattr(
+        "crawler.discovery.url_builder.build_url",
+        lambda record: {
+            "canonical_url": canonical_url,
+            "fields": fields,
+            "artifacts": {},
+        },
+    )
+
+    config = parse_args(["crawl", "--input", str(input_path), "--output", str(output_dir)])
+    records, errors = run_command(config)
+
+    assert errors == []
+    assert records[0]["extractor"] == extractor
+
+
 def test_new_pipeline_does_not_write_html_artifact_for_api_payload(monkeypatch, workspace_tmp_path: Path) -> None:
     input_path = workspace_tmp_path / "input.jsonl"
     output_dir = workspace_tmp_path / "out"
@@ -1850,3 +2008,211 @@ def test_discover_crawl_keeps_other_candidates_running_when_auth_is_required(mon
     assert [record["canonical_url"] for record in records] == ["https://example.com/docs"]
     assert errors[0]["error_code"] == "AUTH_REQUIRED"
     assert errors[0]["canonical_url"] == "https://www.linkedin.com/in/protected/"
+
+
+@pytest.mark.parametrize(
+    ("platform", "resource_type", "seed_url", "expected_canonical_url"),
+    [
+        ("wikipedia", "article", "https://en.wikipedia.org/wiki/Test", "https://en.wikipedia.org/wiki/Test"),
+        ("arxiv", "paper", "https://arxiv.org/abs/2401.12345", "https://arxiv.org/abs/2401.12345"),
+        (
+            "base",
+            "address",
+            "https://basescan.org/address/0x123",
+            "https://basescan.org/address/0x123",
+        ),
+    ],
+)
+def test_discover_crawl_routes_api_platforms_through_api_fetcher(
+    monkeypatch,
+    workspace_tmp_path: Path,
+    platform: str,
+    resource_type: str,
+    seed_url: str,
+    expected_canonical_url: str,
+) -> None:
+    input_path = workspace_tmp_path / f"{platform}.jsonl"
+    output_dir = workspace_tmp_path / f"{platform}-out"
+    input_path.write_text(
+        json.dumps({"platform": platform, "resource_type": resource_type, "url": seed_url}) + "\n",
+        encoding="utf-8",
+    )
+    captured: dict[str, object] = {}
+
+    class FakeDiscoveryAdapter:
+        async def crawl(self, candidate, context: dict[str, object]) -> dict[str, object]:
+            fetched = await context["fetch_fn"](candidate)
+            return {"candidate": candidate, "fetched": fetched, "spawned_candidates": []}
+
+    class FakePlatformAdapter:
+        requires_auth = False
+        default_backend = "api"
+        fallback_backends = ("http", "playwright")
+
+        def fetch_record(self, record: dict, discovered: dict, backend: str, storage_state_path: str | None = None) -> dict:
+            captured["adapter_backend"] = backend
+            captured["discovered"] = discovered
+            return {
+                "url": discovered["canonical_url"],
+                "content_type": "application/json",
+                "status_code": 200,
+                "headers": {},
+                "json_data": {"ok": True, "platform": platform},
+            }
+
+    async def fake_fetch(
+        self,
+        url: str,
+        platform: str,
+        resource_type: str | None = None,
+        *,
+        requires_auth: bool = False,
+        override_backend: str | None = None,
+        api_fetcher=None,
+        api_kwargs=None,
+        preferred_backend: str | None = None,
+        fallback_chain=None,
+    ):
+        from datetime import datetime, timezone
+        from crawler.fetch.models import FetchTiming, RawFetchResult
+
+        captured["override_backend"] = override_backend
+        captured["preferred_backend"] = preferred_backend
+        captured["fetch_platform"] = platform
+        captured["fetch_resource_type"] = resource_type
+        captured["fallback_chain"] = fallback_chain
+        assert api_fetcher is not None
+        payload = api_fetcher(url)
+        return RawFetchResult(
+            url=url,
+            final_url=payload["url"],
+            backend="api",
+            fetch_time=datetime.now(timezone.utc),
+            content_type=payload["content_type"],
+            status_code=payload["status_code"],
+            json_data=payload["json_data"],
+            headers=payload["headers"],
+            timing=FetchTiming(start_ms=0, navigation_ms=1, wait_strategy_ms=0, total_ms=1),
+        )
+
+    monkeypatch.setattr("crawler.discovery.adapters.registry.get_discovery_adapter", lambda name: FakeDiscoveryAdapter())
+    monkeypatch.setattr("crawler.platforms.registry.get_platform_adapter", lambda name: FakePlatformAdapter())
+    monkeypatch.setattr("crawler.fetch.engine.FetchEngine.fetch", fake_fetch)
+
+    config = CrawlerConfig.from_mapping({
+        "command": "discover-crawl",
+        "input_path": str(input_path),
+        "output_dir": str(output_dir),
+        "max_depth": 0,
+        "max_pages": 1,
+    })
+    records, errors = run_command(config)
+
+    assert errors == []
+    assert [record["canonical_url"] for record in records] == [expected_canonical_url]
+    assert captured["override_backend"] is None
+    assert captured["preferred_backend"] == "api"
+    assert captured["adapter_backend"] == "api"
+    assert captured["fetch_platform"] == platform
+    assert captured["fetch_resource_type"] == resource_type
+
+
+@pytest.mark.parametrize(
+    ("platform", "resource_type", "seed_url", "expected_fields"),
+    [
+        (
+            "wikipedia",
+            "article",
+            "https://en.wikipedia.org/wiki/Artificial_intelligence",
+            {"title": "Artificial_intelligence"},
+        ),
+        (
+            "arxiv",
+            "paper",
+            "https://arxiv.org/abs/1706.03762",
+            {"arxiv_id": "1706.03762"},
+        ),
+        (
+            "base",
+            "address",
+            "https://basescan.org/address/0x4200000000000000000000000000000000000006",
+            {"address": "0x4200000000000000000000000000000000000006"},
+        ),
+    ],
+)
+def test_discover_crawl_derives_platform_identity_from_url_only_seed(
+    monkeypatch,
+    workspace_tmp_path: Path,
+    platform: str,
+    resource_type: str,
+    seed_url: str,
+    expected_fields: dict[str, str],
+) -> None:
+    input_path = workspace_tmp_path / f"{platform}-url-only.jsonl"
+    output_dir = workspace_tmp_path / f"{platform}-url-only-out"
+    input_path.write_text(
+        json.dumps({"platform": platform, "resource_type": resource_type, "url": seed_url}) + "\n",
+        encoding="utf-8",
+    )
+    captured: dict[str, object] = {}
+
+    class FakePlatformAdapter:
+        requires_auth = False
+        default_backend = "api"
+        fallback_backends = ("http", "playwright")
+
+        def fetch_record(self, record: dict, discovered: dict, backend: str, storage_state_path: str | None = None) -> dict:
+            captured["record"] = record
+            captured["discovered"] = discovered
+            return {
+                "url": discovered["canonical_url"],
+                "content_type": "application/json",
+                "status_code": 200,
+                "headers": {},
+                "json_data": {"ok": True},
+            }
+
+    async def fake_fetch(
+        self,
+        url: str,
+        platform: str,
+        resource_type: str | None = None,
+        *,
+        requires_auth: bool = False,
+        override_backend: str | None = None,
+        api_fetcher=None,
+        api_kwargs=None,
+        preferred_backend: str | None = None,
+        fallback_chain=None,
+    ):
+        from datetime import datetime, timezone
+        from crawler.fetch.models import FetchTiming, RawFetchResult
+
+        payload = api_fetcher(url)
+        return RawFetchResult(
+            url=url,
+            final_url=payload["url"],
+            backend="api",
+            fetch_time=datetime.now(timezone.utc),
+            content_type=payload["content_type"],
+            status_code=payload["status_code"],
+            json_data=payload["json_data"],
+            headers=payload["headers"],
+            timing=FetchTiming(start_ms=0, navigation_ms=1, wait_strategy_ms=0, total_ms=1),
+        )
+
+    monkeypatch.setattr("crawler.platforms.registry.get_platform_adapter", lambda name: FakePlatformAdapter())
+    monkeypatch.setattr("crawler.fetch.engine.FetchEngine.fetch", fake_fetch)
+
+    config = CrawlerConfig.from_mapping({
+        "command": "discover-crawl",
+        "input_path": str(input_path),
+        "output_dir": str(output_dir),
+        "max_depth": 0,
+        "max_pages": 1,
+    })
+    records, errors = run_command(config)
+
+    assert errors == []
+    assert len(records) == 1
+    assert captured["discovered"]["fields"] == expected_fields

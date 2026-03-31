@@ -3,7 +3,7 @@ from __future__ import annotations
 import asyncio
 import json
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from crawler.contracts import CrawlCommand, CrawlerConfig
 from crawler.core.auth import (
@@ -15,7 +15,10 @@ from crawler.core.auth import (
 )
 from crawler.enrich.input_normalizer import build_enrich_input
 from crawler.fetch.error_classifier import FetchError
-from crawler.io import read_json_file, read_jsonl_file
+from crawler.output import read_json_file, read_jsonl_file
+
+if TYPE_CHECKING:
+    from crawler.discovery.contracts import DiscoveryCandidate, DiscoveryRecord
 
 
 def run_command(config: CrawlerConfig) -> tuple[list[dict], list[dict]]:
@@ -36,7 +39,7 @@ def _run_discovery_crawl_pipeline(config: CrawlerConfig) -> tuple[list[dict], li
 async def _run_discovery_crawl_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], list[dict]]:
     """Async implementation of discovery crawl pipeline."""
     from crawler.discovery.adapters.registry import get_discovery_adapter
-    from crawler.discovery.contracts import CrawlOptions, DiscoveryCandidate, DiscoveryMode
+    from crawler.discovery.contracts import CrawlOptions, DiscoveryCandidate, DiscoveryMode, DiscoveryRecord
     from crawler.discovery.runner import run_discover_crawl
     from crawler.fetch.engine import FetchEngine
     from crawler.fetch.session_store import SessionStore
@@ -55,22 +58,7 @@ async def _run_discovery_crawl_pipeline_async(config: CrawlerConfig) -> tuple[li
     # Build candidates from input
     seeds: list[DiscoveryCandidate] = []
     for input_record in input_records:
-        url = input_record.get("url") or input_record.get("canonical_url")
-        if not url:
-            continue
-        seeds.append(DiscoveryCandidate(
-            platform=input_record.get("platform", "generic"),
-            resource_type=input_record.get("resource_type", "page"),
-            canonical_url=url,
-            seed_url=url,
-            fields={},
-            discovery_mode=DiscoveryMode.DIRECT_INPUT,
-            score=1.0,
-            score_breakdown={"direct_input": 1.0},
-            hop_depth=0,
-            parent_url=None,
-            metadata={},
-        ))
+        seeds.extend(_build_discovery_candidates(input_record, get_discovery_adapter))
 
     session_root = config.output_dir / ".sessions"
     session_root.mkdir(parents=True, exist_ok=True)
@@ -79,10 +67,12 @@ async def _run_discovery_crawl_pipeline_async(config: CrawlerConfig) -> tuple[li
 
     async with FetchEngine(session_root) as fetch_engine:
         async def fetch_fn(target: DiscoveryCandidate | str) -> dict[str, Any]:
+            candidate_fields: dict[str, Any] = {}
             if isinstance(target, DiscoveryCandidate):
                 url = target.canonical_url or ""
                 platform = target.platform
                 resource_type = target.resource_type
+                candidate_fields = dict(target.fields)
             else:
                 url = str(target)
                 platform = "generic"
@@ -113,11 +103,33 @@ async def _run_discovery_crawl_pipeline_async(config: CrawlerConfig) -> tuple[li
             last_exc: Exception | None = None
             for fetch_attempt in range(2):
                 try:
+                    preferred_backend = getattr(adapter, "default_backend", None)
+                    fallback_chain = getattr(adapter, "fallback_backends", ())
+                    record = {
+                        "platform": platform,
+                        "resource_type": resource_type,
+                        **candidate_fields,
+                    }
+                    discovered = {
+                        "canonical_url": url,
+                        "fields": candidate_fields,
+                    }
+                    api_fetcher = None
+                    if preferred_backend == "api":
+                        api_fetcher = lambda canonical_url, *, _record=record, _discovered=discovered, _adapter=adapter, _storage_state_path=storage_state_path: _adapter.fetch_record(
+                            _record,
+                            {**_discovered, "canonical_url": canonical_url},
+                            "api",
+                            _storage_state_path,
+                        )
                     result = await fetch_engine.fetch(
                         url=url,
                         platform=platform,
                         resource_type=resource_type,
                         requires_auth=requires_auth,
+                        preferred_backend=preferred_backend,
+                        fallback_chain=fallback_chain,
+                        api_fetcher=api_fetcher,
                     )
                     return result.to_legacy_dict()
                 except Exception as exc:
@@ -424,6 +436,8 @@ async def _run_new_pipeline_async(config: CrawlerConfig) -> tuple[list[dict], li
             normalized["markdown"] = extracted_doc.full_markdown
             normalized["structured"] = extracted_doc.structured.platform_fields
             normalized["document_blocks"] = legacy_extracted.get("document_blocks", [])
+            if legacy_extracted.get("extractor") not in (None, ""):
+                normalized["extractor"] = legacy_extracted["extractor"]
             normalized["chunks"] = [chunk.to_dict() for chunk in extracted_doc.chunks]
             normalized["extraction_quality"] = {
                 "content_ratio": extracted_doc.quality.content_ratio,
@@ -530,6 +544,82 @@ def _discovered_from_seed(seed) -> dict[str, Any]:
         "artifacts": dict(seed.metadata.get("artifacts", {})),
         "fields": dict(seed.identity),
     }
+
+
+def _build_discovery_candidates(
+    input_record: dict[str, Any],
+    adapter_resolver: Any,
+) -> list[Any]:
+    from crawler.discovery.contracts import DiscoveryCandidate, DiscoveryMode
+
+    platform = str(input_record.get("platform") or "generic")
+    resource_type = str(input_record.get("resource_type") or "page")
+    adapter = adapter_resolver(platform)
+    url = input_record.get("url") or input_record.get("canonical_url")
+
+    normalize_url = getattr(adapter, "normalize_url", None)
+    if url and callable(normalize_url):
+        normalized = adapter.normalize_url(str(url))
+        if normalized.entity_type != "unknown" and normalized.canonical_url:
+            return [
+                DiscoveryCandidate(
+                    platform=platform,
+                    resource_type=resource_type or normalized.entity_type,
+                    canonical_url=normalized.canonical_url,
+                    seed_url=normalized.canonical_url,
+                    fields=dict(normalized.identity),
+                    discovery_mode=DiscoveryMode.CANONICALIZED_INPUT,
+                    score=1.0,
+                    score_breakdown={"direct_input": 1.0},
+                    hop_depth=0,
+                    parent_url=None,
+                    metadata={},
+                )
+            ]
+
+    try:
+        seed_records = adapter.build_seed_records(input_record)
+    except Exception:
+        seed_records = []
+    if seed_records:
+        return [_candidate_from_discovery_record(seed) for seed in seed_records]
+
+    if not url:
+        return []
+    canonical_url = str(url)
+    return [
+        DiscoveryCandidate(
+            platform=platform,
+            resource_type=resource_type,
+            canonical_url=canonical_url,
+            seed_url=canonical_url,
+            fields={},
+            discovery_mode=DiscoveryMode.DIRECT_INPUT,
+            score=1.0,
+            score_breakdown={"direct_input": 1.0},
+            hop_depth=0,
+            parent_url=None,
+            metadata={},
+        )
+    ]
+
+
+def _candidate_from_discovery_record(seed: DiscoveryRecord) -> DiscoveryCandidate:
+    from crawler.discovery.contracts import DiscoveryCandidate
+
+    return DiscoveryCandidate(
+        platform=seed.platform,
+        resource_type=seed.resource_type,
+        canonical_url=seed.canonical_url,
+        seed_url=seed.canonical_url,
+        fields=dict(seed.identity),
+        discovery_mode=seed.discovery_mode,
+        score=1.0,
+        score_breakdown={"direct_input": 1.0},
+        hop_depth=0,
+        parent_url=None,
+        metadata=dict(seed.metadata),
+    )
 
 
 def _build_enrich_input_from_record(record: dict[str, Any]) -> dict[str, Any]:

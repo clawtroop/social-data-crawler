@@ -10,6 +10,7 @@ import json
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
+from xml.etree import ElementTree as ET
 
 from bs4 import Tag
 from markdownify import markdownify as to_markdown
@@ -89,10 +90,19 @@ class ExtractPipeline:
         url = fetch_result.get("url", "")
         doc_id = _generate_doc_id(url, platform)
         json_data = fetch_result.get("json_data")
+        content_type = str(fetch_result.get("content_type") or "").lower()
 
         if json_data is not None:
             return self._extract_from_json(
                 json_data=json_data,
+                fetch_result=fetch_result,
+                platform=platform,
+                resource_type=resource_type,
+                url=url,
+                doc_id=doc_id,
+            )
+        if "xml" in content_type:
+            return self._extract_from_xml(
                 fetch_result=fetch_result,
                 platform=platform,
                 resource_type=resource_type,
@@ -162,6 +172,145 @@ class ExtractPipeline:
             content_ratio=content_size / max(raw_size, 1),
             noise_removed=0,
             chunking_strategy="json_structured",
+        )
+
+        return ExtractedDocument(
+            doc_id=doc_id,
+            source_url=url,
+            platform=platform,
+            resource_type=resource_type,
+            extracted_at=datetime.now(timezone.utc),
+            chunks=chunks,
+            total_chunks=len(chunks),
+            full_text=reduced_content.text,
+            full_markdown=reduced_content.markdown,
+            structured=structured,
+            quality=quality,
+            cleaned_html="",
+        )
+
+    def _extract_from_xml(
+        self,
+        *,
+        fetch_result: dict[str, Any],
+        platform: str,
+        resource_type: str,
+        url: str,
+        doc_id: str,
+    ) -> ExtractedDocument:
+        xml_text = (
+            fetch_result.get("text")
+            or fetch_result.get("html")
+            or (fetch_result.get("content_bytes", b"") or b"").decode("utf-8", "ignore")
+        )
+        if platform != "arxiv":
+            return self._extract_from_html(
+                fetch_result=fetch_result,
+                platform=platform,
+                resource_type=resource_type,
+                url=url,
+                doc_id=doc_id,
+            )
+
+        root = ET.fromstring(xml_text.encode("utf-8"))
+        ns = {
+            "atom": "http://www.w3.org/2005/Atom",
+            "arxiv": "http://arxiv.org/schemas/atom",
+        }
+        entry = root.find("atom:entry", ns)
+        if entry is None:
+            return self._extract_from_html(
+                fetch_result=fetch_result,
+                platform=platform,
+                resource_type=resource_type,
+                url=url,
+                doc_id=doc_id,
+            )
+
+        def text_or_none(path: str) -> str | None:
+            node = entry.find(path, ns)
+            if node is None or node.text is None:
+                return None
+            text = " ".join(node.text.split()).strip()
+            return text or None
+
+        title = text_or_none("atom:title")
+        summary = text_or_none("atom:summary")
+        authors = [
+            " ".join((node.text or "").split()).strip()
+            for node in entry.findall("atom:author/atom:name", ns)
+            if (node.text or "").strip()
+        ]
+        categories = [
+            term.strip()
+            for node in entry.findall("atom:category", ns)
+            for term in [node.attrib.get("term", "")]
+            if term.strip()
+        ]
+        primary_category = None
+        primary_category_node = entry.find("arxiv:primary_category", ns)
+        if primary_category_node is not None:
+            primary_category = (primary_category_node.attrib.get("term") or "").strip() or None
+        pdf_url = None
+        for link in entry.findall("atom:link", ns):
+            if (link.attrib.get("type") or "").strip() == "application/pdf":
+                pdf_url = (link.attrib.get("href") or "").strip() or None
+                break
+
+        full_text = summary or ""
+        full_markdown = f"# {title}\n\n{summary}".strip() if title or summary else ""
+        structured = StructuredFields(
+            platform=platform,
+            resource_type=resource_type,
+            title=title,
+            description=summary,
+            canonical_url=url,
+            platform_fields={
+                "authors": authors,
+                "categories": categories,
+                "primary_category": primary_category,
+                "published": text_or_none("atom:published"),
+                "updated": text_or_none("atom:updated"),
+                "entry_id": text_or_none("atom:id"),
+                "pdf_url": pdf_url,
+            },
+            field_sources={
+                "authors": "xml:author/name",
+                "categories": "xml:category@term",
+                "primary_category": "xml:primary_category@term",
+                "published": "xml:published",
+                "updated": "xml:updated",
+                "entry_id": "xml:id",
+                "pdf_url": "xml:link[type=application/pdf]@href",
+            },
+        )
+
+        sections: list[ContentSection] = []
+        if full_text or full_markdown or title:
+            sections.append(ContentSection(
+                heading_text=title,
+                heading_level=1,
+                section_path=[title or "Main"],
+                html="",
+                text=full_text,
+                markdown=full_markdown,
+                char_offset_start=0,
+                char_offset_end=len(full_text),
+            ))
+
+        main_content = MainContent(
+            html="",
+            text=full_text,
+            markdown=full_markdown,
+            sections=sections,
+            selector_used="xml_structured",
+        )
+        reduced_content = self.reducer.reduce(main_content)
+        chunks = self.chunker.chunk(reduced_content, doc_id=doc_id)
+        quality = ExtractionQuality(
+            content_ratio=len(reduced_content.text) / max(len(xml_text), 1),
+            noise_removed=0,
+            chunking_strategy="xml_structured",
         )
 
         return ExtractedDocument(

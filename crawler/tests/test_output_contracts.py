@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from crawler.normalize.canonical import build_canonical_record
+from crawler.output import read_json_file, read_jsonl_file
 from crawler.output.artifact_writer import write_artifact_bytes, write_artifact_json, write_artifact_text
 from crawler.output.jsonl_writer import write_jsonl
 from crawler.output.summary_writer import build_summary
@@ -51,3 +52,13 @@ def test_artifact_writers_persist_text_json_and_bytes(workspace_tmp_path: Path) 
     assert text_path.read_text(encoding="utf-8") == "<html>ok</html>"
     assert json.loads(json_path.read_text(encoding="utf-8")) == {"title": "Example"}
     assert bytes_path.read_bytes() == b"PNG"
+
+
+def test_output_package_exposes_json_read_helpers(workspace_tmp_path: Path) -> None:
+    json_path = workspace_tmp_path / "manifest.json"
+    jsonl_path = workspace_tmp_path / "records.jsonl"
+    json_path.write_text('{"status":"ok"}', encoding="utf-8")
+    jsonl_path.write_text('{"id":1}\n{"id":2}\n', encoding="utf-8")
+
+    assert read_json_file(json_path) == {"status": "ok"}
+    assert read_jsonl_file(jsonl_path) == [{"id": 1}, {"id": 2}]

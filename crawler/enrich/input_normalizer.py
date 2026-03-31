@@ -142,14 +142,21 @@ def _apply_platform_aliases(document: dict[str, Any]) -> None:
         _setdefault_from_candidates(document, "brand", "manufacturer")
         _setdefault_from_candidates(document, "availability", "stock_status")
         _setdefault_from_candidates(document, "fulfillment", "shipping_type")
+        _setdefault_from_candidates(document, "variants", "variant_options", "product_variants")
         return
 
     if platform == "amazon" and resource_type == "review":
         _setdefault_from_candidates(document, "review_text", "plain_text")
+        _setdefault_from_candidates(document, "reviewer_name", "author", "reviewer", "user_name")
+        _setdefault_from_candidates(document, "rating", "review_rating", "stars")
+        _setdefault_from_candidates(document, "verified_purchase", "is_verified_purchase", "verified")
+        _setdefault_from_candidates(document, "review_images", "photo_urls", "image_urls", "images")
         return
 
     if platform == "amazon" and resource_type == "seller":
         _setdefault_from_candidates(document, "seller_name", "title", "name")
+        _setdefault_from_candidates(document, "product_listings", "products", "listings", "items")
+        _setdefault_from_candidates(document, "seller_since", "since", "shop_since", "joined_date")
         return
 
     if platform == "base" and resource_type == "address":

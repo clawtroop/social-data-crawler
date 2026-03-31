@@ -1,6 +1,8 @@
 """Structured field extraction from API JSON responses and HTML metadata."""
 from __future__ import annotations
 
+import json
+import re
 from typing import Any
 from urllib.parse import urljoin
 
@@ -23,11 +25,13 @@ def _extract_og_meta(soup: BeautifulSoup, url: str) -> dict[str, Any]:
     """Extract OpenGraph and standard meta tags."""
     fields: dict[str, Any] = {}
     sources: dict[str, str] = {}
+    is_amazon = "amazon." in url.lower()
 
     # Title
     og_title = soup.find("meta", property="og:title")
-    if og_title and og_title.get("content"):
-        fields["title"] = og_title["content"]
+    og_title_content = og_title.get("content").strip() if og_title and og_title.get("content") else ""
+    if og_title_content and not (is_amazon and og_title_content.lower() == "amazon"):
+        fields["title"] = og_title_content
         sources["title"] = "html_meta:og:title"
     elif soup.title and soup.title.string:
         fields["title"] = soup.title.string.strip()
@@ -35,8 +39,9 @@ def _extract_og_meta(soup: BeautifulSoup, url: str) -> dict[str, Any]:
 
     # Description
     og_desc = soup.find("meta", property="og:description")
-    if og_desc and og_desc.get("content"):
-        fields["description"] = og_desc["content"]
+    og_desc_content = og_desc.get("content").strip() if og_desc and og_desc.get("content") else ""
+    if og_desc_content and not (is_amazon and og_desc_content.lower() == "amazon"):
+        fields["description"] = og_desc_content
         sources["description"] = "html_meta:og:description"
     else:
         meta_desc = soup.find("meta", attrs={"name": "description"})
@@ -205,6 +210,20 @@ class JsonExtractor:
         fields = meta["fields"]
         sources = meta["sources"]
 
+        if platform == "amazon":
+            if resource_type == "product":
+                amazon = self._extract_amazon_product_html(soup, url)
+                fields.update(amazon["fields"])
+                sources.update(amazon["sources"])
+            elif resource_type == "seller":
+                amazon = self._extract_amazon_seller_html(soup, url)
+                fields.update(amazon["fields"])
+                sources.update(amazon["sources"])
+        elif platform == "base":
+            base = self._extract_base_html(soup, url, resource_type)
+            fields.update(base["fields"])
+            sources.update(base["sources"])
+
         return StructuredFields(
             platform=platform,
             resource_type=resource_type,
@@ -214,6 +233,240 @@ class JsonExtractor:
             platform_fields=fields,
             field_sources=sources,
         )
+
+    def _extract_amazon_product_html(
+        self,
+        soup: BeautifulSoup,
+        canonical_url: str,
+    ) -> dict[str, dict[str, Any]]:
+        fields: dict[str, Any] = {}
+        sources: dict[str, str] = {}
+
+        def set_field(name: str, value: Any, source: str) -> None:
+            if value in (None, "", [], {}):
+                return
+            fields[name] = value
+            sources[name] = source
+
+        def set_if_missing(name: str, value: Any, source: str) -> None:
+            if name in fields:
+                return
+            set_field(name, value, source)
+
+        title_node = soup.select_one("#productTitle")
+        if title_node is not None:
+            set_field("title", title_node.get_text(" ", strip=True), "amazon_html:#productTitle")
+
+        byline_node = soup.select_one("#bylineInfo")
+        if byline_node is not None:
+            byline_text = byline_node.get_text(" ", strip=True)
+            brand = self._normalize_amazon_brand(byline_text)
+            set_field("brand", brand, "amazon_html:#bylineInfo")
+            if byline_node.get("href"):
+                set_field("brand_url", urljoin(canonical_url, str(byline_node["href"])), "amazon_html:#bylineInfo@href")
+
+        price_node = soup.select_one(
+            "#corePrice_feature_div .a-offscreen, "
+            "#corePrice_desktop .a-offscreen, "
+            "#apex_desktop .a-offscreen, "
+            ".a-price .a-offscreen"
+        )
+        if price_node is not None:
+            set_field("price", price_node.get_text(" ", strip=True), "amazon_html:price")
+
+        availability_node = soup.select_one(
+            "#availability .a-color-success, "
+            "#availability span, "
+            "#availability_feature_div span.a-color-success, "
+            "#availability_feature_div #availability span, "
+            "#outOfStock .a-color-price, "
+            "#outOfStock .a-text-bold"
+        )
+        if availability_node is not None:
+            availability_text = availability_node.get_text(" ", strip=True)
+            if availability_node.find_parent(id="outOfStock") is not None:
+                out_of_stock = availability_node.find_parent(id="outOfStock")
+                if out_of_stock is not None:
+                    availability_text = out_of_stock.get_text(" ", strip=True)
+            set_field("availability", availability_text, "amazon_html:availability")
+
+        rating_node = soup.select_one("#averageCustomerReviews_feature_div .a-icon-alt, #acrPopover .a-icon-alt")
+        if rating_node is not None:
+            set_field("rating", rating_node.get_text(" ", strip=True), "amazon_html:rating")
+
+        review_count_node = soup.select_one("#acrCustomerReviewText")
+        if review_count_node is not None:
+            set_field("reviews_count", review_count_node.get_text(" ", strip=True), "amazon_html:#acrCustomerReviewText")
+
+        no_reviews_text = soup.find(string=re.compile(r"no customer reviews yet", re.IGNORECASE))
+        if no_reviews_text is not None:
+            if "rating" not in fields:
+                set_field("rating", "No customer reviews yet", "amazon_html:no_reviews")
+            if "reviews_count" not in fields:
+                set_field("reviews_count", "0 reviews", "amazon_html:no_reviews")
+
+        category_nodes = soup.select("#wayfinding-breadcrumbs_feature_div a")
+        if category_nodes:
+            categories = [
+                node.get_text(" ", strip=True)
+                for node in category_nodes
+                if node.get_text(" ", strip=True)
+            ]
+            set_field("category", categories, "amazon_html:breadcrumbs")
+
+        bullet_nodes = soup.select("#feature-bullets .a-list-item")
+        if bullet_nodes:
+            bullets = []
+            for node in bullet_nodes:
+                text = node.get_text(" ", strip=True)
+                if text:
+                    bullets.append(text)
+            set_field("bullet_points", bullets, "amazon_html:#feature-bullets")
+
+        if "category" not in fields:
+            meta_title = soup.find("meta", attrs={"name": "title"})
+            title_text = meta_title.get("content", "").strip() if meta_title is not None else ""
+            if not title_text and soup.title and soup.title.string:
+                title_text = soup.title.string.strip()
+            category = self._extract_amazon_meta_category(title_text)
+            if category:
+                set_field("category", [category], "amazon_html:meta_title_category")
+
+        image_nodes = soup.select("#imgTagWrapperId img[src], #altImages img[src]")
+        if image_nodes:
+            images: list[str] = []
+            for node in image_nodes:
+                src = node.get("src")
+                if not src:
+                    continue
+                absolute = urljoin(canonical_url, str(src))
+                if absolute not in images:
+                    images.append(absolute)
+            set_field("images", images, "amazon_html:images")
+
+        description_node = soup.select_one("#productDescription, #productDescription_feature_div, #bookDescription_feature_div")
+        if description_node is not None:
+            set_field("description", description_node.get_text(" ", strip=True), "amazon_html:description")
+
+        fulfillment_node = soup.select_one(
+            "#mir-layout-DELIVERY_BLOCK-slot-PRIMARY_DELIVERY_MESSAGE_LARGE, "
+            "#deliveryBlockMessage, "
+            "#mir-layout-DELIVERY_BLOCK-slot-DELIVERY_MESSAGE, "
+            "#exports_desktop_qualifiedBuybox_deliveryPromiseMessaging_feature_div"
+        )
+        if fulfillment_node is not None:
+            set_field("fulfillment", fulfillment_node.get_text(" ", strip=True), "amazon_html:fulfillment")
+        elif "availability" in fields and re.search(r"unavailable|out of stock|back in stock", str(fields["availability"]), re.IGNORECASE):
+            set_field("fulfillment", fields["availability"], "amazon_html:availability_fallback")
+
+        variant_nodes = soup.select("#twister li[data-defaultasin], #twister li[data-asin]")
+        if variant_nodes:
+            variants: list[dict[str, Any]] = []
+            for node in variant_nodes:
+                asin = node.get("data-defaultasin") or node.get("data-asin")
+                label = node.get("title")
+                if not label:
+                    image = node.select_one("img[alt]")
+                    if image is not None:
+                        label = image.get("alt")
+                variant: dict[str, Any] = {}
+                if asin:
+                    variant["asin"] = str(asin)
+                if label:
+                    variant["label"] = str(label).strip()
+                if variant:
+                    variants.append(variant)
+            set_field("variants", variants, "amazon_html:variants")
+
+        seller_node = soup.select_one("#merchant-info")
+        if seller_node is not None:
+            set_field("seller", seller_node.get_text(" ", strip=True), "amazon_html:#merchant-info")
+
+        return {"fields": fields, "sources": sources}
+
+    def _extract_amazon_seller_html(
+        self,
+        soup: BeautifulSoup,
+        canonical_url: str,
+    ) -> dict[str, dict[str, Any]]:
+        fields: dict[str, Any] = {}
+        sources: dict[str, str] = {}
+
+        def set_field(name: str, value: Any, source: str) -> None:
+            if value in (None, "", [], {}):
+                return
+            fields[name] = value
+            sources[name] = source
+
+        seller_name_node = soup.select_one("#seller-name, #seller-profile-container h1, h1")
+        if seller_name_node is not None:
+            seller_name = seller_name_node.get_text(" ", strip=True)
+            set_field("title", seller_name, "amazon_html:seller_name")
+            set_field("seller_name", seller_name, "amazon_html:seller_name")
+
+        seller_rating_node = soup.select_one("#seller-rating, #seller-info-feedback-summary, .seller-rating")
+        if seller_rating_node is not None:
+            set_field("seller_rating", seller_rating_node.get_text(" ", strip=True), "amazon_html:seller_rating")
+
+        feedback_count_node = soup.select_one("#feedback-count, #seller-feedback-count, .feedback-count")
+        if feedback_count_node is not None:
+            set_field("feedback_count", feedback_count_node.get_text(" ", strip=True), "amazon_html:feedback_count")
+
+        seller_since_node = soup.select_one("#seller-since, .seller-since")
+        if seller_since_node is not None:
+            set_field("seller_since", seller_since_node.get_text(" ", strip=True), "amazon_html:seller_since")
+
+        product_cards = soup.select("#seller-listings .seller-product, .seller-product")
+        if product_cards:
+            product_listings: list[dict[str, Any]] = []
+            for card in product_cards:
+                product: dict[str, Any] = {}
+                asin = card.get("data-asin")
+                if asin:
+                    product["asin"] = str(asin)
+                link_node = card.select_one("a.seller-product-link[href], a[href*='/dp/']")
+                if link_node is not None:
+                    title = link_node.get_text(" ", strip=True)
+                    href = link_node.get("href")
+                    if title:
+                        product["title"] = title
+                    if href:
+                        product["url"] = urljoin(canonical_url, str(href))
+                price_node = card.select_one(".a-price .a-offscreen, .seller-product-price")
+                if price_node is not None:
+                    product["price"] = price_node.get_text(" ", strip=True)
+                rating_node = card.select_one(".a-icon-alt, .seller-product-rating")
+                if rating_node is not None:
+                    product["rating"] = rating_node.get_text(" ", strip=True)
+                if product:
+                    product_listings.append(product)
+            set_field("product_listings", product_listings, "amazon_html:product_listings")
+
+        return {"fields": fields, "sources": sources}
+
+    def _normalize_amazon_brand(self, byline_text: str) -> str:
+        text = byline_text.strip()
+        if not text:
+            return text
+
+        visit_match = re.match(r"visit the\s+(.+?)\s+store$", text, flags=re.IGNORECASE)
+        if visit_match:
+            return visit_match.group(1).strip()
+
+        brand_match = re.match(r"brand:\s*(.+)$", text, flags=re.IGNORECASE)
+        if brand_match:
+            return brand_match.group(1).strip()
+
+        return text
+
+    def _extract_amazon_meta_category(self, title_text: str) -> str | None:
+        text = title_text.strip()
+        if not text:
+            return None
+        match = re.search(r":\s*([^:]+?)\s*:\s*([^:]+?)\s*$", text)
+        if match:
+            return match.group(2).strip()
+        return None
 
     def _extract_linkedin_fields(
         self,
@@ -268,6 +521,82 @@ class JsonExtractor:
                     break
 
         return title, description, fields, sources
+
+    def _extract_base_html(
+        self,
+        soup: BeautifulSoup,
+        canonical_url: str,
+        resource_type: str,
+    ) -> dict[str, dict[str, Any]]:
+        fields: dict[str, Any] = {}
+        sources: dict[str, str] = {}
+
+        def set_field(name: str, value: Any, source: str) -> None:
+            if value in (None, "", [], {}):
+                return
+            fields[name] = value
+            sources[name] = source
+
+        def set_if_missing(name: str, value: Any, source: str) -> None:
+            if name in fields:
+                return
+            set_field(name, value, source)
+
+        title_node = soup.select_one("main h1, #ContentPlaceHolder1_maincontentinner h1")
+        if title_node is not None:
+            set_field("title", title_node.get_text(" ", strip=True), "base_html:h1")
+
+        for script in soup.select('script[type="application/ld+json"]'):
+            raw_json = script.string or script.get_text()
+            if not raw_json.strip():
+                continue
+            try:
+                data = json.loads(raw_json)
+            except json.JSONDecodeError:
+                continue
+            if not isinstance(data, dict):
+                continue
+            if data.get("@type") == "Product":
+                set_field("title", data.get("name"), "base_html:ldjson")
+                set_field("description", data.get("description"), "base_html:ldjson")
+                offers = data.get("offers")
+                if isinstance(offers, dict):
+                    set_field("price_usd", offers.get("price"), "base_html:ldjson:offers.price")
+                    set_field("price_currency", offers.get("priceCurrency"), "base_html:ldjson:offers.priceCurrency")
+
+        description_text = fields.get("description")
+        meta_desc = soup.find("meta", attrs={"name": "description"})
+        if meta_desc is not None and meta_desc.get("content"):
+            meta_description = meta_desc.get("content", "").strip()
+            if not description_text and meta_description:
+                set_field("description", meta_description, "base_html:meta_description")
+
+            token_rep = re.search(r"Token Rep:\s*([^|]+)", meta_description, flags=re.IGNORECASE)
+            price = re.search(r"Price:\s*([^|]+)", meta_description, flags=re.IGNORECASE)
+            market_cap = re.search(r"Onchain Market Cap:\s*([^|]+)", meta_description, flags=re.IGNORECASE)
+            holders = re.search(r"Holders:\s*([^|]+)", meta_description, flags=re.IGNORECASE)
+            contract_status = re.search(r"Contract:\s*([^|]+)", meta_description, flags=re.IGNORECASE)
+            transactions = re.search(r"Transactions:\s*([^|]+)", meta_description, flags=re.IGNORECASE)
+
+            if token_rep:
+                set_if_missing("token_reputation", token_rep.group(1).strip(), "base_html:meta_description")
+            if price:
+                set_if_missing("price_usd", price.group(1).strip(), "base_html:meta_description")
+            if market_cap:
+                set_if_missing("market_cap", market_cap.group(1).strip(), "base_html:meta_description")
+            if holders:
+                set_if_missing("holders", holders.group(1).strip(), "base_html:meta_description")
+            if contract_status:
+                set_if_missing("contract_status", contract_status.group(1).strip(), "base_html:meta_description")
+            if transactions:
+                set_if_missing("transactions", transactions.group(1).strip(), "base_html:meta_description")
+
+        if resource_type == "contract":
+            source_code_node = soup.select_one("#verifiedbytecode2, #editor, pre")
+            if source_code_node is not None:
+                set_field("source_code", source_code_node.get_text("\n", strip=True), "base_html:source_code")
+
+        return {"fields": fields, "sources": sources}
 
     def _extract_via_platform_adapter(
         self,

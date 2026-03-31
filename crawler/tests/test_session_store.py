@@ -81,6 +81,35 @@ def test_session_store_imports_wrapped_storage_state_export(workspace_tmp_path: 
     }
 
 
+def test_session_store_preserves_wrapped_storage_state_for_non_linkedin_platform(workspace_tmp_path: Path) -> None:
+    cookies_path = workspace_tmp_path / "base-session.json"
+    cookies_path.write_text(
+        """
+        {
+          "platform": "base",
+          "source": "auto-browser",
+          "storage_state": {
+            "cookies": [
+              {"name": "wallet", "value": "secret", "domain": ".base.org", "path": "/"}
+            ],
+            "origins": []
+          }
+        }
+        """.strip(),
+        encoding="utf-8",
+    )
+    store = SessionStore(workspace_tmp_path / "sessions")
+
+    saved_path = store.import_cookies("base", cookies_path)
+    restored = store.load("base")
+
+    assert saved_path.exists()
+    assert restored == {
+        "cookies": [{"name": "wallet", "value": "secret", "domain": ".base.org", "path": "/"}],
+        "origins": [],
+    }
+
+
 def test_session_store_imports_cookie_header_string(workspace_tmp_path: Path) -> None:
     cookies_path = workspace_tmp_path / "headers.json"
     cookies_path.write_text(

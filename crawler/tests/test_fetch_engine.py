@@ -258,6 +258,26 @@ class TestFetchEngineHttp:
         assert err.error_code == "AUTH_EXPIRED"
         assert err.agent_hint == "refresh_session"
 
+    def test_classify_content_detects_amazon_product_shell_page(self):
+        shell_page = """
+        <html>
+          <head>
+            <title>Amazon</title>
+            <meta property="og:title" content="Amazon">
+            <meta property="og:description" content="Amazon">
+          </head>
+          <body>
+            <div id="page-shell">
+              <img src="https://m.media-amazon.com/images/G/01/share-icons/previewdoh/amazon.png" />
+            </div>
+          </body>
+        </html>
+        """
+        err = classify_content(shell_page * 5, "https://www.amazon.com/dp/B09V3KXJPB")
+        assert err is not None
+        assert err.error_code == "CONTENT_PARTIAL"
+        assert err.agent_hint == "retry_with_browser"
+
     def test_fetch_http_success(self):
         """Test HTTP fetch via the engine with a mocked httpx response."""
         from crawler.fetch.engine import FetchEngine

@@ -587,6 +587,54 @@ def test_pipeline_json_extraction_base_has_meaningful_output() -> None:
     assert doc.structured.platform_fields["rpc_result"] == "0x360fe4a3fc66beffcabd"
 
 
+def test_pipeline_xml_extraction_arxiv_skips_crawl4ai_and_parses_atom(monkeypatch) -> None:
+    fetch_result = {
+        "url": "https://arxiv.org/abs/2303.08774",
+        "text": """<?xml version='1.0' encoding='UTF-8'?>
+<feed xmlns:arxiv="http://arxiv.org/schemas/atom" xmlns="http://www.w3.org/2005/Atom">
+  <entry>
+    <id>http://arxiv.org/abs/2303.08774v6</id>
+    <title>GPT-4 Technical Report</title>
+    <updated>2024-03-04T06:01:33Z</updated>
+    <published>2023-03-15T17:15:04Z</published>
+    <summary>We report the development of GPT-4, a large-scale, multimodal model.</summary>
+    <category term="cs.CL" scheme="http://arxiv.org/schemas/atom"/>
+    <category term="cs.AI" scheme="http://arxiv.org/schemas/atom"/>
+    <arxiv:primary_category term="cs.CL"/>
+    <author><name>OpenAI</name></author>
+    <author><name>Josh Achiam</name></author>
+    <link href="https://arxiv.org/abs/2303.08774v6" rel="alternate" type="text/html"/>
+    <link href="https://arxiv.org/pdf/2303.08774v6" rel="related" type="application/pdf" title="pdf"/>
+  </entry>
+</feed>
+""",
+        "content_type": "application/atom+xml; charset=utf-8",
+    }
+
+    def fail_if_called(*args, **kwargs):
+        raise AssertionError("crawl4ai should not be called for arxiv atom xml")
+
+    monkeypatch.setattr(
+        "crawler.extract.pipeline.extract_html_with_crawl4ai",
+        fail_if_called,
+    )
+
+    pipeline = ExtractPipeline()
+    doc = pipeline.extract(fetch_result, "arxiv", "paper")
+
+    assert doc.structured.title == "GPT-4 Technical Report"
+    assert doc.structured.description == "We report the development of GPT-4, a large-scale, multimodal model."
+    assert "GPT-4 Technical Report" in doc.full_markdown
+    assert "We report the development of GPT-4" in doc.full_text
+    assert doc.structured.platform_fields["authors"] == ["OpenAI", "Josh Achiam"]
+    assert doc.structured.platform_fields["categories"] == ["cs.CL", "cs.AI"]
+    assert doc.structured.platform_fields["primary_category"] == "cs.CL"
+    assert doc.structured.platform_fields["published"] == "2023-03-15T17:15:04Z"
+    assert doc.structured.platform_fields["updated"] == "2024-03-04T06:01:33Z"
+    assert doc.structured.platform_fields["pdf_url"] == "https://arxiv.org/pdf/2303.08774v6"
+    assert doc.quality.chunking_strategy == "xml_structured"
+
+
 def test_pipeline_json_extraction_linkedin_company_uses_voyager_shape() -> None:
     fetch_result = {
         "url": "https://www.linkedin.com/company/openai/",
@@ -709,6 +757,308 @@ def test_pipeline_html_extraction_applies_css_schema_when_configured(workspace_t
     assert doc.structured.platform_fields["price"] == "$19"
     assert doc.structured.platform_fields["features"] == ["Fast setup", "Clear output"]
     assert doc.structured.platform_fields["checkout_url"] == "https://example.com/checkout"
+
+
+def test_pipeline_html_extraction_extracts_amazon_product_fields() -> None:
+    fetch_result = {
+        "url": "https://www.amazon.com/dp/B000TEST",
+        "text": """
+        <html>
+          <head>
+            <title>Amazon.com: Example listing</title>
+          </head>
+          <body>
+            <div id="dp">
+              <span id="productTitle">Keychron K3 Wireless Keyboard</span>
+              <a id="bylineInfo" href="/stores/Keychron/page/abc">Visit the Keychron Store</a>
+              <div id="corePrice_feature_div">
+                <span class="a-price">
+                  <span class="a-offscreen">$99.99</span>
+                </span>
+              </div>
+              <div id="availability_feature_div">
+                <span class="a-color-success">In Stock</span>
+              </div>
+              <div id="averageCustomerReviews_feature_div">
+                <span class="a-icon-alt">4.5 out of 5 stars</span>
+                <span id="acrCustomerReviewText">1,234 ratings</span>
+              </div>
+              <div id="wayfinding-breadcrumbs_feature_div">
+                <ul>
+                  <li><span class="a-list-item"><a>Electronics</a></span></li>
+                  <li><span class="a-list-item"><a>Keyboards</a></span></li>
+                </ul>
+              </div>
+              <div id="feature-bullets">
+                <ul>
+                  <li><span class="a-list-item">Wireless</span></li>
+                  <li><span class="a-list-item">Low-profile switches</span></li>
+                </ul>
+              </div>
+              <div id="imgTagWrapperId">
+                <img src="https://example.com/main.jpg" />
+              </div>
+              <div id="altImages">
+                <img src="https://example.com/alt-1.jpg" />
+                <img src="https://example.com/alt-2.jpg" />
+              </div>
+              <div id="merchant-info">Ships from Amazon.com Sold by Keychron</div>
+            </div>
+          </body>
+        </html>
+        """,
+        "content_type": "text/html",
+    }
+
+    pipeline = ExtractPipeline()
+    doc = pipeline.extract(fetch_result, "amazon", "product")
+
+    assert doc.structured.title == "Keychron K3 Wireless Keyboard"
+    assert doc.structured.platform_fields["brand"] == "Keychron"
+    assert doc.structured.platform_fields["price"] == "$99.99"
+    assert doc.structured.platform_fields["availability"] == "In Stock"
+    assert doc.structured.platform_fields["rating"] == "4.5 out of 5 stars"
+    assert doc.structured.platform_fields["reviews_count"] == "1,234 ratings"
+    assert doc.structured.platform_fields["category"] == ["Electronics", "Keyboards"]
+    assert doc.structured.platform_fields["bullet_points"] == ["Wireless", "Low-profile switches"]
+    assert doc.structured.platform_fields["images"] == [
+        "https://example.com/main.jpg",
+        "https://example.com/alt-1.jpg",
+        "https://example.com/alt-2.jpg",
+    ]
+    assert doc.structured.platform_fields["seller"] == "Ships from Amazon.com Sold by Keychron"
+
+
+def test_pipeline_html_extraction_extracts_amazon_product_extended_fields() -> None:
+    fetch_result = {
+        "url": "https://www.amazon.com/dp/B000TEST",
+        "text": """
+        <html>
+          <body>
+            <div id="productDescription">
+              Compact 75% mechanical keyboard with Bluetooth and low-profile switches.
+            </div>
+            <div id="mir-layout-DELIVERY_BLOCK-slot-PRIMARY_DELIVERY_MESSAGE_LARGE">
+              FREE delivery Tomorrow by Amazon
+            </div>
+            <div id="twister">
+              <li data-defaultasin="B000TEST-BLACK"><img alt="Black" /></li>
+              <li data-defaultasin="B000TEST-WHITE"><img alt="White" /></li>
+            </div>
+          </body>
+        </html>
+        """,
+        "content_type": "text/html",
+    }
+
+    pipeline = ExtractPipeline()
+    doc = pipeline.extract(fetch_result, "amazon", "product")
+
+    assert doc.structured.description == "Compact 75% mechanical keyboard with Bluetooth and low-profile switches."
+    assert doc.structured.platform_fields["fulfillment"] == "FREE delivery Tomorrow by Amazon"
+    assert doc.structured.platform_fields["variants"] == [
+        {"asin": "B000TEST-BLACK", "label": "Black"},
+        {"asin": "B000TEST-WHITE", "label": "White"},
+    ]
+
+
+def test_pipeline_html_extraction_prefers_non_generic_amazon_description_and_out_of_stock_state() -> None:
+    fetch_result = {
+        "url": "https://www.amazon.com/dp/B09V3KXJPB",
+        "text": """
+        <html>
+          <head>
+            <meta property="og:title" content="Amazon" />
+            <meta property="og:description" content="Amazon" />
+            <meta name="description" content="Buy Apple iPad Air: Cases - Amazon.com FREE DELIVERY possible on eligible purchases" />
+            <meta name="title" content="Amazon.com: Apple iPad Air : Electronics" />
+          </head>
+          <body>
+            <div id="buybox">
+              <div id="outOfStock" class="a-box">
+                <div class="a-box-inner">
+                  <div class="a-section a-spacing-small a-text-center">
+                    <span class="a-size-medium a-color-price a-text-bold">Currently unavailable.</span>
+                    <br/>We don't know when or if this item will be back in stock.
+                  </div>
+                </div>
+              </div>
+            </div>
+          </body>
+        </html>
+        """,
+        "content_type": "text/html",
+    }
+
+    pipeline = ExtractPipeline()
+    doc = pipeline.extract(fetch_result, "amazon", "product")
+
+    assert doc.structured.description == "Buy Apple iPad Air: Cases - Amazon.com FREE DELIVERY possible on eligible purchases"
+    assert doc.structured.platform_fields["availability"] == "Currently unavailable. We don't know when or if this item will be back in stock."
+    assert doc.structured.platform_fields["category"] == ["Electronics"]
+
+
+def test_pipeline_html_extraction_adds_amazon_product_fallbacks_for_unavailable_and_no_reviews() -> None:
+    fetch_result = {
+        "url": "https://www.amazon.com/dp/B09V3KXJPB",
+        "text": """
+        <html>
+          <body>
+            <div id="buybox">
+              <div id="outOfStock" class="a-box">
+                <div class="a-box-inner">
+                  <div class="a-section a-spacing-small a-text-center">
+                    <span class="a-size-medium a-color-price a-text-bold">Currently unavailable.</span>
+                    <br/>We don't know when or if this item will be back in stock.
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="ucc-v2-widget__table__col__container__reviews">
+              <span class="a-size-base">No customer reviews yet</span>
+            </div>
+          </body>
+        </html>
+        """,
+        "content_type": "text/html",
+    }
+
+    pipeline = ExtractPipeline()
+    doc = pipeline.extract(fetch_result, "amazon", "product")
+
+    assert doc.structured.platform_fields["fulfillment"] == "Currently unavailable. We don't know when or if this item will be back in stock."
+    assert doc.structured.platform_fields["reviews_count"] == "0 reviews"
+    assert doc.structured.platform_fields["rating"] == "No customer reviews yet"
+
+
+def test_pipeline_html_extraction_extracts_amazon_seller_fields() -> None:
+    fetch_result = {
+        "url": "https://www.amazon.com/sp?seller=ABC123",
+        "text": """
+        <html>
+          <body>
+            <div id="seller-profile-container">
+              <h1 id="seller-name">Keychron Official</h1>
+              <div id="seller-rating">4.9 out of 5 stars</div>
+              <div id="feedback-count">8,421 ratings</div>
+              <div id="seller-since">On Amazon since 2019</div>
+            </div>
+            <div id="seller-listings">
+              <div class="seller-product" data-asin="B000TEST1">
+                <a class="seller-product-link" href="/dp/B000TEST1">Keychron K3</a>
+                <span class="a-price"><span class="a-offscreen">$99.99</span></span>
+                <span class="a-icon-alt">4.8 out of 5 stars</span>
+              </div>
+              <div class="seller-product" data-asin="B000TEST2">
+                <a class="seller-product-link" href="/dp/B000TEST2">Keychron K2</a>
+                <span class="a-price"><span class="a-offscreen">$89.99</span></span>
+              </div>
+            </div>
+          </body>
+        </html>
+        """,
+        "content_type": "text/html",
+    }
+
+    pipeline = ExtractPipeline()
+    doc = pipeline.extract(fetch_result, "amazon", "seller")
+
+    assert doc.structured.title == "Keychron Official"
+    assert doc.structured.platform_fields["seller_name"] == "Keychron Official"
+    assert doc.structured.platform_fields["seller_rating"] == "4.9 out of 5 stars"
+    assert doc.structured.platform_fields["feedback_count"] == "8,421 ratings"
+    assert doc.structured.platform_fields["seller_since"] == "On Amazon since 2019"
+    assert doc.structured.platform_fields["product_listings"] == [
+        {
+            "asin": "B000TEST1",
+            "title": "Keychron K3",
+            "url": "https://www.amazon.com/dp/B000TEST1",
+            "price": "$99.99",
+            "rating": "4.8 out of 5 stars",
+        },
+        {
+            "asin": "B000TEST2",
+            "title": "Keychron K2",
+            "url": "https://www.amazon.com/dp/B000TEST2",
+            "price": "$89.99",
+        },
+    ]
+
+
+def test_pipeline_html_extraction_extracts_base_token_fields() -> None:
+    fetch_result = {
+        "url": "https://basescan.org/token/0x4200000000000000000000000000000000000006",
+        "text": """
+        <html>
+          <head>
+            <title>Wrapped Ether (WETH) | ERC-20 | Address: 0x42000000...000000006 | BaseScan</title>
+            <meta name="description" content="Token Rep: Neutral | Price: $2,263.38 | Onchain Market Cap: $566,175,585.58 | Holders: 4,886,759 | As at Mar-31-2026 06:37:10 AM (UTC)">
+            <script type="application/ld+json">
+              {
+                "@context": "http://schema.org",
+                "@type": "Product",
+                "description": "wETH is wrapped ETH",
+                "name": "Wrapped Ether (WETH)",
+                "url": "https://basescan.org/token/0x4200000000000000000000000000000000000006",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "2263.38",
+                  "priceCurrency": "USD"
+                }
+              }
+            </script>
+          </head>
+          <body>
+            <main id="ContentPlaceHolder1_maincontentinner">
+              <h1>Wrapped Ether (WETH)</h1>
+            </main>
+          </body>
+        </html>
+        """,
+        "content_type": "text/html",
+    }
+
+    pipeline = ExtractPipeline()
+    doc = pipeline.extract(fetch_result, "base", "token")
+
+    assert doc.structured.title == "Wrapped Ether (WETH)"
+    assert doc.structured.description == "wETH is wrapped ETH"
+    assert doc.structured.platform_fields["price_usd"] == "2263.38"
+    assert doc.structured.platform_fields["price_currency"] == "USD"
+    assert doc.structured.platform_fields["holders"] == "4,886,759"
+    assert doc.structured.platform_fields["market_cap"] == "$566,175,585.58"
+    assert doc.structured.platform_fields["token_reputation"] == "Neutral"
+
+
+def test_pipeline_html_extraction_extracts_base_contract_fields() -> None:
+    fetch_result = {
+        "url": "https://basescan.org/address/0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913#code",
+        "text": """
+        <html>
+          <head>
+            <title>Circle: USDC Token | Address: 0x833589fC...4bdA02913 | BaseScan</title>
+            <meta name="description" content="Contract: Verified | Token Rep: OK | Price: $0.9996 | Transactions: 120,625,756 | As at Mar-31-2026 06:37:26 AM (UTC)">
+          </head>
+          <body>
+            <main id="ContentPlaceHolder1_maincontentinner">
+              <h1>Circle: USDC Token</h1>
+              <pre id="verifiedbytecode2">contract FiatTokenProxy {}</pre>
+            </main>
+          </body>
+        </html>
+        """,
+        "content_type": "text/html",
+    }
+
+    pipeline = ExtractPipeline()
+    doc = pipeline.extract(fetch_result, "base", "contract")
+
+    assert doc.structured.title == "Circle: USDC Token"
+    assert doc.structured.platform_fields["contract_status"] == "Verified"
+    assert doc.structured.platform_fields["token_reputation"] == "OK"
+    assert doc.structured.platform_fields["price_usd"] == "$0.9996"
+    assert doc.structured.platform_fields["transactions"] == "120,625,756"
+    assert doc.structured.platform_fields["source_code"] == "contract FiatTokenProxy {}"
 
 
 def test_pipeline_html_extraction_applies_llm_schema_when_configured(monkeypatch, workspace_tmp_path: Path) -> None:

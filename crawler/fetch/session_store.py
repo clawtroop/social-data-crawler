@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from crawler.io import read_json_file
+from crawler.output import read_json_file
 
 
 def _cookie_header_to_storage_state(platform: str, cookie_header: str) -> dict[str, Any]:

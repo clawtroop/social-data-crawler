@@ -8,7 +8,7 @@ from typing import Sequence
 
 from .core.pipeline import run_command
 from .contracts import CrawlerConfig, CrawlCommand
-from .io import read_json_file, read_jsonl_file
+from .output import read_json_file, read_jsonl_file
 from .output.jsonl_writer import write_jsonl
 from .output.summary_writer import build_summary, write_manifest, write_summary
 

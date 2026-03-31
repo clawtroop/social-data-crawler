@@ -285,3 +285,39 @@ def test_fill_enrichment_handles_bom_prefixed_json_files(workspace_tmp_path: Pat
     assert exit_code == 0
     updated = records_path.read_text(encoding="utf-8")
     assert '"status": "success"' in updated
+
+
+def test_fill_enrichment_accepts_nested_enrichment_doc_id(workspace_tmp_path: Path) -> None:
+    records_path = workspace_tmp_path / "records.jsonl"
+    responses_path = workspace_tmp_path / "responses.json"
+    records_path.write_text(
+        json.dumps(
+            {
+                "canonical_url": "https://example.com/company/acme",
+                "enrichment": {
+                    "doc_id": "nested-doc-1",
+                    "enrichment_results": {
+                        "summaries": {
+                            "field_group": "summaries",
+                            "status": "pending_agent",
+                            "fields": [],
+                        }
+                    },
+                    "enriched_fields": {},
+                },
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    responses_path.write_text(
+        json.dumps({"nested-doc-1:summaries": '{"summary":"Acme summary"}'}, ensure_ascii=False),
+        encoding="utf-8",
+    )
+
+    exit_code = main(["fill-enrichment", "--records", str(records_path), "--responses", str(responses_path)])
+
+    assert exit_code == 0
+    updated = records_path.read_text(encoding="utf-8")
+    assert '"status": "success"' in updated
+    assert '"summary": "Acme summary"' in updated

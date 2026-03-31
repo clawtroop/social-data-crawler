@@ -60,7 +60,37 @@ def classify_content(html: str | None, final_url: str) -> FetchError | None:
         return FetchError("CAPTCHA", "notify_user",
                           "Captcha or robot check detected", False)
 
+    if _looks_like_amazon_product_shell(lower, final_url):
+        return FetchError("CONTENT_PARTIAL", "retry_with_browser",
+                          "Amazon product page returned a shell page without product details", True)
+
     return None
+
+
+def _looks_like_amazon_product_shell(lower_html: str, final_url: str) -> bool:
+    lower_url = final_url.lower()
+    if "amazon." not in lower_url:
+        return False
+    if "/dp/" not in lower_url and "/gp/product/" not in lower_url:
+        return False
+
+    has_generic_amazon_title = (
+        '<meta property="og:title" content="amazon"' in lower_html
+        or "<title>amazon</title>" in lower_html
+        or '<meta property="og:description" content="amazon"' in lower_html
+    )
+    has_product_markers = any(
+        marker in lower_html
+        for marker in (
+            'id="producttitle"',
+            'id="feature-bullets"',
+            'id="acrcustomerreviewtext"',
+            'id="bylineinfo"',
+            'id="coreprice',
+        )
+    )
+    has_shell_marker = "previewdoh/amazon.png" in lower_html or 'id="page-shell"' in lower_html
+    return has_generic_amazon_title and has_shell_marker and not has_product_markers
 
 
 def classify(

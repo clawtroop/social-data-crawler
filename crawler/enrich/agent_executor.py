@@ -142,7 +142,7 @@ class AgentEnrichmentExecutor:
 
         # Step 2: 收集需要 LLM 的字段组
         pending_groups = [
-            fg for fg in result.field_groups
+            fg for fg in result.enrichment_results.values()
             if fg.status == "pending_agent"
         ]
 
@@ -208,16 +208,11 @@ class AgentEnrichmentExecutor:
         filled: FieldGroupResult
     ) -> None:
         """更新 EnrichedRecord 中的字段组结果"""
-        for i, fg in enumerate(record.field_groups):
-            if fg.field_group == field_group:
-                record.field_groups[i] = filled
-                break
-
-        # 合并字段到 structured
+        record.enrichment_results[field_group] = filled
         if filled.fields:
             for field in filled.fields:
                 if field.value is not None:
-                    record.structured.fields[field.field_name] = field.value
+                    record.enriched_fields[field.field_name] = field.value
 
     async def auto_enrich(
         self,
