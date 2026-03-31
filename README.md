@@ -2,6 +2,8 @@
 
 Agent-first local crawler for `Wikipedia`, `arXiv`, `Amazon`, `Base`, `LinkedIn`, and `generic/page`.
 
+This repo is now the single-repo install entry for the crawler skill plus the bundled OpenClaw plugin source and packaged runtime.
+
 The runtime is built for stable structured output, not raw page dumping:
 
 `discover -> fetch -> extract -> enrich -> write`
@@ -43,6 +45,25 @@ Windows CMD:
 ```bat
 scripts\bootstrap.cmd
 ```
+
+Single-repo OpenClaw install:
+
+```bash
+./scripts/install_openclaw_integration.sh --platform-base-url http://127.0.0.1:3000 --miner-id miner-001
+```
+
+Windows PowerShell:
+
+```powershell
+./scripts/install_openclaw_integration.ps1 --platform-base-url http://127.0.0.1:3000 --miner-id miner-001
+```
+
+The installer will:
+
+- build `dist/openclaw-plugin` and release archives
+- register the local plugin in `~/.openclaw/openclaw.json` or `OPENCLAW_CONFIG_PATH`
+- install a workspace skill wrapper for this repo
+- try to install `awp-wallet`, unlock a token, and fall back to `awpWalletTokenRef` via env SecretRef when needed
 
 Host diagnostics:
 
@@ -211,5 +232,6 @@ Enrichment is extractive-first.
 
 ## Notes
 
-- This repo is the crawler engine and skill, not a monolithic plugin host.
+- `integrations/openclaw-plugin-src/` keeps the plugin source decoupled from crawler runtime code.
+- `dist/openclaw-plugin/` is the minimal packaged plugin runtime; tests and dev-only files stay out of the release bundle.
 - Keep runtime examples small and deterministic.

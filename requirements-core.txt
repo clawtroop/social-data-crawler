@@ -7,3 +7,6 @@ crawl4ai
 beautifulsoup4>=4.12.3
 lxml>=5.3.0
 markdownify>=0.13.1
+PyMuPDF>=1.26.0
+pymupdf4llm>=0.0.27
+pycryptodome>=3.20.0

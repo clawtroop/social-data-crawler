@@ -136,3 +136,49 @@ def test_docs_mention_generic_input_and_windows_bootstrap_cmd() -> None:
     assert '`generic/page`' in readme
     assert "bootstrap.cmd" in readme
     assert "host_diagnostics.py" in readme
+
+
+def test_single_repo_openclaw_install_assets_exist() -> None:
+    assert (ROOT / "integrations" / "openclaw-plugin-src").is_dir()
+    assert (ROOT / "scripts" / "build_openclaw_plugin.py").exists()
+    assert (ROOT / "scripts" / "install_openclaw_integration.ps1").exists()
+    assert (ROOT / "scripts" / "install_openclaw_integration.sh").exists()
+
+
+def test_openclaw_plugin_source_in_repo_keeps_runtime_boundary() -> None:
+    manifest = (ROOT / "integrations" / "openclaw-plugin-src" / "openclaw.plugin.json").read_text(encoding="utf-8")
+    package_json = (ROOT / "integrations" / "openclaw-plugin-src" / "package.json").read_text(encoding="utf-8")
+    run_tool = (ROOT / "integrations" / "openclaw-plugin-src" / "scripts" / "run_tool.py").read_text(encoding="utf-8")
+    assert '"id": "social-crawler-agent"' in manifest
+    assert '"name": "social-crawler-agent"' in package_json
+    assert '"run-worker"' in run_tool
+
+
+def test_openclaw_packaging_script_excludes_dev_only_files() -> None:
+    content = (ROOT / "scripts" / "build_openclaw_plugin.py").read_text(encoding="utf-8")
+    assert "integrations/openclaw-plugin-src" in content or "integrations\\openclaw-plugin-src" in content
+    assert "dist/openclaw-plugin" in content or "dist\\openclaw-plugin" in content
+    assert "tests" in content
+    assert "__pycache__" in content
+    assert ".pytest_cache" in content
+    assert ".gitignore" in content
+
+
+def test_openclaw_installers_cover_cross_platform_entrypoints_and_wallet_setup() -> None:
+    shell = (ROOT / "scripts" / "install_openclaw_integration.sh").read_text(encoding="utf-8")
+    powershell = (ROOT / "scripts" / "install_openclaw_integration.ps1").read_text(encoding="utf-8")
+    for content in (shell, powershell):
+        assert "build_openclaw_plugin.py" in content
+        assert "awp-wallet" in content
+        assert "OPENCLAW_CONFIG_PATH" in content or ".openclaw" in content
+        assert "SecretRef" in content or "awpWalletTokenRef" in content
+        assert "openclaw-plugin" in content
+
+
+def test_docs_describe_single_repo_openclaw_install_flow() -> None:
+    skill = (ROOT / "SKILL.md").read_text(encoding="utf-8")
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert "single-repo" in readme or "single repo" in readme
+    assert "install_openclaw_integration" in readme
+    assert "awp-wallet" in readme
+    assert "OpenClaw" in skill

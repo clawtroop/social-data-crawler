@@ -18,6 +18,17 @@ metadata:
 
 Agent-first crawler skill for deterministic collection, extraction, and enrichment.
 
+## OpenClaw Single-Repo Install
+
+This repo also ships the OpenClaw plugin source and packaged runtime.
+
+Primary install entrypoints:
+
+- `./scripts/install_openclaw_integration.sh`
+- `./scripts/install_openclaw_integration.ps1`
+
+The installer builds `dist/openclaw-plugin`, updates `~/.openclaw/openclaw.json` or `OPENCLAW_CONFIG_PATH`, installs a workspace skill wrapper, and prefers `awpWalletTokenRef` SecretRef wiring when a fresh `awp-wallet` token is not already available.
+
 这个 skill 面向 agent 内部执行。下面的 CLI 片段只说明调用契约，不要求用户手动跑整套命令。
 
 ## Use This Skill When

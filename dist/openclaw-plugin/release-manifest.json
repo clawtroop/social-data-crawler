@@ -1,0 +1,35 @@
+{
+  "source": "D:\\kaifa\\clawtroop\\social-data-crawler\\integrations\\openclaw-plugin-src",
+  "dist": "D:\\kaifa\\clawtroop\\social-data-crawler\\dist\\openclaw-plugin",
+  "files": [
+    "api.ts",
+    "index.ts",
+    "openclaw.config.example.jsonc",
+    "openclaw.plugin.json",
+    "package.json",
+    "README.md",
+    "scripts/agent_runtime.py",
+    "scripts/auth_orchestrator.py",
+    "scripts/common.py",
+    "scripts/crawl_mode_planner.py",
+    "scripts/openclaw_enrich.py",
+    "scripts/pow_solver.py",
+    "scripts/run_artifacts.py",
+    "scripts/run_models.py",
+    "scripts/run_tool.py",
+    "scripts/secret_refs.py",
+    "scripts/signer.py",
+    "scripts/task_sources.py",
+    "scripts/worker_state.py",
+    "src/tools.ts"
+  ],
+  "excluded_names": [
+    ".DS_Store",
+    ".git",
+    ".gitignore",
+    ".pytest_cache",
+    "__pycache__",
+    "node_modules",
+    "tests"
+  ]
+}

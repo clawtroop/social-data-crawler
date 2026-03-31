@@ -6,7 +6,11 @@ __pycache__/
 .Python
 *.egg-info/
 .eggs/
-dist/
+dist/*
+!dist/openclaw-plugin/
+!dist/openclaw-plugin/**
+!dist/*.zip
+!dist/*.tar.gz
 build/
 
 # Environment
@@ -31,6 +35,8 @@ desktop.ini
 # Test/runtime temp
 .pytest-tmp/
 .pytest_cache/
+dist/.tmp/
+dist/.cache/
 
 # IDE
 .idea/

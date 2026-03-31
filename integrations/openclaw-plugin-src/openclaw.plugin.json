@@ -1,0 +1,89 @@
+{
+  "id": "social-crawler-agent",
+  "name": "Social Crawler Agent",
+  "description": "OpenClaw tool plugin that drives the social-data-crawler skill and reports Mining task results.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "crawlerRoot": {
+        "type": "string",
+        "description": "Absolute path to the social-data-crawler project root."
+      },
+      "pythonBin": {
+        "type": "string",
+        "description": "Python executable used to run the plugin helper scripts."
+      },
+      "platformBaseUrl": {
+        "type": "string",
+        "description": "Platform Service base URL."
+      },
+      "platformToken": {
+        "type": "string",
+        "description": "Optional bearer token for Platform Service. Leave empty for auth-disabled deployments."
+      },
+      "minerId": {
+        "type": "string",
+        "description": "Miner identifier used for claim and heartbeat calls."
+      },
+      "outputRoot": {
+        "type": "string",
+        "description": "Directory where plugin-triggered crawler runs are stored."
+      },
+      "defaultBackend": {
+        "type": "string",
+        "description": "Optional backend override passed to social-data-crawler."
+      },
+      "awpWalletBin": {
+        "type": "string",
+        "description": "Path or command name for awp-wallet CLI. Production deployments should normally leave this as 'awp-wallet' and install the CLI on PATH."
+      },
+      "awpWalletToken": {
+        "type": "string",
+        "description": "awp-wallet session token (from 'awp-wallet unlock --duration 3600'). Required for EIP-712 signed requests."
+      },
+      "awpWalletTokenRef": {
+        "type": "object",
+        "description": "Optional OpenClaw SecretRef for resolving the awp-wallet session token from env/file/exec providers at runtime.",
+        "additionalProperties": false,
+        "properties": {
+          "source": {
+            "type": "string"
+          },
+          "provider": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        },
+        "required": ["source", "provider", "id"]
+      },
+      "workerStateRoot": {
+        "type": "string",
+        "description": "Directory for autonomous worker state such as backlog, auth pending, and submit pending."
+      },
+      "workerMaxParallel": {
+        "type": "number",
+        "description": "Maximum concurrent crawler work items handled by the autonomous worker."
+      },
+      "datasetRefreshSeconds": {
+        "type": "number",
+        "description": "Minimum seconds between autonomous dataset discovery scheduling."
+      },
+      "discoveryMaxPages": {
+        "type": "number",
+        "description": "Maximum pages per autonomous discover-crawl seed."
+      },
+      "discoveryMaxDepth": {
+        "type": "number",
+        "description": "Maximum depth per autonomous discover-crawl seed."
+      },
+      "authRetryIntervalSeconds": {
+        "type": "number",
+        "description": "Retry interval for auth-pending items after PUBLIC_URL/VNC login is required."
+      }
+    },
+    "required": ["crawlerRoot", "platformBaseUrl", "minerId"]
+  }
+}
