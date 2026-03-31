@@ -193,6 +193,24 @@ def test_discovery_registry_returns_platform_specific_adapter() -> None:
     assert isinstance(adapter, WikipediaDiscoveryAdapter)
 
 
+def test_discovery_registry_returns_arxiv_adapter() -> None:
+    from crawler.discovery.adapters.arxiv import ArxivDiscoveryAdapter
+    from crawler.discovery.adapters.registry import get_discovery_adapter
+
+    adapter = get_discovery_adapter("arxiv")
+
+    assert isinstance(adapter, ArxivDiscoveryAdapter)
+
+
+def test_discovery_registry_returns_base_adapter() -> None:
+    from crawler.discovery.adapters.base_chain import BaseChainDiscoveryAdapter
+    from crawler.discovery.adapters.registry import get_discovery_adapter
+
+    adapter = get_discovery_adapter("base")
+
+    assert isinstance(adapter, BaseChainDiscoveryAdapter)
+
+
 def test_discovery_registry_falls_back_to_generic_for_unknown_platform() -> None:
     from crawler.discovery.adapters.generic import GenericDiscoveryAdapter
     from crawler.discovery.adapters.registry import get_discovery_adapter
@@ -230,6 +248,18 @@ async def test_wikipedia_map_emits_article_candidates_from_api_links() -> None:
     assert result.accepted[0].resource_type == "article"
     assert "Machine_learning" in result.accepted[0].canonical_url
     assert result.accepted[1].canonical_url == "https://en.wikipedia.org/wiki/Deep_learning"
+
+
+def test_wikipedia_normalize_url_extracts_title_identity() -> None:
+    from crawler.discovery.adapters.wikipedia import WikipediaDiscoveryAdapter
+
+    adapter = WikipediaDiscoveryAdapter()
+
+    normalized = adapter.normalize_url("https://en.wikipedia.org/wiki/Artificial_intelligence")
+
+    assert normalized.entity_type == "article"
+    assert normalized.canonical_url == "https://en.wikipedia.org/wiki/Artificial_intelligence"
+    assert normalized.identity == {"title": "Artificial_intelligence"}
 
 
 # --- Amazon Discovery Adapter Tests ---

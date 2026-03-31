@@ -2,8 +2,6 @@
 
 Normalizes arbitrary LinkedIn URLs into canonical forms for four entity types
 (profile, company, job, post) and provides HTML-based link discovery.
-
-Migrated from ``urlDiscover.MediaUrl.linkedin_url``.
 """
 
 from __future__ import annotations

@@ -297,6 +297,51 @@ def test_non_auth_platform_fallback_escalates_on_retry() -> None:
     assert backend_2 == "camoufox"
 
 
+def test_amazon_adapter_uses_resource_specific_default_field_groups() -> None:
+    from crawler.platforms.amazon import ADAPTER as amazon_adapter
+
+    product_request = amazon_adapter.build_enrichment_request({"platform": "amazon", "resource_type": "product"})
+    seller_request = amazon_adapter.build_enrichment_request({"platform": "amazon", "resource_type": "seller"})
+    review_request = amazon_adapter.build_enrichment_request({"platform": "amazon", "resource_type": "review"})
+
+    assert product_request["field_groups"] == (
+        "amazon_products_identity",
+        "amazon_products_pricing",
+        "amazon_products_description",
+        "amazon_products_category",
+        "amazon_products_visual",
+        "amazon_products_availability",
+        "amazon_products_competition",
+        "amazon_products_reviews_summary",
+        "amazon_products_variants",
+        "amazon_products_compliance",
+        "amazon_products_multimodal_images",
+        "amazon_products_multi_level_summary",
+        "amazon_products_market_positioning",
+        "amazon_products_listing_quality",
+        "amazon_products_linkable_ids",
+    )
+    assert seller_request["field_groups"] == (
+        "amazon_sellers_identity",
+        "amazon_sellers_performance",
+        "amazon_sellers_portfolio",
+        "amazon_sellers_business_intel",
+        "amazon_sellers_multi_level_summary",
+        "amazon_sellers_linkable_ids",
+    )
+    assert review_request["field_groups"] == (
+        "amazon_reviews_identity",
+        "amazon_reviews_content",
+        "amazon_reviews_analysis",
+        "amazon_reviews_quality",
+        "amazon_reviews_structured",
+        "amazon_reviews_media",
+        "amazon_reviews_multimodal_images",
+        "amazon_reviews_multi_level_summary",
+        "amazon_reviews_review_depth",
+    )
+
+
 def test_base_platform_fallback_escalates_on_retry() -> None:
     """Base chain platform should escalate to fallback backends on retry."""
     from crawler.platforms.base_chain import ADAPTER as base_adapter
@@ -312,6 +357,26 @@ def test_base_platform_fallback_escalates_on_retry() -> None:
     # Retry 2: second fallback (playwright)
     backend_2 = base_adapter.resolve_backend({"platform": "base", "resource_type": "address"}, None, retry_count=2)
     assert backend_2 == "playwright"
+
+
+def test_base_token_prefers_http_html_flow() -> None:
+    from crawler.platforms.base_chain import ADAPTER as base_adapter
+
+    backend_0 = base_adapter.resolve_backend({"platform": "base", "resource_type": "token"}, None, retry_count=0)
+    backend_1 = base_adapter.resolve_backend({"platform": "base", "resource_type": "token"}, None, retry_count=1)
+
+    assert backend_0 == "http"
+    assert backend_1 == "playwright"
+
+
+def test_base_contract_prefers_http_html_flow() -> None:
+    from crawler.platforms.base_chain import ADAPTER as base_adapter
+
+    backend_0 = base_adapter.resolve_backend({"platform": "base", "resource_type": "contract"}, None, retry_count=0)
+    backend_1 = base_adapter.resolve_backend({"platform": "base", "resource_type": "contract"}, None, retry_count=1)
+
+    assert backend_0 == "http"
+    assert backend_1 == "playwright"
 
 
 def test_linkedin_post_escalates_to_camoufox_on_retry() -> None:

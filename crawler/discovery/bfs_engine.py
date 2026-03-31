@@ -1,7 +1,4 @@
-"""Generalized BFS graph traversal engine for URL discovery.
-
-Migrated and generalized from ``urlDiscover.MediaUrl.linkedin_url.bfs_expand``.
-"""
+"""Generalized BFS graph traversal engine for URL discovery."""
 
 from __future__ import annotations
 
@@ -15,6 +12,7 @@ from crawler.discovery.scheduler import DiscoveryScheduler
 from crawler.discovery.state.frontier import FrontierEntry
 from crawler.discovery.state.visited import VisitRecord
 from crawler.discovery.store.visited_store import InMemoryVisitedStore
+from crawler.discovery.throttle import TokenBucketThrottle
 
 
 @dataclass
@@ -55,6 +53,7 @@ async def run_bfs_expand(
     options: BfsOptions | None = None,
     *,
     verbose: bool = False,
+    throttle: TokenBucketThrottle | None = None,
 ) -> tuple[BfsExpandResult, dict[str, Any]]:
     """Run BFS expansion using the adapter's normalize/expand methods.
 
@@ -77,7 +76,7 @@ async def run_bfs_expand(
         (BfsExpandResult, stats_dict)
     """
     opts = options or BfsOptions()
-    scheduler = DiscoveryScheduler()
+    scheduler = DiscoveryScheduler(throttle=throttle, platform=adapter.platform)
     visited = InMemoryVisitedStore()
     discovered_by_type: dict[str, set[str]] = defaultdict(set)
     errors: list[str] = []
@@ -130,7 +129,7 @@ async def run_bfs_expand(
             break
 
         # Get next entry
-        entry = scheduler.lease_next("bfs-worker")
+        entry = await scheduler.lease_next("bfs-worker")
         if entry is None:
             break
 
@@ -192,7 +191,7 @@ async def run_bfs_expand(
                         discovery_reason="expansion",
                     ))
 
-            # Mark visited
+            # Mark visited and complete in scheduler
             visited.put(VisitRecord(
                 url_key=entry.url_key,
                 canonical_url=entry.canonical_url or "",
@@ -202,9 +201,11 @@ async def run_bfs_expand(
                 best_depth=entry.depth,
                 crawl_state="done",
             ))
+            scheduler.complete(entry.frontier_id)
 
         except Exception as e:
             errors.append(f"{entry.canonical_url}: {e!r}")
+            scheduler.report_failure(entry.frontier_id, e)
             if verbose:
                 print(f"[bfs] Error: {e!r}")
 

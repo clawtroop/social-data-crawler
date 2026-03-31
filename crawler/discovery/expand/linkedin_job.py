@@ -3,8 +3,6 @@
 Fetches the job detail HTML, discovers embedded LinkedIn links via
 ``discover_from_html_deep``, classifies them into buckets, and returns
 an ``ExpandResult``.
-
-Migrated from ``urlDiscover.MediaUrl.linkedin_url.job_expand``.
 """
 
 from __future__ import annotations

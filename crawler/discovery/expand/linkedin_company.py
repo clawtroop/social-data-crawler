@@ -2,8 +2,6 @@
 
 Extracts job IDs from HTML and jobs/search URLs, discovers linked profiles,
 companies, and posts via deep HTML link extraction.
-
-Migrated from ``urlDiscover.MediaUrl.linkedin_url.company_expand``.
 """
 
 from __future__ import annotations

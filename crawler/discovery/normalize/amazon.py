@@ -1,8 +1,4 @@
-"""Amazon URL normalization and ASIN extraction.
-
-Migrated from ``urlDiscover/Amazon/scripts/amazon_url_discovery.py``
-(class ``AmazonURLUtils``).
-"""
+"""Amazon URL normalization and ASIN extraction."""
 
 from __future__ import annotations
 

@@ -4,6 +4,7 @@ import asyncio
 
 import pytest
 
+from crawler.fetch.error_classifier import FetchError
 from crawler.discovery.contracts import CrawlOptions, DiscoveryCandidate, DiscoveryMode
 from crawler.discovery.runner import run_discover_crawl
 
@@ -271,3 +272,64 @@ async def test_run_discover_crawl_uses_multiple_workers_for_independent_seeds() 
 
     assert len(records) == 4
     assert max_active >= 2
+
+
+@pytest.mark.asyncio
+async def test_run_discover_crawl_captures_candidate_auth_failure_without_stopping_job() -> None:
+    protected = DiscoveryCandidate(
+        platform="linkedin",
+        resource_type="profile",
+        canonical_url="https://www.linkedin.com/in/protected/",
+        seed_url="https://www.linkedin.com/in/protected/",
+        fields={},
+        discovery_mode=DiscoveryMode.DIRECT_INPUT,
+        score=1.0,
+        score_breakdown={"direct_input": 1.0},
+        hop_depth=0,
+        parent_url=None,
+        metadata={},
+    )
+    public_seed = DiscoveryCandidate(
+        platform="generic",
+        resource_type="page",
+        canonical_url="https://example.com/public",
+        seed_url="https://example.com/public",
+        fields={},
+        discovery_mode=DiscoveryMode.DIRECT_INPUT,
+        score=1.0,
+        score_breakdown={"direct_input": 1.0},
+        hop_depth=0,
+        parent_url=None,
+        metadata={},
+    )
+    errors: list[dict[str, object]] = []
+
+    class FakeAdapter:
+        async def crawl(self, candidate: DiscoveryCandidate, context: dict[str, object]) -> dict[str, object]:
+            if candidate.platform == "linkedin":
+                err = RuntimeError("需要登录")
+                err.fetch_error = FetchError("AUTH_REQUIRED", "complete_login_in_auto_browser", "需要登录", True)  # type: ignore[attr-defined]
+                err.public_url = "https://vrd.example/session"  # type: ignore[attr-defined]
+                raise err
+            fetched = await context["fetch_fn"](candidate.canonical_url)
+            return {
+                "candidate": candidate,
+                "fetched": fetched,
+                "spawned_candidates": [],
+            }
+
+    async def fake_fetch(url: str) -> dict[str, object]:
+        return {"url": url, "html": "<html>ok</html>", "content_type": "text/html"}
+
+    records = await run_discover_crawl(
+        seeds=[protected, public_seed],
+        fetch_fn=fake_fetch,
+        options=CrawlOptions(max_depth=0, max_pages=10),
+        adapter_resolver=lambda platform: FakeAdapter(),
+        errors=errors,
+    )
+
+    assert [record["canonical_url"] for record in records] == ["https://example.com/public"]
+    assert errors[0]["error_code"] == "AUTH_REQUIRED"
+    assert errors[0]["public_url"] == "https://vrd.example/session"
+    assert errors[0]["canonical_url"] == "https://www.linkedin.com/in/protected/"

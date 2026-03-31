@@ -3,8 +3,6 @@
 Fetches the post detail HTML, discovers embedded LinkedIn links via
 ``discover_from_html_deep``, classifies them into buckets (commenter
 profiles, companies, related posts, etc.), and returns an ``ExpandResult``.
-
-Migrated from ``urlDiscover.MediaUrl.linkedin_url.post_expand``.
 """
 
 from __future__ import annotations

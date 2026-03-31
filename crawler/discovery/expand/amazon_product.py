@@ -3,9 +3,6 @@
 Fetches an Amazon product page and extracts related ASINs from
 "frequently bought together", "customers also viewed", "compare
 with similar items", and sponsored products sections.
-
-Migrated from ``urlDiscover/Amazon/scripts/amazon_url_discovery.py``
-(class ``PageExpander``).
 """
 
 from __future__ import annotations

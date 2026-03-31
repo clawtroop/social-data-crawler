@@ -4,8 +4,6 @@ Fetches the profile HTML (and optionally recent-activity), discovers
 embedded LinkedIn links via ``discover_from_html_deep``, classifies
 them into buckets (company, post, profile, etc.), and returns an
 ``ExpandResult``.
-
-Migrated from ``urlDiscover.MediaUrl.linkedin_url.profile_expand``.
 """
 
 from __future__ import annotations

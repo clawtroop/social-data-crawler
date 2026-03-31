@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from typing import Any
-from urllib.parse import urljoin, urlparse
+from urllib.parse import unquote, urljoin, urlparse
 
 from bs4 import BeautifulSoup
 
@@ -14,6 +14,7 @@ from crawler.discovery.contracts import (
     DiscoveryRecord,
 )
 from crawler.discovery.map_engine import MapResult
+from crawler.discovery.normalize.base import NormalizeResult
 
 
 class WikipediaDiscoveryAdapter(BaseDiscoveryAdapter):
@@ -32,6 +33,22 @@ class WikipediaDiscoveryAdapter(BaseDiscoveryAdapter):
         from crawler.discovery.url_builder import build_seed_records
 
         return build_seed_records(input_record)
+
+    def normalize_url(self, url: str) -> NormalizeResult:
+        raw = (url or "").strip()
+        parsed = urlparse(raw)
+        path = unquote(parsed.path or "")
+        if "wikipedia.org" not in parsed.netloc or not path.startswith("/wiki/"):
+            return NormalizeResult(entity_type="unknown", canonical_url="", original_url=raw)
+        title = path.removeprefix("/wiki/").strip().replace(" ", "_")
+        if not title or ":" in title:
+            return NormalizeResult(entity_type="unknown", canonical_url="", original_url=raw)
+        return NormalizeResult(
+            entity_type="article",
+            canonical_url=f"https://en.wikipedia.org/wiki/{title}",
+            identity={"title": title},
+            original_url=raw,
+        )
 
     async def map(
         self, seed: DiscoveryRecord, context: dict[str, Any]

@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import fields
 
+import pytest
+
 from crawler.discovery.state.checkpoint import Checkpoint
 from crawler.discovery.state.frontier import FrontierEntry, FrontierStatus
 from crawler.discovery.state.edges import DiscoveryEdge
@@ -115,7 +117,8 @@ def test_discovery_edge_remains_typed_and_small() -> None:
     assert edge.observed_at == "2026-03-30T00:00:00Z"
 
 
-def test_scheduler_leases_highest_priority_entry() -> None:
+@pytest.mark.asyncio
+async def test_scheduler_leases_highest_priority_entry() -> None:
     scheduler = DiscoveryScheduler()
     scheduler.enqueue(
         FrontierEntry(
@@ -145,7 +148,7 @@ def test_scheduler_leases_highest_priority_entry() -> None:
             discovery_reason="sitemap",
         )
     )
-    leased = scheduler.lease_next(worker_id="worker-1")
+    leased = await scheduler.lease_next(worker_id="worker-1")
     assert leased is not None
     assert leased.frontier_id == "high"
     assert scheduler.occupancy_store.list()[0].leased_at.endswith("Z")

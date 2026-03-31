@@ -198,7 +198,22 @@ def hook_normalizer(hook_name: str) -> Callable[[dict[str, Any], dict[str, Any],
                 "pdf_document_blocks": supplemental.get("document_blocks", []),
             }
         if hook_name == "amazon":
-            return {"asin": discovered["fields"].get("asin"), "title": metadata.get("title")}
+            extracted_structured = extracted.get("structured", {})
+            result = {
+                key: value
+                for key, value in discovered["fields"].items()
+                if value not in (None, "", [], {})
+            }
+            result["title"] = metadata.get("title") or (
+                extracted_structured.get("title") if isinstance(extracted_structured, dict) else None
+            )
+            if isinstance(extracted_structured, dict):
+                result.update({
+                    key: value
+                    for key, value in extracted_structured.items()
+                    if key != "title" and value not in (None, "", [], {})
+                })
+            return result
         if hook_name == "base_chain":
             return {
                 "identifier": next(iter(discovered["fields"].values()), None),
