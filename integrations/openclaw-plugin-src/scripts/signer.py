@@ -81,21 +81,27 @@ class WalletSigner:
         self._token = session_token
         self._signer_address: str | None = None
 
-    def _run(self, *args: str) -> dict[str, Any]:
+    def _run(self, *args: str, stdin_data: str | None = None) -> dict[str, Any]:
         cmd = [self._bin, *args]
         env = os.environ.copy()
         if not env.get("HOME") and env.get("USERPROFILE"):
             env["HOME"] = env["USERPROFILE"]
-        result = subprocess.run(cmd, capture_output=True, text=True, timeout=30, env=env)
+        result = subprocess.run(
+            cmd,
+            input=stdin_data,
+            capture_output=True,
+            text=True,
+            timeout=10,
+            env=env,
+        )
         if result.returncode != 0:
             stderr = result.stderr.strip()
             if "Invalid or expired session token" in stderr:
                 raise RuntimeError(
                     "awpWalletToken expired or invalid; rerun "
-                    "`awp-wallet unlock --duration 3600` and update plugin config before retrying. "
-                    f"awp-wallet stderr: {stderr}"
+                    "`awp-wallet unlock --duration 3600` and update plugin config before retrying."
                 )
-            raise RuntimeError(f"awp-wallet failed (exit {result.returncode}): {stderr}")
+            raise RuntimeError(f"awp-wallet failed (exit {result.returncode})")
         return json.loads(result.stdout)
 
     def get_address(self) -> str:
@@ -114,16 +120,24 @@ class WalletSigner:
         return self._signer_address
 
     def sign_typed_data(self, typed_data: dict[str, Any]) -> str:
+        # Pass token via stdin to avoid exposure in process listing
+        stdin_payload = json.dumps({
+            "token": self._token,
+            "data": typed_data,
+        }, separators=(",", ":"))
         resp = self._run(
             "sign-typed-data",
-            "--token",
-            self._token,
             "--data",
             json.dumps(typed_data, separators=(",", ":")),
+            "--token-stdin",
+            stdin_data=stdin_payload,
         )
         sig = resp.get("signature", "")
         if not sig:
             raise RuntimeError("awp-wallet sign-typed-data returned empty signature")
+        # Validate signature format (0x-prefixed hex string)
+        if not (sig.startswith("0x") and len(sig) >= 66 and all(c in "0123456789abcdefABCDEF" for c in sig[2:])):
+            raise RuntimeError("awp-wallet returned malformed signature")
         return sig
 
     def build_typed_data(

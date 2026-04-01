@@ -20,7 +20,11 @@ REGISTRY: dict[str, PlatformAdapter] = {
 
 
 def get_platform_adapter(platform: str) -> PlatformAdapter:
-    return REGISTRY[platform]
+    adapter = REGISTRY.get(platform)
+    if adapter is None:
+        available = ", ".join(sorted(REGISTRY.keys()))
+        raise ValueError(f"unknown platform {platform!r}; available: {available}")
+    return adapter
 
 
 def list_platform_adapters() -> tuple[PlatformAdapter, ...]:

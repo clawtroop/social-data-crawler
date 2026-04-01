@@ -6,12 +6,10 @@ __pycache__/
 .Python
 *.egg-info/
 .eggs/
-dist/*
-!dist/openclaw-plugin/
-!dist/openclaw-plugin/**
-!dist/*.zip
-!dist/*.tar.gz
 build/
+
+# Distribution / build artifacts (regenerate via scripts/build_openclaw_plugin.py)
+dist/
 
 # Environment
 .env
@@ -26,17 +24,21 @@ output/
 !crawler/output/*.py
 .sessions/
 *.auto-browser.json
-*.jsonl
-!data/*.jsonl
 repomix-output.*
 .tmp_*.py
 desktop.ini
 
+# JSONL (keep sample data, ignore test & runtime output)
+*.jsonl
+!data/sample_*.jsonl
+
 # Test/runtime temp
+test-out/
 .pytest-tmp/
 .pytest_cache/
-dist/.tmp/
-dist/.cache/
+
+# Temp install artifacts
+.tmp-openclaw-*/
 
 # IDE
 .idea/
@@ -48,5 +50,5 @@ dist/.cache/
 .DS_Store
 Thumbs.db
 
-# 密钥目录与本地大型 zip 归档（避免误提交）
+# Secrets
 **/.secrets/

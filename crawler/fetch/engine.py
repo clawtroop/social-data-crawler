@@ -140,7 +140,7 @@ class FetchEngine:
                 )
                 if last_fetch_error and last_fetch_error.retryable:
                     backoff_seconds = self._rate_limiter.get_backoff_seconds(platform, attempt)
-                    self._circuit_breaker.record_failure(platform, last_fetch_error, backoff_seconds)
+                    await self._circuit_breaker.record_failure_safe(platform, last_fetch_error, backoff_seconds)
                     if backoff_seconds > 0:
                         logger.info(
                             "Backing off %.1fs for %s after %s",
@@ -267,6 +267,7 @@ class FetchEngine:
             await self.start()
 
         context = await self._pool.acquire_context(platform, backend)
+        page = None
         try:
             page = await context.new_page()
             twister_payloads: list[dict[str, Any]] = []
@@ -336,6 +337,11 @@ class FetchEngine:
                 ),
             )
         finally:
+            if page is not None:
+                try:
+                    await page.close()
+                except Exception:
+                    pass
             await self._pool.release_context(platform, context, backend)
 
     @staticmethod

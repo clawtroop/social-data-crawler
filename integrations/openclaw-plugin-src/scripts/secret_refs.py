@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import subprocess
 from pathlib import Path
 from typing import Any
@@ -67,15 +68,33 @@ def _resolve_file_secret_ref(ref_id: str, provider_config: dict[str, Any]) -> st
     return value if isinstance(value, str) else ""
 
 
+_ALLOWED_EXEC_COMMANDS = frozenset({
+    "awp-wallet",
+    "op",          # 1Password CLI
+    "vault",       # HashiCorp Vault
+    "aws",         # AWS CLI (for secrets-manager)
+    "gcloud",      # Google Cloud CLI
+    "az",          # Azure CLI
+})
+
+
 def _resolve_exec_secret_ref(provider: str, ref_id: str, provider_config: dict[str, Any]) -> str:
     command = str(provider_config.get("command", "")).strip()
     if not command:
+        return ""
+    # Security: only allow known secret-provider binaries
+    command_basename = Path(command).name
+    if command_basename not in _ALLOWED_EXEC_COMMANDS:
+        return ""
+    # Resolve to absolute path via PATH lookup to avoid relative-path tricks
+    resolved = shutil.which(command)
+    if resolved is None:
         return ""
     args = [str(value) for value in provider_config.get("args", [])]
     payload = json.dumps({"protocolVersion": 1, "provider": provider, "ids": [ref_id]})
     try:
         completed = subprocess.run(
-            [command, *args],
+            [resolved, *args],
             input=payload,
             capture_output=True,
             text=True,

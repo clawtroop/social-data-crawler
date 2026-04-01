@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 from typing import Any
 
 from secret_refs import read_openclaw_config, resolve_secret_ref
@@ -33,8 +34,12 @@ def resolve_openclaw_enrich_model_config() -> dict[str, Any]:
 
 
 def write_model_config(path: Path, model_config: dict[str, Any]) -> Path:
+    """Write model config to disk, redacting the api_key from the persisted file."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(model_config, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    safe_config = dict(model_config)
+    if "api_key" in safe_config:
+        safe_config["api_key"] = "***REDACTED***"
+    path.write_text(json.dumps(safe_config, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return path
 
 

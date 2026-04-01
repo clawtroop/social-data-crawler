@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Sequence
@@ -248,11 +250,22 @@ def _fill_enrichment(records_path: Path, responses_path: Path) -> int:
 
         updated_records.append(record)
 
-    # Write back
-    records_path.write_text(
-        "\n".join(json.dumps(r, ensure_ascii=False) for r in updated_records) + "\n",
-        encoding="utf-8",
-    )
+    # Write back atomically
+    content = "\n".join(json.dumps(r, ensure_ascii=False) for r in updated_records) + "\n"
+    fd, tmp = tempfile.mkstemp(dir=str(records_path.parent), suffix=".tmp")
+    try:
+        os.write(fd, content.encode("utf-8"))
+        os.close(fd)
+        fd = -1
+        os.replace(tmp, str(records_path))
+    except BaseException:
+        if fd >= 0:
+            os.close(fd)
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
     print(f"Filled {filled_count} pending_agent enrichment results")
     return 0
 

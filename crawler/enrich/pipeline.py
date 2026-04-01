@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import hashlib
+import logging
 import time
 import json
 import re
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from crawler.enrich.extractive.lookup_enricher import LookupEnricher
 from crawler.enrich.extractive.regex_enricher import RegexEnricher
@@ -502,10 +505,13 @@ class EnrichPipeline:
             return
         if result.status in {"failed", "skipped"}:
             return
-        self._cache_path(document, result.field_group).write_text(
-            json.dumps(result.to_dict(), ensure_ascii=False, indent=2),
-            encoding="utf-8",
-        )
+        try:
+            self._cache_path(document, result.field_group).write_text(
+                json.dumps(result.to_dict(), ensure_ascii=False, indent=2),
+                encoding="utf-8",
+            )
+        except OSError as exc:
+            logger.warning("Failed to write enrichment cache for %s: %s", result.field_group, exc)
 
     def _cache_path(self, document: dict[str, Any], field_group: str) -> Path:
         payload = {

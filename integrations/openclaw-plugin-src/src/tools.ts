@@ -3,6 +3,20 @@ import { spawn } from "node:child_process";
 import { Type } from "@sinclair/typebox";
 import type { OpenClawPluginApi } from "../api.js";
 
+const MAX_STDOUT_BYTES = 10 * 1024 * 1024; // 10 MB
+const PROCESS_TIMEOUT_MS = 10 * 60 * 1000; // 10 minutes
+
+// Whitelist of environment variables passed to Python subprocess
+const ENV_PASSTHROUGH_KEYS = new Set([
+  "PATH", "HOME", "USERPROFILE", "TEMP", "TMP", "TMPDIR",
+  "LANG", "LC_ALL", "LC_CTYPE",
+  "PYTHONPATH", "PYTHONIOENCODING", "VIRTUAL_ENV",
+  "OPENCLAW_CONFIG_PATH", "OPENCLAW_GATEWAY_TOKEN",
+  "OPENCLAW_GATEWAY_BASE_URL", "OPENCLAW_ENRICH_MODE",
+  "OPENCLAW_ENRICH_MODEL", "OPENCLAW_UPSTREAM_MODEL",
+  "SYSTEMROOT", "COMSPEC", // Windows essentials
+]);
+
 type PluginConfig = {
   secretRef?: {
     source?: string;
@@ -50,16 +64,16 @@ function resolvePluginConfig(api: OpenClawPluginApi): Required<Pick<PluginConfig
   };
 }
 
-async function runPythonTool(
-  api: OpenClawPluginApi,
-  command: string,
-  extraArgs: string[] = [],
-): Promise<string> {
-  const cfg = resolvePluginConfig(api);
-  const pythonBin = cfg.pythonBin?.trim() || "python";
-  const scriptPath = path.join(api.rootDir ?? ".", "scripts", "run_tool.py");
-  const env = {
-    ...process.env,
+function buildSafeEnv(cfg: Required<Pick<PluginConfig, "crawlerRoot" | "platformBaseUrl" | "minerId">> & PluginConfig, pythonBin: string): NodeJS.ProcessEnv {
+  // Start from whitelisted process.env keys only
+  const safeEnv: Record<string, string> = {};
+  for (const key of ENV_PASSTHROUGH_KEYS) {
+    if (process.env[key]) {
+      safeEnv[key] = process.env[key]!;
+    }
+  }
+  // Add plugin-specific variables
+  Object.assign(safeEnv, {
     SOCIAL_CRAWLER_ROOT: cfg.crawlerRoot,
     PLATFORM_BASE_URL: cfg.platformBaseUrl,
     PLATFORM_TOKEN: cfg.platformToken ?? "",
@@ -76,7 +90,28 @@ async function runPythonTool(
     DISCOVERY_MAX_PAGES: String(cfg.discoveryMaxPages ?? 25),
     DISCOVERY_MAX_DEPTH: String(cfg.discoveryMaxDepth ?? 1),
     AUTH_RETRY_INTERVAL_SECONDS: String(cfg.authRetryIntervalSeconds ?? 300),
-  };
+  });
+  return safeEnv;
+}
+
+function validatePath(filePath: string, rootDir: string, label: string): string {
+  const resolved = path.resolve(rootDir, filePath);
+  const normalizedRoot = path.resolve(rootDir);
+  if (!resolved.startsWith(normalizedRoot + path.sep) && resolved !== normalizedRoot) {
+    throw new Error(`${label} must be within the plugin root directory`);
+  }
+  return resolved;
+}
+
+async function runPythonTool(
+  api: OpenClawPluginApi,
+  command: string,
+  extraArgs: string[] = [],
+): Promise<string> {
+  const cfg = resolvePluginConfig(api);
+  const pythonBin = cfg.pythonBin?.trim() || "python";
+  const scriptPath = path.join(api.rootDir ?? ".", "scripts", "run_tool.py");
+  const env = buildSafeEnv(cfg, pythonBin);
 
   return await new Promise((resolve, reject) => {
     const child = spawn(pythonBin, [scriptPath, command, ...extraArgs], {
@@ -85,16 +120,37 @@ async function runPythonTool(
       stdio: ["ignore", "pipe", "pipe"],
     });
 
-    let stdout = "";
-    let stderr = "";
-    child.stdout.on("data", (chunk) => {
-      stdout += String(chunk);
+    let stdoutLen = 0;
+    let stderrLen = 0;
+    const stdoutChunks: Buffer[] = [];
+    const stderrChunks: Buffer[] = [];
+
+    child.stdout.on("data", (chunk: Buffer) => {
+      stdoutLen += chunk.length;
+      if (stdoutLen <= MAX_STDOUT_BYTES) {
+        stdoutChunks.push(chunk);
+      }
     });
-    child.stderr.on("data", (chunk) => {
-      stderr += String(chunk);
+    child.stderr.on("data", (chunk: Buffer) => {
+      stderrLen += chunk.length;
+      if (stderrLen <= MAX_STDOUT_BYTES) {
+        stderrChunks.push(chunk);
+      }
     });
-    child.on("error", (error) => reject(error));
+
+    const timer = setTimeout(() => {
+      child.kill("SIGTERM");
+      reject(new Error(`python helper timed out after ${PROCESS_TIMEOUT_MS / 1000}s`));
+    }, PROCESS_TIMEOUT_MS);
+
+    child.on("error", (error) => {
+      clearTimeout(timer);
+      reject(error);
+    });
     child.on("close", (code) => {
+      clearTimeout(timer);
+      const stdout = Buffer.concat(stdoutChunks).toString("utf-8");
+      const stderr = Buffer.concat(stderrChunks).toString("utf-8");
       if (code === 0) {
         resolve(stdout.trim() || "ok");
         return;
@@ -149,7 +205,9 @@ export function createProcessTaskFileTool(api: OpenClawPluginApi) {
       if (!taskType.trim() || !taskPath.trim()) {
         throw new Error("taskType and taskPath are required");
       }
-      const text = await runPythonTool(api, "process-task-file", [taskType, taskPath]);
+      const rootDir = api.rootDir ?? ".";
+      const safePath = validatePath(taskPath, rootDir, "taskPath");
+      const text = await runPythonTool(api, "process-task-file", [taskType, safePath]);
       return { content: [{ type: "text", text }] };
     },
   };
@@ -222,7 +280,10 @@ export function createExportCoreSubmissionsTool(api: OpenClawPluginApi) {
       if (!inputPath.trim() || !outputPath.trim() || !datasetId.trim()) {
         throw new Error("inputPath, outputPath, and datasetId are required");
       }
-      const text = await runPythonTool(api, "export-core-submissions", [inputPath, outputPath, datasetId]);
+      const rootDir = api.rootDir ?? ".";
+      const safeInput = validatePath(inputPath, rootDir, "inputPath");
+      const safeOutput = validatePath(outputPath, rootDir, "outputPath");
+      const text = await runPythonTool(api, "export-core-submissions", [safeInput, safeOutput, datasetId]);
       return { content: [{ type: "text", text }] };
     },
   };

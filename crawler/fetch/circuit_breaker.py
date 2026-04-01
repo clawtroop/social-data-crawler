@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import asyncio
 import json
 import time
 from pathlib import Path
@@ -25,6 +26,7 @@ class CircuitBreaker:
         if _CONFIG_PATH.exists():
             self._config = json.loads(_CONFIG_PATH.read_text(encoding="utf-8"))
         self._states: dict[str, dict[str, float | int | str]] = {}
+        self._lock = asyncio.Lock()
 
     def allow_request(self, platform: str) -> bool:
         state = self._states.get(platform)
@@ -60,6 +62,8 @@ class CircuitBreaker:
         self._states.pop(platform, None)
 
     def record_failure(self, platform: str, error: FetchError | None, cooldown_seconds: float) -> None:
+        # Note: must be called within an async context that serialises access,
+        # or explicitly wrapped with ``async with self._lock``.
         if error is None or error.error_code not in _TRIP_ERRORS:
             return
         state = self._states.setdefault(platform, {"failures": 0})
@@ -68,6 +72,11 @@ class CircuitBreaker:
         state["last_error_code"] = error.error_code
         if failures >= self._threshold(platform):
             state["open_until"] = time.monotonic() + max(cooldown_seconds, self._cooldown(platform))
+
+    async def record_failure_safe(self, platform: str, error: FetchError | None, cooldown_seconds: float) -> None:
+        """Thread-safe version of record_failure for concurrent async callers."""
+        async with self._lock:
+            self.record_failure(platform, error, cooldown_seconds)
 
     def _threshold(self, platform: str) -> int:
         return int(

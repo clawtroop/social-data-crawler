@@ -83,6 +83,15 @@ class BrowserPool:
         except Exception:
             logger.warning("Failed to save storage_state for %s", platform)
 
+    async def _is_context_alive(self, ctx: Any) -> bool:
+        """Check if a pooled context is still usable."""
+        try:
+            # A lightweight probe — accessing pages is synchronous and cheap
+            _ = ctx.pages
+            return True
+        except Exception:
+            return False
+
     async def acquire_context(self, platform: str, backend_type: str = "playwright") -> Any:
         """Get a browser context for the given platform. Reuses pooled contexts when available."""
         if not self._started:
@@ -90,10 +99,17 @@ class BrowserPool:
 
         key = f"{platform}:{backend_type}"
 
-        if key in self._available and not self._available[key].empty():
+        while key in self._available and not self._available[key].empty():
             ctx = self._available[key].get_nowait()
-            logger.debug("Reusing pooled context for %s", key)
-            return ctx
+            if await self._is_context_alive(ctx):
+                logger.debug("Reusing pooled context for %s", key)
+                return ctx
+            logger.warning("Discarding dead pooled context for %s", key)
+            if key in self._contexts:
+                try:
+                    self._contexts[key].remove(ctx)
+                except ValueError:
+                    pass
 
         browser = await self._ensure_browser(backend_type)
         storage_state = self._load_storage_state(platform)

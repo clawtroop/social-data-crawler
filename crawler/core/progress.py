@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -56,7 +58,22 @@ class ProgressTracker:
             "count": len(self._done),
             "last_updated": datetime.now(timezone.utc).isoformat(),
         }
-        self._path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+        data = json.dumps(payload, indent=2)
+        # Atomic write via temp file + rename
+        fd, tmp = tempfile.mkstemp(dir=str(self._path.parent), suffix=".tmp")
+        try:
+            os.write(fd, data.encode("utf-8"))
+            os.close(fd)
+            fd = -1
+            os.replace(tmp, str(self._path))
+        except BaseException:
+            if fd >= 0:
+                os.close(fd)
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+            raise
         self._dirty = False
         self._marks_since_flush = 0
 
